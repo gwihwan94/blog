@@ -1,0 +1,157 @@
+/* 통화 화면 — 음성 대신 상대방 대사가 화면 중앙에 하나의 텍스트 덩어리로 출력 (본인 대사 없음) */
+import { useEffect, useState, useRef } from "react";
+import { MicOff, Grid3x3, Volume2, Plus, Video, CircleUser } from "lucide-react";
+import { HandsetDown } from "../phoneIcons";
+import { Wallpaper } from "../Phone";
+
+export function CallScreen({ name, lines: them, mode, onEnd, me = [], meName = "나", talk }: { name: string; lines: string[]; mode: "out" | "in"; onEnd: () => void; me?: string[]; meName?: string; talk?: { who: "them" | "me"; text: string }[] }) {
+  /* 통화 내용: talk(순서대로 주고받은 말)가 있으면 그대로, 없으면 상대 · 나를 번갈아 */
+  const seq: { who: "them" | "me"; t: string }[] = [];
+  if (talk?.length) talk.forEach((x) => x.text && seq.push({ who: x.who === "me" ? "me" : "them", t: x.text }));
+  else for (let i = 0; i < Math.max(them.length, me.length); i++) { if (them[i]) seq.push({ who: "them", t: them[i] }); if (me[i]) seq.push({ who: "me", t: me[i] }); }
+  const logRef = useRef<HTMLDivElement>(null);
+  const lines = seq.map((x) => x.t);
+  const [connected, setConnected] = useState(mode === "in");
+  const [sec, setSec] = useState(0);
+  const [shown, setShown] = useState(0); // 다 나온 문장 수
+  const [typed, setTyped] = useState(0); // 지금 문장에서 나온 글자 수
+  const [on, setOn] = useState<Record<string, boolean>>({});
+  const [pad, setPad] = useState(false);
+  const [digits, setDigits] = useState("");
+  const [ended, setEnded] = useState(false);
+
+  // 발신: 연결 중 → 연결됨
+  useEffect(() => {
+    if (connected) return;
+    const t = setTimeout(() => setConnected(true), 2600);
+    return () => clearTimeout(t);
+  }, [connected]);
+  // 통화 시간
+  useEffect(() => {
+    if (!connected || ended) return;
+    const i = setInterval(() => setSec((s) => s + 1), 1000);
+    return () => clearInterval(i);
+  }, [connected, ended]);
+  // 대사 출력: 한 글자씩 타이핑되듯 → 문장 끝나면 잠깐 쉬고 다음 문장
+  const cur = lines[shown] ?? "";
+  const speaking = connected && !ended && shown < lines.length && typed < cur.length;
+  useEffect(() => {
+    if (!connected || ended) return;
+    if (shown >= lines.length) {
+      const t = setTimeout(() => setEnded(true), 2800);
+      return () => clearTimeout(t);
+    }
+    if (typed < cur.length) {
+      const t = setTimeout(() => setTyped((x) => x + 1), shown === 0 && typed === 0 ? 900 : /[.,?!…]/.test(cur[typed - 1] ?? "") ? 260 : 55);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => {
+      setShown((x) => x + 1);
+      setTyped(0);
+    }, 700 + Math.min(1600, cur.length * 22));
+    return () => clearTimeout(t);
+  }, [connected, ended, shown, typed, cur, lines.length]);
+  useEffect(() => {
+    if (!ended) return;
+    const t = setTimeout(onEnd, 1300);
+    return () => clearTimeout(t);
+  }, [ended, onEnd]);
+
+  useEffect(() => { const el = logRef.current; if (el) el.scrollTop = el.scrollHeight; }, [shown, typed]);
+  const mmss = `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}`;
+  const status = ended ? "통화 종료" : connected ? mmss : "통화 연결 중…";
+  const btns = [
+    { id: "mute", label: "음소거", icon: <MicOff size={30} strokeWidth={1.8} /> },
+    { id: "pad", label: "키패드", icon: <Grid3x3 size={30} strokeWidth={1.8} /> },
+    { id: "spk", label: "스피커", icon: <Volume2 size={30} strokeWidth={1.8} /> },
+    { id: "add", label: "통화 추가", icon: <Plus size={32} strokeWidth={1.8} />, disabled: true },
+    { id: "ft", label: "FaceTime", icon: <Video size={30} strokeWidth={1.8} />, disabled: true },
+    { id: "ct", label: "연락처", icon: <CircleUser size={30} strokeWidth={1.8} /> },
+  ];
+  const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"];
+  const subs: Record<string, string> = { "2": "ABC", "3": "DEF", "4": "GHI", "5": "JKL", "6": "MNO", "7": "PQRS", "8": "TUV", "9": "WXYZ", "0": "+" };
+
+  return (
+    <div className="absolute inset-0 z-[80] text-white fade bg-[#111]">
+      <Wallpaper blur={46} dim={0.55} />
+      <div className="relative h-full flex flex-col">
+        {/* 상단: 이름 · 상태 */}
+        <div className="pt-[78px] text-center px-6">
+          <div className="text-[30px] leading-[36px] truncate">{pad && digits ? digits : name}</div>
+          <div className="text-[17px] text-white/60 tabular h-[22px] mt-[4px]">{pad && digits ? "" : status}</div>
+        </div>
+
+        {/* 중앙: 상대 대사 — 하나의 텍스트 덩어리. 지난 문장은 흐리게, 지금 말하는 문장은 또렷하게 */}
+        <div className="flex-1 flex flex-col items-center justify-center px-[30px]">
+          {!pad && connected && (
+            <>
+              <div className="flex items-center gap-[4px] h-[22px] mb-[18px]" aria-hidden>
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <span
+                    key={i}
+                    className="w-[4px] rounded-full bg-white/70 origin-center transition-all"
+                    style={{ height: speaking ? 18 : 4, animation: speaking ? `eq ${0.5 + (i % 3) * 0.17}s ease-in-out ${i * 0.08}s infinite` : "none", opacity: speaking ? 1 : 0.35 }}
+                  />
+                ))}
+              </div>
+              {/* 주고받은 말이 메시지처럼 위에서 아래로 이어진다 (상대 왼쪽 · 나 오른쪽) */}
+              <div ref={logRef} className="w-full max-w-[340px] max-h-[300px] overflow-hidden flex flex-col gap-[8px]" style={{ wordBreak: "keep-all", maskImage: "linear-gradient(transparent 0, #000 36px)", WebkitMaskImage: "linear-gradient(transparent 0, #000 36px)" }} data-call-done={shown >= lines.length ? "" : undefined}>
+                {[...seq.slice(0, shown), ...(shown < lines.length ? [{ ...seq[shown], t: cur.slice(0, typed), live: true }] : [])].map((l, i, all) => {
+                  const mine = l.who === "me", head = i === 0 || all[i - 1].who !== l.who;
+                  return (
+                    <div key={i} className={`flex flex-col ${mine ? "items-end" : "items-start"}`}>
+                      {head && <span className="text-[11px] font-semibold text-white/55 mb-[3px] px-[4px]">{mine ? meName : name}</span>}
+                      <span className="max-w-[86%] px-[13px] py-[8px] rounded-[18px] text-[16px] leading-[22px]" style={{ background: mine ? "rgba(10,132,255,0.55)" : "rgba(255,255,255,0.16)", minHeight: 38 }}>{l.t || "\u00a0"}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* 하단 컨트롤 */}
+        {!pad ? (
+          <div className="grid grid-cols-3 gap-y-[22px] px-[36px] justify-items-center">
+            {btns.map((b) => {
+              const active = !!on[b.id];
+              return (
+                <button
+                  key={b.id}
+                  disabled={b.disabled}
+                  onClick={() => (b.id === "pad" ? setPad(true) : setOn((o) => ({ ...o, [b.id]: !o[b.id] })))}
+                  className="flex flex-col items-center gap-[7px]"
+                  style={{ opacity: b.disabled ? 0.4 : 1 }}
+                >
+                  <span className="w-[78px] h-[78px] rounded-full flex items-center justify-center transition-colors blur-bar" style={{ background: active ? "#fff" : "rgba(255,255,255,0.2)", color: active ? "#000" : "#fff" }}>
+                    {b.icon}
+                  </span>
+                  <span className="text-[13px] font-medium">{b.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-y-[14px] px-[46px] justify-items-center">
+            {keys.map((k) => (
+              <button key={k} onClick={() => setDigits((x) => x + k)} className="w-[76px] h-[76px] rounded-full flex flex-col items-center justify-center active:bg-white/50" style={{ background: "rgba(255,255,255,0.2)" }}>
+                <span className="text-[34px] leading-[36px] font-light">{k}</span>
+                {subs[k] && <span className="text-[10px] font-bold tracking-[0.16em]">{subs[k]}</span>}
+              </button>
+            ))}
+          </div>
+        )}
+        <div className="relative flex justify-center mt-[30px] mb-[54px]">
+          <button data-call="end" onClick={() => setEnded(true)} className="w-[78px] h-[78px] rounded-full bg-[#FF3B30] flex items-center justify-center active:brightness-90">
+            <HandsetDown size={38} />
+          </button>
+          {pad && (
+            <button onClick={() => setPad(false)} className="absolute right-[56px] top-1/2 -translate-y-1/2 text-[17px]">
+              가리기
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

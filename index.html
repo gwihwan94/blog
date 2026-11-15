@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>귀환의 블로그</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%20shape-rendering%3D%27crispEdges%27%3E%3Crect%20width%3D%2716%27%20height%3D%2716%27%20rx%3D%273%27%20fill%3D%27%23111%27%2F%3E%3Cpath%20d%3D%27M3%203h4v4H3zM9%203h4v4H9zM3%209h4v4H3zM9%209h4v4H9z%27%20fill%3D%27%23fff%27%2F%3E%3C%2Fsvg%3E">
+<meta name="description" content="귀환의 블로그: 로판AI·케이브덕에서 쓰는 AI 채팅 롤플레이 OOC 툴 모음과 세계관 A440 전용 툴">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/y2k.css">
+<style>
+/* 허브: 2000년대 흑백 데스크톱. 탐색기 창 하나에 모든 툴이 파일처럼 모여 있고, 옆에 작은 창 몇 개(사용법·플레이어·폰).
+   장식은 실제로 쓰는 것만: 거르기 버튼, 찾기, 주소줄, 상태줄, 시계, 바로 가기. */
+.desk { max-width: 1180px; margin: 0 auto; padding: 22px max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px)); display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+
+/* 맨 위 배너 창: 큰 도트 로고 + 오늘 */
+.banner { grid-column: 1 / -1; }
+.bn { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: end; padding: 22px 22px 18px; background: linear-gradient(180deg, #ffffff 0%, #ececec 100%); }
+.logo { margin: 0; font: 700 clamp(40px, 7.2vw, 84px)/1 "Galmuri11", var(--px); letter-spacing: -.02em; color: #111; display: flex; flex-wrap: wrap; gap: 0 .32em; text-shadow: 3px 3px 0 #c9c9c9, 6px 6px 0 #111; }
+.bn-r { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+.today { display: flex; align-items: stretch; border: 1px solid var(--y-ink); background: #fff; box-shadow: 3px 3px 0 var(--y-ink); }
+.today b { display: grid; place-items: center; min-width: 58px; padding: 6px 10px; background: #111; color: #fff; font: 400 32px/1 "Galmuri11", var(--px); }
+.today span { display: flex; flex-direction: column; justify-content: center; padding: 6px 12px; font: 400 12px/1.6 var(--px9); }
+.today i { font-style: normal; }
+/* 첫 줄: 무엇을 하는 곳인지 */
+.intro { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: end; padding: 4px 2px 0; }
+.intro h1 { margin: 0; font-family: var(--px); font-weight: 400; font-size: clamp(24px, 3.4vw, 38px); line-height: 1.25; letter-spacing: -.01em; }
+.intro h1 .cur { display: inline-block; width: .5em; height: .9em; margin-left: 4px; vertical-align: -.08em; background: var(--y-ink); }
+.intro p { margin: 8px 0 0; max-width: 40em; font-size: 14.5px; line-height: 1.7; color: var(--y-sub); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.chips span { font-family: var(--px9); font-size: 12px; padding: 4px 8px; background: var(--y-win); border: 1px solid var(--y-ink); box-shadow: 2px 2px 0 var(--y-ink); }
+
+/* 탐색기 */
+.explorer .toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 10px; border-bottom: 1px solid var(--y-dark); background: var(--y-face); }
+.explorer .toolbar .sep { width: 1px; align-self: stretch; background: var(--y-dark); box-shadow: 1px 0 0 #fff; margin: 0 4px; }
+.find { margin-left: auto; display: flex; align-items: center; gap: 6px; font-family: var(--px9); font-size: 12px; }
+.find input { width: 170px; height: 30px; padding: 0 8px; font: 14px var(--ui); background: #fff; border: 1px solid var(--y-ink); box-shadow: inset 1px 1px 0 var(--y-dark); border-radius: 0; color: var(--y-ink); }
+.addr { display: flex; align-items: center; gap: 8px; padding: 6px 10px; font-family: var(--px9); font-size: 12px; border-bottom: 1px solid var(--y-dark); background: var(--y-face); }
+.addr output { flex: 1; min-width: 0; padding: 3px 8px; background: #fff; border: 1px solid var(--y-ink); box-shadow: inset 1px 1px 0 var(--y-dark); font-family: var(--mono); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.split { display: grid; grid-template-columns: 196px minmax(0, 1fr); min-height: 420px; background: #fff; }
+.tree { border-right: 1px solid var(--y-dark); background: var(--y-face); padding: 10px 8px; font-size: 13px; }
+.tree h2 { margin: 0 0 6px; font: 400 12px var(--px9); color: var(--y-sub); }
+.tree button { display: flex; align-items: center; gap: 7px; width: 100%; padding: 5px 6px; border: 1px dotted transparent; background: none; text-align: left; cursor: pointer; font: 400 13px var(--px); color: var(--y-ink); }
+.tree button svg { width: 16px; height: 16px; flex: none; }
+.tree button small { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--y-sub); }
+.tree button[aria-pressed="true"] { background: var(--y-ink); color: #fff; }
+.tree button[aria-pressed="true"] small { color: #bbb; }
+.tree button:focus-visible { border-color: var(--y-ink); outline: 0; }
+.tree .howto { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--y-dark); box-shadow: 0 -1px 0 #fff inset; }
+.tree ol { margin: 0; padding: 0 0 0 18px; font-size: 12.5px; line-height: 1.6; color: var(--y-ink); }
+.tree ol li { margin-bottom: 6px; }
+.tree ol li::marker { font-family: var(--mono); font-size: 11px; }
+
+.files { min-width: 0; }
+.fhead, .frow { display: grid; grid-template-columns: minmax(150px, 1.05fr) minmax(0, 2fr) 70px 86px; align-items: center; gap: 12px; padding: 0 14px; }
+.fhead { position: sticky; top: 0; height: 28px; background: var(--y-face); border-bottom: 1px solid var(--y-dark); font: 400 12px var(--px9); color: var(--y-ink); }
+.fhead span { border-right: 1px solid var(--y-dark); box-shadow: 1px 0 0 #fff; height: 100%; display: flex; align-items: center; }
+.fhead span:last-child { border-right: 0; box-shadow: none; }
+.frow { min-height: 64px; padding-block: 9px; text-decoration: none; color: var(--y-ink); border-bottom: 1px dotted #c8c8c8; }
+.frow .nm { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.frow .nm svg { width: 32px; height: 32px; flex: none; }
+.frow .nm b { font: 400 15px var(--px); line-height: 1.3; }
+.frow .nm b small { display: block; font: 400 11px var(--px9); color: var(--y-sub); margin-top: 2px; }
+.frow .ds { font-size: 13px; line-height: 1.55; color: #333; }
+.frow .oc { font-family: var(--mono); font-size: 12px; }
+.frow .kd { font: 400 12px var(--px9); }
+.frow:hover, .frow:focus-visible { background: var(--y-sel); color: #fff; outline: 0; }
+.frow:hover .ds, .frow:focus-visible .ds, .frow:hover small, .frow:focus-visible small { color: #e6e6e6; }
+.frow:hover svg .k, .frow:focus-visible svg .k { fill: #fff; } .frow:hover svg .g, .frow:focus-visible svg .g { fill: #6b6b6b; }
+.frow[hidden] { display: none; }
+.empty { padding: 40px 16px; text-align: center; font: 400 13px var(--px); color: var(--y-sub); }
+.status { display: flex; gap: 0; background: var(--y-face); border-top: 1px solid var(--y-dark); font: 400 12px var(--px9); }
+.status span { padding: 5px 10px; border-right: 1px solid var(--y-dark); box-shadow: 1px 0 0 #fff; }
+.status span:last-child { margin-left: auto; border-right: 0; box-shadow: none; }
+
+/* 큰 아이콘 보기 */
+.views { display: inline-flex; gap: 4px; }
+.views .vw { width: 32px; min-height: 30px; padding: 0; }
+.views .vw svg { width: 16px; height: 16px; }
+.views .vw[aria-pressed="true"] { background: var(--y-ink); color: #fff; box-shadow: inset 1px 1px 0 #000; }
+.files.icons .fhead { display: none; }
+.files.icons #list { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; padding: 14px; }
+.files.icons .frow { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px; min-height: 118px; padding: 12px 6px; border: 1px dotted transparent; text-align: center; }
+.files.icons .frow .nm { flex-direction: column; gap: 8px; }
+.files.icons .frow .nm svg { width: 48px; height: 48px; }
+.files.icons .frow .nm b { font-size: 13.5px; }
+.files.icons .frow .ds, .files.icons .frow .oc, .files.icons .frow .kd { display: none; }
+.files.icons .frow:hover, .files.icons .frow:focus-visible { border-color: #fff; }
+
+/* 달력 */
+.cal-b { padding: 10px 12px 12px; background: #fff; }
+.cal-h, .cal-g { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
+.cal-h span { font: 400 11px var(--px9); color: var(--y-sub); padding-bottom: 4px; border-bottom: 1px solid var(--y-dark); }
+.cal-h span:first-child, .cal-g .sun { color: #b3261e; }
+.cal-g span { font: 400 12.5px/30px var(--mono); }
+.cal-g .pad { color: transparent; }
+.cal-g .on { background: #111; color: #fff; }
+
+/* 작업 표시줄 */
+.taskbar { position: sticky; bottom: 0; z-index: 20; display: flex; align-items: center; gap: 6px; padding: 5px max(10px, env(safe-area-inset-right, 0px)) calc(5px + env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)); background: linear-gradient(180deg, #f4f4f4 0%, #d4d4d4 100%); border-top: 1px solid var(--y-ink); box-shadow: inset 0 1px 0 #fff; overflow-x: auto; scrollbar-width: none; }
+.taskbar::-webkit-scrollbar { display: none; }
+.taskbar a { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; text-decoration: none; color: var(--y-ink); font: 400 12.5px var(--px); background: var(--y-face); border: 1px solid var(--y-ink); box-shadow: inset -1px -1px 0 var(--y-dark), inset 1px 1px 0 #fff; }
+.taskbar a:hover { background: #fff; }
+.taskbar a:active { box-shadow: inset 1px 1px 0 var(--y-dark); }
+.tb-start { font-weight: 700 !important; }
+.tb-start svg { width: 16px; height: 16px; }
+.tb-sep { flex: none; width: 1px; height: 24px; background: var(--y-dark); box-shadow: 1px 0 0 #fff; }
+.tb-tray { margin-left: auto; flex: none; height: 30px; display: inline-flex; align-items: center; padding: 0 10px; font: 400 12.5px var(--mono); border: 1px solid var(--y-dark); box-shadow: inset 1px 1px 0 var(--y-dark); background: #ececec; }
+[id^="w-"] { scroll-margin-top: 54px; }
+
+/* 옆 창들 */
+.side { display: grid; gap: 20px; }
+.player .lcd { margin: 12px; padding: 10px 12px; background: #1b1b1b; color: #e9e9e9; font-family: var(--px9); font-size: 12px; line-height: 1.6; border: 1px solid var(--y-ink); box-shadow: inset 2px 2px 0 #000; overflow: hidden; }
+.player .lcd b { display: block; font: 400 15px var(--px); white-space: nowrap; animation: marq 12s linear infinite; }
+@keyframes marq { 0%, 15% { transform: translateX(0); } 85%, 100% { transform: translateX(calc(-100% + 230px)); } }
+.player .lcd .eq { display: flex; gap: 2px; height: 18px; align-items: end; margin-top: 6px; }
+.player .lcd .eq i { width: 6px; background: #e9e9e9; animation: eq 1.2s ease-in-out infinite; }
+@keyframes eq { 0%, 100% { height: 30%; } 50% { height: 100%; } }
+.player .pbtns { display: flex; gap: 6px; padding: 0 12px 12px; }
+.player .pbtns .y-btn { flex: 1; }
+.phone-w .body { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 12px; padding: 12px; align-items: center; }
+.phone-w svg { width: 92px; height: auto; }
+.phone-w p { margin: 0 0 10px; font-size: 12.5px; line-height: 1.6; }
+.memo .body { padding: 10px 12px 12px; font-family: var(--mono); font-size: 12px; line-height: 1.75; background: #fff; }
+.memo .body p { margin: 0; }
+.a440-link { display: flex; align-items: center; gap: 10px; padding: 12px; text-decoration: none; color: var(--y-ink); }
+.a440-link:hover { background: var(--y-sel); color: #fff; }
+.a440-link svg { width: 32px; height: 32px; flex: none; }
+.a440-link b { font: 400 14px var(--px); display: block; }
+.a440-link small { font-size: 12px; opacity: .8; }
+
+footer { max-width: 1180px; margin: 0 auto; padding: 0 16px 40px; font: 400 12px var(--px9); color: var(--y-sub); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+@media (max-width: 960px) {
+  .desk { grid-template-columns: 1fr; }
+  .side { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+}
+@media (max-width: 720px) {
+  .intro { grid-template-columns: 1fr; } .chips { justify-content: flex-start; }
+  .bn { grid-template-columns: 1fr; padding: 16px 14px 14px; } .bn-r { align-items: flex-start; flex-direction: row; flex-wrap: wrap; align-items: center; }
+  .logo { text-shadow: 2px 2px 0 #c9c9c9, 4px 4px 0 #111; }
+  .views { display: none; }
+  .tb-btn { display: none !important; }
+  .split { grid-template-columns: 1fr; min-height: 0; }
+  .tree { border-right: 0; border-bottom: 1px solid var(--y-dark); display: flex; flex-wrap: wrap; gap: 4px; padding: 8px; }
+  .tree h2, .tree .howto { display: none; }
+  .tree button { width: auto; flex: 1 1 auto; justify-content: center; border: 1px solid var(--y-ink); background: #fff; }
+  .tree button small { margin-left: 4px; }
+  .fhead { display: none; }
+  .frow { grid-template-columns: 40px minmax(0, 1fr); grid-template-areas: "ic nm" "ic ds" "ic mt"; gap: 2px 12px; padding: 12px; align-items: start; }
+  .frow .nm { display: contents; } .frow .nm svg { grid-area: ic; width: 36px; height: 36px; }
+  .frow .nm b { grid-area: nm; }
+  .frow .ds { grid-area: ds; }
+  .frow .oc, .frow .kd { grid-area: mt; display: inline; font-size: 11.5px; color: var(--y-sub); }
+  .frow .kd { justify-self: end; }
+  .find { margin-left: 0; flex: 1 1 100%; } .find input { flex: 1; width: auto; } .explorer .toolbar > a, .explorer .toolbar .sep { display: none; }
+  .status span:nth-child(2) { display: none; }
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body class="y-hub">
+<header class="y-menubar">
+  <a class="y-logo" href="./"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" fill="#111"/><rect x="4" y="4" width="8" height="5" fill="#fff"/><rect x="5" y="11" width="6" height="1" fill="#fff"/></svg>귀환의 블로그</a>
+  <span class="y-spacer"></span>
+  <a class="y-menu-a" href="a440/">A440</a>
+  <time class="y-clock" id="clock">--:--</time>
+</header>
+
+<main class="desk">
+  <section class="y-win banner" id="w-top" aria-label="귀환의 블로그">
+    <div class="y-title"><span class="y-title-t">귀환의 블로그</span><span class="y-title-b" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span></div>
+    <div class="bn">
+      <h1 class="logo"><span>귀환의</span><span>블로그</span></h1>
+      <div class="bn-r">
+        <div class="chips"><span>PC에서 보시는 걸 추천드려요</span></div>
+        <div class="today" aria-label="오늘"><b id="t-d">--</b><span><i id="t-m">----.--</i><i id="t-w">-요일</i></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="y-win explorer" id="w-exp" aria-label="툴 목록">
+    <div class="y-title"><span class="y-title-t">귀환의 블로그 탐색기</span><span class="y-title-b" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span></div>
+    <div class="toolbar">
+      <a class="y-btn" href="phone/">폰 열기</a><a class="y-btn" href="line/">노선도</a><a class="y-btn" href="fight/">대전</a>
+      <span class="sep" aria-hidden="true"></span>
+      <span class="views" role="group" aria-label="보기"><button type="button" class="y-btn vw" data-v="list" aria-label="자세히" aria-pressed="true"><svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path d="M1 2h3v3H1zM6 3h9v1H6zM1 7h3v3H1zM6 8h9v1H6zM1 12h3v3H1zM6 13h9v1H6z" fill="currentColor"/></svg></button><button type="button" class="y-btn vw" data-v="icons" aria-label="큰 아이콘" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path d="M1 1h6v6H1zM9 1h6v6H9zM1 9h6v6H1zM9 9h6v6H9z" fill="currentColor"/></svg></button></span>
+      <label class="find">찾기 <input id="q" type="search" placeholder="예: 편지, 싸움, 노래" autocomplete="off"></label>
+    </div>
+    <div class="addr">주소 <output id="crumb">C:\귀환의 블로그\전체</output></div>
+    <div class="split">
+      <nav class="tree" aria-label="폴더">
+        <h2>폴더</h2>
+        <button type="button" data-f="all" aria-pressed="true"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="k" d="M1 3h5l1 1h8v10H1z" fill="#111"/><path class="g" d="M2 5h12v8H2z" fill="#e8e8e8"/></svg>전체<small id="n-all"></small></button>
+        <button type="button" data-f="pair" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="k" d="M1 3h5l1 1h8v10H1z" fill="#111"/><path class="g" d="M2 5h12v8H2z" fill="#e8e8e8"/></svg>관계 OOC<small id="n-pair"></small></button>
+        <button type="button" data-f="phone" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="k" d="M1 3h5l1 1h8v10H1z" fill="#111"/><path class="g" d="M2 5h12v8H2z" fill="#e8e8e8"/></svg>NPC의 폰<small id="n-phone"></small></button>
+        <button type="button" data-f="a440" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="k" d="M1 3h5l1 1h8v10H1z" fill="#111"/><path class="g" d="M2 5h12v8H2z" fill="#e8e8e8"/></svg>A440 세계관<small id="n-a440"></small></button>
+        <div class="howto">
+          <h2>사용법.txt</h2>
+          <ol><li><b>만들기</b>에서 OOC 복사</li><li>AI 채팅에 보내기</li><li>답 붙여넣기</li><li>PNG 저장 · 링크 복사</li></ol>
+        </div>
+      </nav>
+      <div class="files">
+        <div class="fhead" aria-hidden="true"><span>이름</span><span>하는 일</span><span>OOC</span><span>종류</span></div>
+        <div id="list"></div>
+        <p class="empty" id="empty" hidden>찾는 툴이 없어요.</p>
+      </div>
+    </div>
+    <div class="status"><span id="count">0개 항목</span></div>
+  </section>
+
+  <aside class="side">
+    <section class="y-win player" id="w-play" aria-label="두 사람의 노래">
+      <div class="y-title"><span class="y-title-t">플레이어.exe</span><span class="y-title-b" aria-hidden="true"><i>_</i><i>×</i></span></div>
+      <div class="lcd"><span>두 사람의 노래</span><b>악보 · 연주 · MP3 저장</b><div class="eq" aria-hidden="true"><i style="animation-delay:-.1s"></i><i style="animation-delay:-.5s"></i><i style="animation-delay:-.3s"></i><i style="animation-delay:-.8s"></i><i style="animation-delay:-.2s"></i><i style="animation-delay:-.6s"></i><i style="animation-delay:-.4s"></i><i style="animation-delay:-.9s"></i><i style="animation-delay:-.15s"></i><i style="animation-delay:-.7s"></i></div></div>
+      <div class="pbtns"><a class="y-btn" href="a440/score/">▶ 듣기</a><a class="y-btn" href="a440/score/#edit">만들기</a></div>
+    </section>
+
+    <section class="y-win phone-w" id="w-phone" aria-label="NPC의 폰">
+      <div class="y-title"><span class="y-title-t">NPC의 폰</span><span class="y-title-b" aria-hidden="true"><i>×</i></span></div>
+      <div class="body">
+        <svg viewBox="0 0 46 80" aria-hidden="true" shape-rendering="crispEdges"><rect x="8" y="1" width="30" height="34" fill="#111"/><rect x="11" y="4" width="24" height="20" fill="#e8e8e8"/><rect x="13" y="7" width="12" height="2" fill="#111"/><rect x="13" y="11" width="18" height="2" fill="#111"/><rect x="13" y="15" width="9" height="2" fill="#111"/><rect x="8" y="36" width="30" height="42" fill="#111"/><rect x="11" y="39" width="24" height="7" fill="#e8e8e8"/><g fill="#e8e8e8"><rect x="12" y="49" width="6" height="5"/><rect x="20" y="49" width="6" height="5"/><rect x="28" y="49" width="6" height="5"/><rect x="12" y="56" width="6" height="5"/><rect x="20" y="56" width="6" height="5"/><rect x="28" y="56" width="6" height="5"/><rect x="12" y="63" width="6" height="5"/><rect x="20" y="63" width="6" height="5"/><rect x="28" y="63" width="6" height="5"/></g><rect x="36" y="0" width="2" height="6" fill="#111"/></svg>
+        <div><a class="y-btn" href="phone/">열기</a></div>
+      </div>
+    </section>
+
+    <section class="y-win cal" id="w-cal" aria-label="달력">
+      <div class="y-title"><span class="y-title-t" id="cal-t">달력</span><span class="y-title-b" aria-hidden="true"><i>×</i></span></div>
+      <div class="cal-b"><div class="cal-h" aria-hidden="true"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div><div class="cal-g" id="cal-g"></div></div>
+    </section>
+
+    <section class="y-win" id="w-a440" aria-label="A440">
+      <div class="y-title"><span class="y-title-t">A440 바로 가기</span><span class="y-title-b" aria-hidden="true"><i>×</i></span></div>
+      <a class="a440-link" href="a440/"><svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><rect x="1" y="3" width="14" height="11" fill="#111"/><rect x="2" y="5" width="12" height="8" fill="#e8e8e8"/><rect x="4" y="7" width="1" height="4" fill="#111"/><rect x="7" y="7" width="1" height="4" fill="#111"/><rect x="10" y="7" width="1" height="4" fill="#111"/><rect x="3" y="9" width="10" height="1" fill="#111"/></svg><span><b>A440</b><small>세계관 전용</small></span></a>
+    </section>
+  </aside>
+</main>
+<nav class="taskbar" aria-label="창">
+  <a class="tb-start" href="./"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" fill="#111"/><rect x="4" y="4" width="8" height="5" fill="#fff"/><rect x="5" y="11" width="6" height="1" fill="#fff"/></svg>귀환의 블로그</a>
+  <span class="tb-sep" aria-hidden="true"></span>
+  <a class="tb-btn" href="#w-exp">귀환의 블로그 탐색기</a><a class="tb-btn" href="#w-play">플레이어.exe</a><a class="tb-btn" href="#w-phone">NPC의 폰</a><a class="tb-btn" href="#w-a440">A440</a>
+  <span class="tb-tray"><time id="tb-clock">--:--</time></span>
+</nav>
+<footer><span>귀환의 블로그</span><span>폰트 Galmuri · Pretendard · 악기 소리 FluidR3 · MusyngKite · Salamander</span></footer>
+
+<script>
+/* 16×16 도트 아이콘: 1 = 먹, 2 = 회색 면 */
+const PX = {
+  phone: ['....1111111.....','....1222221.....','....1211121.....','....1211121.....','....1222221.....','....1111111.....','....1222221.....','....1212121.....','....1222221.....','....1212121.....','....1222221.....','....1212121.....','....1222221.....','....1111111.....','................','................'],
+  line: ['................','...1111111111...','..122222222221..','..121111111121..','..121222222121..','..121222222121..','..121111111121..','..122222222221..','..121122221121..','..122222222221..','..111111111111..','...1........1...','..11........11..','1111111111111111','.1..1..1..1..1..','................'],
+  post: ['................','................','................','1111111111111111','1122222222222211','1212222222222121','1221222222221221','1222122222212221','1222212222122221','1222221111222221','1222222222222221','1222222222222221','1111111111111111','................','................','................'],
+  orbit: ['................','......1111......','....11222211....','...1222222221...','..122222222221..','1.122222222221.1','.11111111111111.','..122222222221..','...1222222221...','....11222211....','......1111......','................','................','................','................','................'],
+  fight: ['................','......111.......','.....12221......','.....12221......','......111.......','.......1........','.......1........','.......1........','..111111111111..','.12222222222221.','1221122221122221','1222222222222221','1111111111111111','................','................','................'],
+  date: ['................','.....111111.....','....12222221....','...1222112221...','...1221..1221...','...1221..1221...','...1222112221...','....12222221....','.....122221.....','......1221......','.......11.......','................','.11111111111111.','.1..1....1...1..','.11111111111111.','................'],
+  novel: ['................','................','1111111111111111','1222222222222221','1222221121122221','1222211111112221','1222221111122221','1222222111222221','1222222212222221','1222222222222221','1111111111111111','...11...........','...1............','................','................','................'],
+  score: ['................','......11111111..','......11111111..','......1......1..','......1......1..','......1......1..','......1......1..','......1......1..','...1111...1111..','..11111..11111..','..11111..11111..','...111....111...','................','................','................','................'],
+  gate: ['................','1111111111111111','1222212222212221','1222212222212221','1222222222212221','1111212111112221','1222222222222221','1222222112222221','1222222112222221','1111122222211111','1222212222212221','1222222222222221','1222212222212221','1111111111111111','................','................'],
+  imprint: ['................','......1111......','.....122221.....','.....122221.....','......1221......','......1221......','....11111111....','...1222222221...','...1111111111...','................','..111111111111..','..1..1....1..1..','..111111111111..','................','................','................'] };
+const icon = k => { let r = ''; PX[k].forEach((row, y) => [...row].forEach((c, x) => { if (c === '1') r += `<rect class="k" x="${x}" y="${y}" width="1" height="1" fill="#111"/>`; else if (c === '2') r += `<rect class="g" x="${x}" y="${y}" width="1" height="1" fill="#d6d6d6"/>`; })); return `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`; };
+const TOOLS = [
+  { k: 'phone', c: 'phone', href: 'phone/', nm: 'NPC의 폰', sub: '폰.app', ds: '하루 재생 · 폰 둘러보기', oc: 4, kd: '폰', tags: '폰 핸드폰 메시지 카톡 일상' },
+  { k: 'line', c: 'pair', href: 'line/', nm: '둘의 노선도', sub: '관계 단계', ds: '관계 단계 노선도', oc: 1, kd: '관계', tags: '노선도 지하철 관계 단계 냅' },
+  { k: 'post', c: 'pair', href: 'post/', nm: '마음 우체국', sub: '사랑의 언어', ds: '보낸 마음 · 받은 마음', oc: 1, kd: '관계', tags: '편지 우체국 우편 사랑의 언어' },
+  { k: 'orbit', c: 'pair', href: 'orbit/', nm: '두 행성', sub: '투자 모델', ds: '궤도 계산', oc: 1, kd: '관계', tags: '행성 궤도 우주 중력' },
+  { k: 'fight', c: 'pair', href: 'fight/', nm: '대전 화면', sub: '갈등 대처', ds: '싸움 한 판', oc: 1, kd: '관계', tags: '싸움 대전 격투 게임 갈등' },
+  { k: 'date', c: 'pair', href: 'date/', nm: '데이트 동선', sub: '지도 · 영수증', ds: '데이트 코스 지도 · 영수증', oc: 1, kd: '관계', tags: '데이트 지도 영수증 동선' },
+  { k: 'novel', c: 'pair', href: 'novel/', nm: '미연시', sub: '선택지 · 엔딩', ds: '선택지 · 호감도 · 엔딩', oc: 2, kd: '관계', tags: '미연시 게임 선택지 엔딩 호감도' },
+  { k: 'score', c: 'a440', href: 'a440/score/', nm: '두 사람의 노래', sub: '모든 세계관', ds: '이중주 · 악보 · MP3', oc: 1, kd: '음악', tags: '노래 음악 작곡 악보 mp3' },
+  { k: 'gate', c: 'a440', href: 'a440/gate/', nm: '게이트 작전 리플레이', sub: 'A440 전용', ds: '작전 지도 · 보고서', oc: 1, kd: 'A440', tags: '게이트 작전 센티넬 가이드' },
+  { k: 'imprint', c: 'a440', href: 'a440/imprint/', nm: '각인 신고서', sub: 'A440 전용', ds: '각인 신고 · 결재', oc: 1, kd: 'A440', tags: '각인 신고 결재 센티넬 가이드' } ];
+const NAME = { all: '전체', pair: '관계 OOC', phone: 'NPC의 폰', a440: 'A440 세계관' };
+const list = document.getElementById('list');
+list.innerHTML = TOOLS.map(t => `<a class="frow" href="${t.href}" data-c="${t.c}" data-s="${(t.nm + ' ' + t.ds + ' ' + t.tags).toLowerCase()}"><span class="nm">${icon(t.k)}<b>${t.nm}<small>${t.sub}</small></b></span><span class="ds">${t.ds}</span><span class="oc">OOC ${t.oc}</span><span class="kd">${t.kd}</span></a>`).join('');
+['all', 'pair', 'phone', 'a440'].forEach(c => { document.getElementById('n-' + c).textContent = c === 'all' ? TOOLS.length : TOOLS.filter(t => t.c === c).length; });
+let F = 'all';
+const apply = () => { const q = document.getElementById('q').value.trim().toLowerCase(); let n = 0;
+  list.querySelectorAll('.frow').forEach(r => { const ok = (F === 'all' || r.dataset.c === F) && (!q || r.dataset.s.includes(q)); r.hidden = !ok; if (ok) n++; });
+  document.getElementById('count').textContent = `${n}개 항목`; document.getElementById('empty').hidden = n > 0;
+  document.getElementById('crumb').textContent = `C:\\귀환의 블로그\\${NAME[F]}${q ? `\\"${q}" 찾기` : ''}`; };
+document.querySelectorAll('.tree button').forEach(b => b.onclick = () => { F = b.dataset.f; document.querySelectorAll('.tree button').forEach(x => x.setAttribute('aria-pressed', x === b)); apply(); });
+document.getElementById('q').oninput = apply; apply();
+const tick = () => { const d = new Date(); document.getElementById('clock').textContent = `${d.getHours() < 12 ? '오전' : '오후'} ${(d.getHours() % 12) || 12}:${String(d.getMinutes()).padStart(2, '0')}`; };
+tick(); setInterval(tick, 15000);
+const D = ['일', '월', '화', '수', '목', '금', '토'];
+const today = () => { const d = new Date(); document.getElementById('t-d').textContent = d.getDate(); document.getElementById('t-m').textContent = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}`; document.getElementById('t-w').textContent = D[d.getDay()] + '요일';
+  document.getElementById('cal-t').textContent = `${d.getFullYear()}년 ${d.getMonth() + 1}월`;
+  const first = new Date(d.getFullYear(), d.getMonth(), 1).getDay(), last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(); let g = '';
+  for (let i = 0; i < first; i++) g += '<span class="pad">0</span>';
+  for (let n = 1; n <= last; n++) g += `<span class="${(first + n - 1) % 7 === 0 ? 'sun' : ''}${n === d.getDate() ? ' on' : ''}">${n}</span>`;
+  document.getElementById('cal-g').innerHTML = g;
+  const c = document.getElementById('clock').textContent; document.getElementById('tb-clock').textContent = c; };
+today(); setInterval(today, 15000);
+/* 보기 바꾸기: 자세히 · 큰 아이콘 (이 브라우저에 기억) */
+const files = document.querySelector('.files');
+const setView = v => { files.classList.toggle('icons', v === 'icons'); document.querySelectorAll('.vw').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v))); try { localStorage.setItem('hub-view', v); } catch (e) {} };
+document.querySelectorAll('.vw').forEach(b => b.onclick = () => setView(b.dataset.v));
+try { const v = localStorage.getItem('hub-view'); if (v) setView(v); } catch (e) {}
+</script>
+</body>
+</html>

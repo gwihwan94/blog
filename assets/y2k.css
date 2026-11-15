@@ -1,0 +1,116 @@
+/* Y2K 흑백 데스크톱 틀: 허브와 모든 툴(A440 제외)의 바깥 틀.
+   은색 면, 검은 1px 테두리, 딱딱한 그림자, 줄무늬 제목 막대, 눌리는 버튼, 도트 글꼴(갈무리).
+   툴 안의 결과 화면(포스터)은 각 툴 디자인을 그대로 둔다. */
+:root {
+  --y-desk: #d2d2d2; --y-face: #e4e4e4; --y-win: #f7f7f7; --y-ink: #111; --y-sub: #555; --y-dark: #8c8c8c; --y-sel: #111;
+  --px: "Galmuri11", "Pretendard Variable", Pretendard, system-ui, sans-serif;
+  --px9: "Galmuri9", "Galmuri11", "Pretendard Variable", Pretendard, sans-serif;
+  --ui: "Pretendard Variable", Pretendard, "Noto Sans KR", system-ui, -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", "Pretendard Variable", Pretendard, ui-monospace, monospace;
+  --y-dots: radial-gradient(#b4b4b4 1px, transparent 1.2px) 0 0 / 8px 8px;
+}
+body.y-hub { margin: 0; min-height: 100vh; background: var(--y-desk); background-image: radial-gradient(#bdbdbd 1px, transparent 1.2px); background-size: 8px 8px; color: var(--y-ink); font-family: var(--ui); font-size: 15px; line-height: 1.6; word-break: keep-all; overflow-wrap: anywhere; -webkit-font-smoothing: antialiased; }
+body.y-hub * { box-sizing: border-box; }
+
+/* ── 부품 ── */
+.y-menubar { white-space: nowrap; position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 16px; height: 34px; padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); background: linear-gradient(#fbfbfb, #dcdcdc); border-bottom: 1px solid var(--y-ink); font: 400 13px var(--px); color: var(--y-ink); }
+.y-logo { display: flex; align-items: center; gap: 7px; text-decoration: none; color: inherit; font-size: 14px; }
+.y-logo svg { width: 16px; height: 16px; }
+.y-menu-t { font: 400 12px var(--px9); color: var(--y-sub); white-space: nowrap; }
+.y-spacer { flex: 1; }
+.y-menu-a { color: inherit; text-decoration: none; padding: 2px 8px; }
+.y-menu-a:hover { background: var(--y-ink); color: #fff; }
+@media (max-width: 560px) { .y-menu-t { display: none; } .y-menubar { gap: 10px; } }
+.y-clock { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+.y-win { background: var(--y-win); border: 1px solid var(--y-ink); box-shadow: 3px 3px 0 var(--y-ink); min-width: 0; }
+.y-title { color: var(--y-ink); display: flex; align-items: center; gap: 8px; height: 24px; padding: 0 5px; border-bottom: 1px solid var(--y-ink); background: repeating-linear-gradient(180deg, #ececec 0 2px, #a3a3a3 2px 3px); }
+.y-title-t { margin: 0 auto; padding: 0 10px; background: #ececec; font: 400 12px var(--px); line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%; }
+.y-title-b { display: flex; gap: 3px; background: #ececec; padding-left: 4px; }
+.y-title-b i { width: 15px; height: 15px; border: 1px solid var(--y-ink); background: var(--y-win); font: 400 10px/13px var(--px9); text-align: center; font-style: normal; }
+
+.y-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; padding: 0 12px; background: var(--y-face); color: var(--y-ink); border: 1px solid var(--y-ink); border-radius: 0; box-shadow: inset -1px -1px 0 var(--y-dark), inset 1px 1px 0 #fff; font: 400 13px var(--px); text-decoration: none; cursor: pointer; white-space: nowrap; }
+.y-btn:hover { background: #efefef; }
+.y-btn:active { box-shadow: inset 1px 1px 0 var(--y-dark), inset -1px -1px 0 #fff; transform: translate(1px, 1px); }
+.y-btn.primary { background: var(--y-ink); color: #fff; box-shadow: inset -1px -1px 0 #000, inset 1px 1px 0 #555; }
+:where(body.y-hub, body[data-mode]) :focus-visible { outline: 2px dotted var(--y-ink); outline-offset: 2px; }
+
+/* ── 툴 화면의 바깥 틀 (base.css 위에 덮음) ── */
+body[data-mode] { --m-paper: #e4e4e4; --m-ink: #111; --m-sub: #555; --m-line: #8c8c8c; --m-hot: #111; --m-field: #f7f7f7; }
+body[data-mode] header.bar { height: 36px; background: linear-gradient(#fbfbfb, #dcdcdc); color: var(--y-ink); border-bottom: 1px solid var(--y-ink); font-family: var(--px); }
+body[data-mode]::before { background: #fbfbfb; }
+body[data-mode] .brand { font: 400 13px var(--px); letter-spacing: 0; color: var(--y-ink); }
+body[data-mode] .brand::before { width: 10px; height: 10px; background: var(--y-ink); box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px var(--y-ink); }
+body[data-mode] .bar-title { color: var(--y-ink); border-left: 1px solid var(--y-dark); font: 400 13px var(--px); }
+body[data-mode] .tabs { align-items: center; gap: 4px; }
+body[data-mode] .tabs button { height: 26px; padding: 0 12px; color: var(--y-ink); font: 400 13px var(--px); border: 1px solid transparent; }
+body[data-mode] .tabs button[aria-selected="true"] { background: var(--y-ink); color: #fff; }
+body[data-mode] .tabs button[aria-selected="true"]::after { display: none; }
+body[data-mode] .tabs button:not([aria-selected="true"]):hover { border-color: var(--y-ink); }
+
+body[data-mode] .btn { font: 400 13px var(--px); border-radius: 0; background: var(--y-face); border: 1px solid var(--y-ink); box-shadow: inset -1px -1px 0 var(--y-dark), inset 1px 1px 0 #fff; }
+body[data-mode] .btn:hover { background: #efefef; }
+body[data-mode] .btn:active { box-shadow: inset 1px 1px 0 var(--y-dark), inset -1px -1px 0 #fff; }
+body[data-mode] .btn.primary { background: var(--y-ink); color: #fff; box-shadow: inset -1px -1px 0 #000, inset 1px 1px 0 #555; }
+body[data-mode] .btn.ghost { background: transparent; border-color: transparent; box-shadow: none; }
+body[data-mode] .btn.done { background: var(--y-win); color: var(--y-sub); }
+
+/* 하단 버튼 줄: 작은 도구 창 */
+body[data-mode] .actions { background: var(--y-face); border: 1px solid var(--y-ink); border-radius: 0; box-shadow: 3px 3px 0 var(--y-ink); padding: 4px; gap: 4px; }
+body[data-mode] .actions .btn { border: 1px solid var(--y-ink); color: var(--y-ink); background: var(--y-face); min-height: 38px; padding: 0 14px; }
+body[data-mode] .actions .btn:first-child { border-left: 1px solid var(--y-ink); }
+body[data-mode] .actions .btn:hover { background: #efefef; }
+body[data-mode] .actions .btn.primary { background: var(--y-ink); color: #fff; }
+body[data-mode] .shared-note { background: var(--y-win); border: 1px solid var(--y-ink); box-shadow: 2px 2px 0 var(--y-ink); border-radius: 0; color: var(--y-ink); font: 400 12.5px var(--px9); }
+
+/* 만들기 화면: 점무늬 바탕 위 창들 */
+body[data-mode="edit"] { background: var(--y-desk); background-image: radial-gradient(#bdbdbd 1px, transparent 1.2px); background-size: 8px 8px; }
+body[data-mode] .editor .card, body[data-mode] .f-sec { position: relative; background: var(--y-win); border: 1px solid var(--y-ink); border-radius: 0; box-shadow: 3px 3px 0 var(--y-ink); padding: 0 16px 16px; }
+body[data-mode] .editor .card > h3, body[data-mode] .f-sec > h3 { margin: 0 -16px 12px; height: 26px; padding: 0 10px; display: flex; align-items: center; justify-content: center; gap: 8px; border-bottom: 1px solid var(--y-ink); background: repeating-linear-gradient(180deg, #ececec 0 2px, #a3a3a3 2px 3px); font: 400 13px var(--px); }
+body[data-mode] .editor .card > h3 { margin-bottom: 10px; }
+body[data-mode] .editor .card > h3, body[data-mode] .f-sec > h3 { color: var(--y-ink); }
+body[data-mode] .editor .card > h3 > *, body[data-mode] .f-sec > h3 > * { background: #ececec; }
+body[data-mode] .f-sec > h3 small { display: none; }
+body[data-mode] .f-desc { font-size: 12.5px; }
+body[data-mode] .editor .how { border: 1px solid var(--y-ink); background: #fff; }
+body[data-mode] .editor .how div { border-left: 1px dotted var(--y-dark); }
+body[data-mode] .editor .how b { font: 400 13px var(--px); }
+body[data-mode] .pstep .pnum { color: var(--y-ink); font-family: var(--mono); }
+body[data-mode] .pstep .plab { font: 400 13px var(--px); }
+body[data-mode] .pstep .plab small { font-family: var(--ui); }
+body[data-mode] .paste, body[data-mode] .f input[type="text"], body[data-mode] .f input[type="search"], body[data-mode] .f textarea, body[data-mode] .f select { background: #fff; border: 1px solid var(--y-ink); border-radius: 0; box-shadow: inset 1px 1px 0 var(--y-dark); }
+body[data-mode] .f input[type="color"] { border-radius: 0; border-color: var(--y-ink); }
+body[data-mode] .f-lab { font: 400 12px var(--px9); color: var(--y-ink); }
+body[data-mode] .f-sub { font: 400 12.5px var(--px); }
+body[data-mode] .progress span { border-radius: 0; border-color: var(--y-ink); color: var(--y-ink); background: #fff; font: 400 11.5px var(--px9); }
+body[data-mode] .progress span.ok { background: var(--y-ink); color: #fff; }
+body[data-mode] .toast { border-radius: 0; background: var(--y-win); color: var(--y-ink); border: 1px solid var(--y-ink); box-shadow: 3px 3px 0 var(--y-ink); font: 400 13px var(--px); }
+body[data-mode] .f input[type="range"] { accent-color: var(--y-ink); }
+@media (max-width: 640px) { body[data-mode] .tabs button { min-height: 28px; height: 28px; padding: 0 12px; } body[data-mode] .actions { padding: 4px; } }
+/* 결과 화면 창 틀: 바깥은 점무늬 책상, 창 안은 툴 고유 바탕 */
+body[data-mode="view"]:not([data-noframe]) { background-color: var(--y-desk); background-image: radial-gradient(#bdbdbd 1px, transparent 1.2px); background-size: 8px 8px; }
+.y-frame { width: min(1140px, 100%); background: var(--y-win); border: 1px solid var(--y-ink); box-shadow: 4px 4px 0 var(--y-ink); }
+.y-frame-b { display: flex; justify-content: center; padding: 20px; background: var(--bg); }
+.pc-note { font: 400 12.5px var(--px9); }
+@media (max-width: 640px) { .y-frame-b { padding: 10px 6px; } .y-frame .y-title-b { display: none; } }
+body[data-mode="view"]:not([data-noframe]) .stage { background: none; }
+
+/* 바탕은 단색·그라데이션만 */
+body.y-hub { background: linear-gradient(180deg, #e9e9e9 0%, #cfcfcf 100%) fixed; }
+body[data-mode="edit"] { background: #d6d6d6; }
+body[data-mode="view"]:not([data-noframe]) { background: linear-gradient(180deg, #e2e2e2 0%, #cacaca 100%) fixed; }
+
+/* 만들기 화면 툴 색: 각 툴이 body에 --e-* 변수만 정하면 창 · 제목 막대 · 주 버튼 · 바탕이 물든다 */
+body[data-mode="edit"] { background: linear-gradient(180deg, var(--e-bg1, #e4e4e4) 0%, var(--e-bg2, #cdcdcd) 100%) fixed; }
+body[data-mode="edit"] .editor .card, body[data-mode="edit"] .f-sec { background: var(--e-win, var(--y-win)); border-color: var(--e-ink, var(--y-ink)); box-shadow: 3px 3px 0 var(--e-ink, var(--y-ink)); }
+body[data-mode="edit"] .editor .card > h3, body[data-mode="edit"] .f-sec > h3 { background: repeating-linear-gradient(180deg, var(--e-s1, #ececec) 0 2px, var(--e-s2, #a3a3a3) 2px 3px); border-bottom-color: var(--e-ink, var(--y-ink)); color: var(--e-ink, var(--y-ink)); }
+body[data-mode="edit"] .editor .card > h3 > *, body[data-mode="edit"] .f-sec > h3 > * { background: var(--e-s1, #ececec); }
+body[data-mode="edit"] .editor .btn.primary { background: var(--e-main, var(--y-ink)); border-color: var(--e-ink, var(--y-ink)); box-shadow: inset -1px -1px 0 var(--e-dark, #000), inset 1px 1px 0 rgba(255,255,255,.35); }
+body[data-mode="edit"] .progress span.ok { background: var(--e-main, var(--y-ink)); border-color: var(--e-main, var(--y-ink)); }
+body[data-mode="edit"] .pstep .pnum { color: var(--e-main, var(--y-ink)); }
+body[data-mode="edit"] .f input[type="range"] { accent-color: var(--e-main, var(--y-ink)); }
+body[data-mode="edit"] .editor .card, body[data-mode="edit"] .f-sec, body[data-mode="edit"] .editor .pstep .plab { color: var(--e-ink, var(--y-ink)); }
+body[data-mode="edit"] .editor .pstep .plab small, body[data-mode="edit"] .editor .hint, body[data-mode="edit"] .f-desc { color: #555; }
+/* 붙여넣기 미리 보기 체크 */
+.progress.live span.ok { outline: 1px dashed currentColor; outline-offset: 1px; }
+.progress .live-note { flex-basis: 100%; font: 400 11.5px var(--px9, sans-serif); font-style: normal; color: #6b6b6b; }

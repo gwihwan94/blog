@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>둘의 노선도</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%20shape-rendering%3D%27crispEdges%27%3E%3Crect%20width%3D%2716%27%20height%3D%2716%27%20rx%3D%273%27%20fill%3D%27%23e5483d%27%2F%3E%3Cpath%20d%3D%27M2%207h12v2H2z%27%20fill%3D%27%23fff%27%2F%3E%3Cpath%20d%3D%27M5%205h3v6H5z%27%20fill%3D%27%23fff%27%2F%3E%3Cpath%20d%3D%27M6%206h1v4H6z%27%20fill%3D%27%23e5483d%27%2F%3E%3C%2Fsvg%3E">
+<meta name="description" content="두 사람의 관계를 관계 발전 10단계 모델로 읽는 지하철 노선도 메이커">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="stylesheet" href="../assets/y2k.css">
+<style>
+:root {
+  --bg: #e8e6e0;
+  --ink: #121418;
+  --muted: #74726c;
+  --accent: #f0483e;
+  --up: #f0483e;
+  --down: #2d6be4;
+  --rail: #dcd8cf;
+  --paper: #f8f7f3;
+  --card: #ffffff;
+  --soft: rgba(18,20,24,.06);
+}
+
+/* ───────── 포스터 ───────── */
+.poster { width: min(1000px, 100%); background: var(--paper); border-radius: 22px; overflow: hidden; box-shadow: 0 1px 2px rgba(18,20,24,.06), 0 24px 60px -12px rgba(18,20,24,.22); }
+.poster.capturing { border-radius: 0; box-shadow: none; }
+.led-track { position: relative; z-index: 1; width: 100%; height: 100%; font-family: "Galmuri11", var(--ui-font); font-weight: 400; font-size: 18px; letter-spacing: .04em; }
+.led-track span { position: absolute; inset: 0; display: block; line-height: 52px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 20px; text-align: center; opacity: 0; transform: translateY(6px); transition: opacity .6s ease, transform .6s ease; }
+.led-track span.on { opacity: 1; transform: none; }
+.led-track span.off { transform: translateY(-6px); }
+
+/* 헤더 */
+.p-head { position: relative; padding: 34px 40px 30px; background: var(--ink); color: #fff; display: grid; grid-template-columns: auto 1fr auto; gap: 22px; align-items: center; overflow: hidden; }
+.p-head::after { content: ""; position: absolute; right: -60px; top: -60px; width: 260px; height: 260px; border-radius: 50%; border: 22px solid var(--up); opacity: .14; }
+.line-badge { position: relative; z-index: 1; width: 72px; height: 72px; border-radius: 50%; background: var(--up); display: grid; place-items: center; font-size: 40px; font-weight: 800; letter-spacing: -.05em; box-shadow: 0 0 0 5px var(--ink), 0 0 0 7px rgba(255,255,255,.25); }
+.p-title { position: relative; z-index: 1; min-width: 0; }
+.p-title small { display: block; font-size: 13px; font-weight: 700; color: rgba(255,255,255,.62); }
+.p-title h1 { margin: 6px 0 0; font-size: 40px; line-height: 1.12; font-weight: 800; letter-spacing: -.045em; word-break: keep-all; }
+.p-title p { margin: 10px 0 0; font-size: 15px; color: rgba(255,255,255,.66); word-break: keep-all; }
+.p-meta { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.dir-chip { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); font-weight: 700; font-size: 13px; }
+.dir-chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 28%, transparent); }
+.period { font-family: var(--mono); font-size: 12px; color: rgba(255,255,255,.5); }
+
+/* 안내 전광판 */
+.led { background: #0a0b0d; color: #ffc53d; text-shadow: 0 0 6px rgba(255,170,30,.45); overflow: hidden; white-space: nowrap; height: 52px; display: flex; align-items: center; position: relative; border-top: 1px solid #23262c; }
+.led::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle, rgba(255,190,60,.09) 0 1px, transparent 1.3px) 0 0 / 4px 4px; pointer-events: none; }
+.poster.capturing .led-track span { transition: none !important; opacity: 0 !important; } .poster.capturing .led-track span:first-child { opacity: 1 !important; transform: none !important; }
+.led-track span b { font-weight: 400; color: #fff6df; text-shadow: 0 0 6px rgba(255,220,150,.5); }
+
+/* 탑승자 */
+.riders { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 26px 24px 4px; flex-wrap: wrap; }
+.rider { display: flex; align-items: center; gap: 10px; padding: 7px 16px 7px 7px; background: var(--card); border-radius: 999px; box-shadow: 0 0 0 1px var(--soft); }
+.rider .av { width: 34px; height: 34px; border-radius: 50%; background: var(--c); color: #fff; display: grid; place-items: center; font-size: 15px; font-weight: 800; }
+.rider b { font-size: 15px; font-weight: 700; }
+.rider small { display: block; font-size: 11.5px; color: var(--muted); line-height: 1.2; }
+.riders .x { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+/* 노선도 */
+.map-wrap { margin: 16px 24px 0; padding: 8px 4px; border-radius: 18px; background: var(--card) radial-gradient(circle, rgba(18,20,24,.07) 1px, transparent 1.2px) 0 0 / 22px 22px; box-shadow: 0 0 0 1px var(--soft); }
+.map { width: 100%; height: auto; display: block; overflow: visible; }
+.map text { font-family: var(--ui-font); }
+.st-name { font-size: 19px; font-weight: 800; fill: var(--ink); letter-spacing: -.03em; }
+.st-en { display: none; }
+.st-num { font-family: var(--mono) !important; font-size: 11px; font-weight: 600; fill: #b3afa6; }
+.st .ring { fill: #fff; stroke: var(--rail); stroke-width: 5; }
+.st.lit .ring { stroke: var(--lc); }
+.st.lit .st-num { fill: var(--ink); }
+.st.off .st-name { fill: #b8b4ab; }
+.st.cur .ring { fill: var(--lc); stroke: #fff; stroke-width: 5; }
+.st.cur .st-num { fill: #fff; font-size: 13px; }
+.st.cur .cur-o { fill: none; stroke: var(--lc); stroke-width: 3; }
+.st.pop .ring { animation: pop .45s cubic-bezier(.3,1.6,.5,1); transform-box: fill-box; transform-origin: center; }
+@keyframes pop { 45% { transform: scale(1.35); } }
+.halo { fill: none; stroke: var(--lc); stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.halo.on { opacity: .35; transform: scale(1.5); }
+@keyframes halo { 0% { opacity: .7; transform: scale(1); } 100% { opacity: 0; transform: scale(2.3); } }
+.next-ring { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 3 4; transform-box: fill-box; transform-origin: center; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.tag rect { fill: var(--ink); }
+.tag text { fill: #fff; font-size: 11px; font-weight: 700; }
+.pin { transition: opacity .5s, transform .5s cubic-bezier(.3,1.5,.5,1); }
+.pin.hide { opacity: 0; transform: translateY(-6px); }
+.pin .pin-i { fill: #fff; font-size: 13px; font-weight: 800; }
+.pin .pin-l { font-size: 13px; font-weight: 800; fill: var(--ink); paint-order: stroke; stroke: #fff; stroke-width: 4px; }
+.cap { font-family: var(--mono) !important; font-size: 9.5px; fill: var(--muted); letter-spacing: .03em; }
+.legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px; padding: 14px 24px 4px; font-size: 12px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { width: 20px; height: 6px; border-radius: 3px; background: var(--c); }
+.legend i.dash { width: 13px; height: 13px; border-radius: 50%; border: 1.5px dashed var(--ink); background: none; }
+.legend i.av { width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 9.5px; font-weight: 800; font-style: normal; }
+
+/* 섹션 */
+.sec { padding: 40px 40px 8px; }
+.sec-h { display: flex; align-items: baseline; gap: 12px; margin-bottom: 18px; }
+.sec-h .k { flex: none; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 4px var(--ink); align-self: center; }
+.sec-h b { font-size: 22px; font-weight: 800; letter-spacing: -.035em; }
+.sec-h small { margin-left: auto; font-size: 13px; color: var(--muted); }
+
+/* 역명판 */
+.signs { display: grid; grid-template-columns: 1fr 108px 1fr; gap: 14px; align-items: start; }
+.signs .gap { align-self: center; margin-top: -30px; }
+.sign { min-width: 0; }
+.sign-top { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+.sign-top .av { width: 24px; height: 24px; border-radius: 50%; background: var(--c); color: #fff; display: grid; place-items: center; font-size: 11px; font-weight: 800; }
+.board { position: relative; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; background: #fff; border-radius: 14px; padding: 18px 16px 24px; box-shadow: 0 0 0 1px var(--soft), 0 8px 24px -10px rgba(18,20,24,.18); overflow: hidden; }
+.board::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 9px; background: var(--lc); }
+.board .side { font-size: 12.5px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.board .side.r { text-align: right; }
+.board .main { text-align: center; }
+.board .main b { display: block; font-size: 34px; font-weight: 800; letter-spacing: -.05em; line-height: 1.05; }
+.board .main span { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-family: var(--mono); font-size: 11.5px; letter-spacing: .03em; color: var(--muted); }
+.board .main span i { font-style: normal; color: #fff; background: var(--lc); border-radius: 999px; padding: 1px 7px; letter-spacing: 0; font-weight: 600; }
+.sign p { margin: 12px 2px 0; font-size: 14px; line-height: 1.7; color: #33353a; word-break: keep-all; }
+.gap { text-align: center; }
+.gap b { display: block; font-size: 44px; font-weight: 800; letter-spacing: -.06em; line-height: 1; }
+.gap b small { font-size: 15px; letter-spacing: -.02em; margin-left: 2px; }
+.gap span { display: block; margin-top: 6px; font-size: 12px; color: var(--muted); line-height: 1.45; word-break: keep-all; }
+
+/* 정차 기록 */
+.log { display: flex; flex-direction: column; }
+.stop { display: grid; grid-template-columns: 112px 44px 1fr; gap: 0 14px; }
+.stop .when { text-align: right; padding-top: 12px; font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.5; word-break: keep-all; }
+.stop .rail { position: relative; display: flex; justify-content: center; }
+.stop .rail::before { content: ""; position: absolute; top: 0; bottom: 0; width: 6px; background: var(--lc); }
+.stop:first-child .rail::before { top: 22px; }
+.stop:last-child .rail::before { bottom: auto; height: 22px; }
+.stop .dot { position: relative; z-index: 1; margin-top: 4px; width: 38px; height: 38px; border-radius: 50%; background: #fff; border: 5px solid var(--lc); display: grid; place-items: center; font-family: var(--mono); font-size: 11.5px; font-weight: 600; }
+.stop.skip .dot { border-style: dotted; color: var(--muted); }
+.stop .body { margin-bottom: 14px; background: var(--card); border-radius: 16px; padding: 16px 20px 18px; box-shadow: 0 0 0 1px var(--soft); }
+.stop .meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.stop .meta b { font-size: 17px; font-weight: 800; letter-spacing: -.03em; }
+.stop .meta .stn { font-size: 11.5px; font-weight: 700; color: var(--lc); background: color-mix(in srgb, var(--lc) 10%, transparent); padding: 2px 8px; border-radius: 999px; }
+.stop .meta .when-m { display: none; }
+.stop p { margin: 8px 0 0; font-size: 14px; line-height: 1.75; color: #33353a; word-break: keep-all; }
+.stop .q { position: relative; display: block; margin-top: 12px; padding: 10px 14px 10px 34px; background: var(--paper); border-radius: 10px; font-size: 14px; font-weight: 600; letter-spacing: -.01em; word-break: keep-all; }
+.stop .q::before { content: "“"; position: absolute; left: 12px; top: 2px; font-size: 30px; font-weight: 800; color: var(--lc); line-height: 1; }
+.stop.skip .body { background: transparent; box-shadow: 0 0 0 1px var(--soft) inset; padding: 12px 18px; }
+.stop.skip .meta b { color: var(--muted); font-size: 14px; }
+.ahead { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0 170px; }
+.ahead span { font-size: 12px; padding: 5px 11px; border-radius: 999px; box-shadow: 0 0 0 1px rgba(18,20,24,.12) inset; color: #6b675f; }
+.ahead span.nx { background: var(--ink); color: #fff; box-shadow: none; font-weight: 700; }
+
+/* 승차권 */
+.ticket-wrap { padding: 36px 40px 44px; display: flex; justify-content: center; }
+.ticket { position: relative; display: grid; grid-template-columns: 1fr 170px; width: min(760px, 100%); background: #fff; border-radius: 18px; box-shadow: 0 0 0 1px var(--soft), 0 18px 40px -16px rgba(18,20,24,.28); }
+.ticket::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 10px; border-radius: 18px 0 0 18px; background: linear-gradient(var(--up) 0 50%, var(--lc) 50%); }
+.notch { position: absolute; right: 161px; width: 18px; height: 18px; border-radius: 50%; background: var(--paper); box-shadow: inset 0 0 0 1px var(--soft); }
+.notch.t { top: -9px; } .notch.b { bottom: -9px; }
+.t-main { padding: 24px 26px 22px 34px; border-right: 2px dashed #e1ddd4; min-width: 0; }
+.t-top { display: flex; justify-content: space-between; gap: 10px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .03em; color: var(--muted); }
+.t-route { display: flex; align-items: center; gap: 16px; margin: 14px 0 16px; }
+.t-route small { display: block; font-size: 11px; font-weight: 700; color: var(--muted); }
+.t-route b { font-size: 30px; font-weight: 800; letter-spacing: -.05em; white-space: nowrap; }
+.t-route .arr { flex: 1; min-width: 30px; height: 3px; background: repeating-linear-gradient(90deg, var(--ink) 0 6px, transparent 6px 10px); position: relative; }
+.t-route .arr::after { content: ""; position: absolute; right: -3px; top: -5px; border: 6.5px solid transparent; border-left: 9px solid var(--ink); border-right: 0; }
+.t-dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.t-dl div { background: var(--paper); border-radius: 10px; padding: 8px 12px; min-width: 0; }
+.t-dl dt { font-size: 10.5px; font-weight: 700; color: var(--muted); }
+.t-dl dd { margin: 1px 0 0; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-say { margin: 16px 0 0; font-size: 14px; line-height: 1.75; word-break: keep-all; }
+.t-say b { display: inline-block; font-size: 10.5px; color: #fff; background: var(--ink); border-radius: 4px; padding: 1px 6px; margin-right: 6px; vertical-align: 2px; }
+.t-why { margin: 6px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.6; word-break: keep-all; }
+.t-stub { position: relative; padding: 22px 16px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; text-align: center; }
+.t-stub .no { font-family: var(--mono); font-size: 10.5px; color: var(--muted); letter-spacing: .08em; }
+.t-stub .pct { font-size: 46px; font-weight: 800; letter-spacing: -.06em; line-height: 1; }
+.t-stub .pct small { font-size: 18px; }
+.t-stub .pct-l { font-size: 11.5px; font-weight: 700; color: var(--muted); margin-top: -6px; }
+.barcode { width: 100%; height: 38px; background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 4px, var(--ink) 4px 5px, transparent 5px 8px, var(--ink) 8px 11px, transparent 11px 12px, var(--ink) 12px 13px, transparent 13px 16px); }
+.punch { position: absolute; right: 18px; top: 18px; width: 20px; height: 20px; border-radius: 50%; background: var(--paper); box-shadow: inset 0 2px 3px rgba(0,0,0,.2); transform: scale(0); }
+.punch.on { animation: punch .4s cubic-bezier(.3,1.7,.5,1) forwards; }
+@keyframes punch { to { transform: scale(1); } }
+
+.p-foot { display: flex; justify-content: space-between; gap: 14px; padding: 18px 40px; background: var(--ink); color: rgba(255,255,255,.5); font-size: 11.5px; }
+.p-foot b { color: #fff; }
+
+.fade-in { animation: fadeUp .7s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } }
+
+/* ───────── 반응형 ───────── */
+@media (max-width: 760px) {
+  .stage { padding: 14px 10px 110px; }
+  .poster { border-radius: 16px; }
+  .p-head { grid-template-columns: auto 1fr; padding: 24px 20px 22px; gap: 14px; }
+  .line-badge { width: 52px; height: 52px; font-size: 28px; box-shadow: 0 0 0 4px var(--ink), 0 0 0 6px rgba(255,255,255,.25); }
+  .p-title h1 { font-size: 26px; }
+  .p-title p { font-size: 13.5px; }
+  .p-meta { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; }
+  .led { height: 48px; } .led-track { font-size: 15px; } .led-track span { line-height: 48px; padding: 0 12px; }
+  .riders { padding: 20px 14px 0; }
+  .rider { padding-right: 12px; }
+  .map-wrap { margin: 14px 12px 0; }
+  .sec { padding: 30px 16px 4px; }
+  .sec-h b { font-size: 19px; }
+  .sec-h small { display: none; }
+  .signs { grid-template-columns: 1fr; gap: 18px; }
+  .gap { display: flex; align-items: baseline; justify-content: center; gap: 10px; }
+  .gap b { font-size: 30px; }
+  .gap span { margin: 0; }
+  .board .main b { font-size: 30px; }
+  .stop { grid-template-columns: 36px 1fr; gap: 0 12px; }
+  .stop .when { display: none; }
+  .stop .dot { width: 34px; height: 34px; border-width: 4px; font-size: 10.5px; }
+  .stop .rail::before { width: 5px; }
+  .stop .body { padding: 14px 16px 16px; }
+  .stop .meta .when-m { display: block; width: 100%; font-family: var(--mono); font-size: 10.5px; color: var(--muted); order: -1; }
+  .ahead { margin-left: 48px; }
+  .ticket-wrap { padding: 28px 14px 30px; }
+  .ticket { grid-template-columns: 1fr; }
+  .notch { display: none; }
+  .t-main { border-right: 0; border-bottom: 2px dashed #e1ddd4; padding: 20px 18px 18px 26px; }
+  .t-route b { font-size: 24px; }
+  .t-dl { grid-template-columns: 1fr 1fr; }
+  .t-dl div:first-child { grid-column: 1 / -1; }
+  .t-stub { flex-direction: row; padding: 16px 18px 18px 26px; justify-content: space-between; text-align: left; }
+  .t-stub .barcode { width: 90px; }
+  .punch { display: none; }
+  .p-foot { flex-direction: column; gap: 4px; padding: 16px 18px; }
+}
+
+
+/* ───────── 노선도: 허브와 같은 흑백 창 UI. 색은 노선색 하나, 전광판만 호박색. 굵은 효과 없이 1px 선과 여백으로 ───────── */
+:root { --rail: #cfcfcf; --ink: #111; --muted: #666; --paper: #f7f7f7; --card: #fff; --soft: rgba(0,0,0,.12); }
+body[data-mode="view"] { background-color: #f2d6d2; background-image: radial-gradient(#e2b3ad 1px, transparent 1.2px); background-size: 8px 8px; }
+.poster { position: relative; border-radius: 0; background: var(--paper); border: 1px solid #111; box-shadow: 4px 4px 0 #111; padding-top: 24px; }
+.poster::before { content: "둘의 노선도"; position: absolute; left: 0; right: 0; top: 0; height: 24px; border-bottom: 1px solid #111; background: repeating-linear-gradient(180deg, #ececec 0 2px, #a3a3a3 2px 3px); font: 400 12px/24px "Galmuri11", var(--ui-font); text-align: center; color: #111; }
+.poster.capturing { box-shadow: none; }
+.p-head { background: #fff; color: #111; border-bottom: 1px solid #111; }
+.p-head::after { display: none; }
+.line-badge { background: var(--up); color: #fff; border: 2px solid #111; box-shadow: none; font-weight: 900; }
+.p-title small { color: #666; font: 400 12px "Galmuri9", var(--ui-font); }
+.p-title h1 { color: #111; }
+.p-title p { color: #444; }
+.dir-chip { border-radius: 0; background: #fff; border: 1px solid #111; color: #111; font-size: 12.5px; }
+.dir-chip i { box-shadow: none; }
+.period { color: #666; }
+.led { border-bottom: 1px solid #111; }
+.riders { padding-top: 22px; }
+.rider { border-radius: 0; background: #fff; box-shadow: none; border: 1px solid #111; }
+.rider .av { border-radius: 0; }
+.map-wrap { border-radius: 0; background: #fff radial-gradient(circle, rgba(0,0,0,.09) 1px, transparent 1.2px) 0 0 / 10px 10px; border: 1px solid #111; box-shadow: none; }
+.st .ring { stroke: #cfcfcf; }
+.legend i { border-radius: 0; }
+.sec-h .k { width: 10px; height: 10px; border-radius: 0; background: #111; box-shadow: none; }
+.sec-h small { font: 400 12px "Galmuri9", var(--ui-font); }
+.board { border-radius: 0; border: 1px solid #111; box-shadow: none; }
+.sign-top .av, .stop .dot { border-radius: 0; }
+.stop .dot { background: #fff; }
+.stop .body { border-radius: 0; border: 1px solid #111; box-shadow: none; }
+.stop .meta .stn { border-radius: 0; }
+.stop .q { border-radius: 0; background: #f2f2f2; border-left: 3px solid var(--lc); }
+.stop .q::before { color: var(--lc); }
+.stop.skip .body { border-style: dashed; border-color: #888; }
+.ahead span { border-radius: 0; box-shadow: none; border: 1px solid #111; background: #fff; }
+.ahead span.nx { background: #111; }
+.ticket { border-radius: 0; border: 1px solid #111; box-shadow: 4px 4px 0 #111; background: #fff; }
+.ticket::before { border-radius: 0; }
+.notch { background: var(--paper); box-shadow: inset 0 0 0 1px #111; }
+.t-main { border-right-color: #bbb; }
+.t-dl div { border-radius: 0; background: #f2f2f2; }
+.t-say b { border-radius: 0; }
+.t-stub .pct-l { margin-top: 4px; } .t-stub .pct { line-height: 1.1; }
+.p-foot { background: #111; }
+body[data-mode] .actions .btn.primary { background: #111; color: #fff; }
+@media (max-width: 760px) { .poster { border-radius: 0; } .signs .gap { margin-top: 0; padding: 4px 0; } .line-badge { box-shadow: none; } }
+
+/* ── 툴 색 (노선 빨강) ── */
+.poster { background: #fff6f4; border-color: #3a1512; box-shadow: 4px 4px 0 #3a1512; }
+.poster::before { background: repeating-linear-gradient(180deg, #ffe3df 0 2px, #e9a49c 2px 3px); color: #3a1512; border-color: #3a1512; }
+body[data-mode] header.bar { background: linear-gradient(#fff3f1, #f6d0ca); border-bottom-color: #3a1512; }
+body[data-mode] .brand, body[data-mode] .bar-title, body[data-mode] .tabs button { color: #3a1512; }
+body[data-mode] .brand::before { background: #e5483d; box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px #3a1512; }
+body[data-mode] .tabs button[aria-selected="true"] { background: #e5483d; color: #fff; }
+body[data-mode] .actions { background: #f6d0ca; border-color: #3a1512; box-shadow: 3px 3px 0 #3a1512; }
+body[data-mode] .actions .btn { background: #fff3f1; border-color: #3a1512; color: #3a1512; box-shadow: inset -1px -1px 0 #e9a49c, inset 1px 1px 0 #fff; }
+body[data-mode] .actions .btn.primary { background: #e5483d; color: #fff; box-shadow: inset -1px -1px 0 #a8261e, inset 1px 1px 0 rgba(255,255,255,.4); }
+body[data-mode] .shared-note { background: #fff6f4; border-color: #3a1512; color: #3a1512; box-shadow: 2px 2px 0 #3a1512; }
+
+.p-head { background: #fff; }
+.dir-chip, .rider, .board, .stop .body, .map-wrap, .ahead span { border-color: #3a1512; }
+.stop .q { background: #fdebe8; }
+.sec-h .k { background: #e5483d; }
+.t-dl div { background: #fdebe8; }
+.ahead span.nx { background: #e5483d; border-color: #e5483d; }
+.ticket { border-color: #3a1512; box-shadow: 4px 4px 0 #3a1512; }
+.p-foot { background: #3a1512; }
+
+/* 바탕은 단색·그라데이션만 */
+body[data-mode="view"] { background: linear-gradient(180deg, #f8e1dd 0%, #efc6c0 100%) fixed; }
+
+/* 만들기 화면 툴 색 */
+body { --e-main:#e5483d;--e-dark:#a8261e;--e-ink:#3a1512;--e-win:#fff6f4;--e-s1:#ffe3df;--e-s2:#e9a49c;--e-bg1:#f8e1dd;--e-bg2:#efc6c0; }
+
+/* 밝은 캐릭터 색 위 이니셜도 잘 보이게 */
+.av { text-shadow: 0 0 1px rgba(0,0,0,.7), 1px 1px 0 rgba(0,0,0,.45); }
+.legend i.av { font-size: 10.5px; width: 18px; height: 18px; }
+
+/* 긴 이름도 잘리지 않게 줄바꿈 */
+.t-dl dd { white-space: normal; overflow: visible; text-overflow: clip; word-break: keep-all; line-height: 1.35; }
+</style>
+</head>
+<body data-mode="view" data-noframe>
+<header class="bar">
+  <a class="brand" href="../">귀환의 블로그</a>
+  <span class="bar-title">둘의 노선도</span>
+  <span class="bar-spacer"></span>
+  <div class="tabs" role="tablist">
+    <button data-mode="view" role="tab">보기</button>
+    <button data-mode="edit" role="tab">만들기</button>
+  </div>
+</header>
+
+<main class="stage only-view">
+  <p class="shared-note" id="shared-note" hidden>공유받은 노선도예요. 만들기에서 고치면 내 브라우저에만 저장돼요.</p>
+  <article class="poster" id="poster"></article>
+  <nav class="actions">
+    <button class="btn primary" id="btn-png">이미지 저장</button>
+    <button class="btn" id="btn-link">링크 복사</button>
+    <button class="btn" id="btn-replay">운행 다시 보기</button>
+  </nav>
+</main>
+
+<main class="editor only-edit">
+  <div id="form"></div>
+  <aside>
+    <section class="card">
+      <h3>AI 채팅으로 채우기</h3>
+      <div class="how"><div><b>01 복사</b>1번부터 차례로</div><div><b>02 보내기</b>캐릭터 채팅방에</div><div><b>03 붙여넣기</b>답을 통째로</div></div>
+    </section>
+    <section class="card">
+      <h3>OOC 프롬프트</h3>
+      <div class="psteps" id="prompts"></div>
+    </section>
+    <section class="card">
+      <h3>AI 답변 붙여넣기</h3>
+      <textarea class="paste" id="paste" placeholder="AI 답변을 그대로 붙여넣어 주세요. 앞뒤에 말이 섞여 있어도 괜찮아요."></textarea>
+      <button class="btn primary" id="apply" style="width:100%;margin-top:8px">적용하기</button>
+      <div class="progress" id="progress"></div>
+    </section>
+    <section class="card" style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="btn-sample">예시 불러오기</button>
+      <button class="btn ghost" id="btn-clear">전부 비우기</button>
+    </section>
+  </aside>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/modern-screenshot@4.6.8/dist/index.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(() => {
+const { esc, br, clamp, num, $, debounce } = Core;
+
+/* 냅(Knapp)의 관계 발전 모델: 가까워지는 5단계 + 멀어지는 5단계 */
+const ST = [
+  { n: '시작', en: 'INITIATING',      d: '첫인상, 첫마디' },
+  { n: '실험', en: 'EXPERIMENTING',   d: '서로를 떠보는 질문과 잡담' },
+  { n: '강화', en: 'INTENSIFYING',    d: '마음을 드러내고 특별해지는 때' },
+  { n: '통합', en: 'INTEGRATING',     d: '주변이 둘을 한 쌍으로 보기 시작' },
+  { n: '결속', en: 'BONDING',         d: '말로든 형식으로든 약속한 사이' },
+  { n: '분화', en: 'DIFFERENTIATING', d: '“우리”보다 “나”와 “너”가 커지는 때' },
+  { n: '제한', en: 'CIRCUMSCRIBING',  d: '건드리지 않는 주제가 늘어남' },
+  { n: '정체', en: 'STAGNATING',      d: '같은 자리를 맴도는 대화' },
+  { n: '회피', en: 'AVOIDING',        d: '몸도 마음도 거리를 둠' },
+  { n: '종결', en: 'TERMINATING',     d: '관계의 마지막 역' },
+];
+const DIRS = { up: { t: '가까워지는 중', c: 'var(--up)' }, down: { t: '멀어지는 중', c: 'var(--down)' }, stop: { t: '정차 중', c: '#ffb21e' } };
+const lineColor = i => (i < 5 ? 'var(--up)' : 'var(--down)');
+const stName = no => (ST[no - 1] ? ST[no - 1].n + '역' : '-');
+const pad = n => String(n).padStart(2, '0');
+const initial = s => [...String(s || '?').trim()][0] || '?';
+
+const emptyStations = () => ST.map(() => ({ date: '', title: '', text: '', quote: '' }));
+const blank = () => ({
+  v: 1, title: '', sub: '', period: '',
+  a: { name: 'NPC', role: '', color: '#f5a524' },
+  b: { name: 'PC', role: '', color: '#7a5af8' },
+  current: 1, dir: 'up',
+  aView: { st: 1, why: '' }, bView: { st: 1, why: '' },
+  stations: emptyStations(),
+  next: { st: 2, pct: 50, why: '' }, verdict: '',
+});
+const sample = () => ({
+  v: 1,
+  title: '막차 다음 열차',
+  sub: '막차를 놓친 밤에 개통한, 매일 같은 시간에 출발하는 노선',
+  period: '8개월째',
+  a: { name: 'NPC', role: '사서 · NPC', color: '#f5a524' },
+  b: { name: 'PC', role: '밴드 드러머 · PC', color: '#7a5af8' },
+  current: 4, dir: 'up',
+  aView: { st: 3, why: '아직 ‘조금 특별한 사이’ 정도라고 믿고 싶다. 이름을 붙이는 순간 잃을 것 같아서.' },
+  bView: { st: 5, why: '이미 다 정해진 얘기라고 생각한다. 고백이라는 절차만 남았을 뿐.' },
+  stations: [
+    { date: '3월 · 막차 플랫폼', title: '놓친 막차', text: '막차를 놓친 두 사람이 같은 벤치에 앉았다. PC가 먼저 핫팩 하나를 반으로 갈라 내밀었다.', quote: '반 나눌래요? 손이 하나밖에 없어서.' },
+    { date: '4월 · 반납대', title: '연체된 악보집', text: 'PC는 악보집을 매주 사흘씩 늦게 반납했다. NPC는 연체료를 받으며 다음 공연 날짜를 물었다.', quote: '이번 주는 몇 시에 끝나요? 그냥, 반납 때문에.' },
+    { date: '7월 · 공연 끝', title: '맨 앞줄', text: 'NPC가 처음으로 공연장 맨 앞줄에 섰다. PC는 앙코르곡을 바꿔 NPC가 좋아한다던 곡을 쳤다.', quote: '그 곡, 나 들으라고 친 거죠.' },
+    { date: '10월 · 단골 국밥집', title: '늘 먹던 걸로 2인분', text: '사장님이 둘을 보자마자 “늘 먹던 걸로 2인분”을 외쳤다. 둘 다 아니라고 하지 않았다.', quote: '우리 이제 세트 취급이네요.' },
+    ...emptyStations().slice(4),
+  ],
+  next: { st: 5, pct: 64, why: 'PC가 먼저 말하면 바로 도착. NPC가 겁을 먹으면 분화역으로 빠질 수도 있다.' },
+  verdict: '같은 열차에 탔지만 NPC는 아직 문 앞에 서 있고, PC는 벌써 종점을 생각한다. 다음 역 안내 방송은 누가 먼저 하게 될까.',
+});
+
+function normalize(s) {
+  const b = blank(); s = s && typeof s === 'object' ? s : {};
+  const o = { ...b, ...s, a: { ...b.a, ...(s.a || {}) }, b: { ...b.b, ...(s.b || {}) },
+    aView: { ...b.aView, ...(s.aView || {}) }, bView: { ...b.bView, ...(s.bView || {}) }, next: { ...b.next, ...(s.next || {}) } };
+  o.stations = ST.map((_, i) => ({ ...b.stations[i], ...((s.stations || [])[i] || {}) }));
+  o.current = clamp(Math.round(num(o.current, 1)), 1, 10);
+  o.aView.st = clamp(Math.round(num(o.aView.st, o.current)), 1, 10);
+  o.bView.st = clamp(Math.round(num(o.bView.st, o.current)), 1, 10);
+  o.next.st = clamp(Math.round(num(o.next.st, Math.min(10, o.current + 1))), 1, 10);
+  o.next.pct = clamp(Math.round(num(o.next.pct, 50)), 0, 100);
+  if (!DIRS[o.dir]) o.dir = 'up';
+  return o;
+}
+
+/* AI JSON → 상태 */
+function apply(S, o) {
+  const got = [];
+  if (Array.isArray(o.stations)) {
+    /* 정차 기록은 한 번에 통째로 오므로, 예시가 섞이지 않게 비우고 채운다 */
+    S.stations = emptyStations();
+    o.stations.forEach((r, i) => {
+      if (!r || typeof r !== 'object') return;
+      let idx = num(r.no, 0) - 1;
+      if (idx < 0) { const byName = ST.findIndex(t => String(r.station || r.key || '').startsWith(t.n)); idx = byName >= 0 ? byName : i; }
+      if (idx < 0 || idx > 9) return;
+      ['date', 'title', 'text', 'quote'].forEach(k => { if (r[k] != null) S.stations[idx][k] = String(r[k]); });
+    });
+    got.push('정차 기록');
+  }
+  const keep = obj => Object.fromEntries(Object.entries(obj).filter(([, v]) => v));
+  if (o.a && typeof o.a === 'object') { Object.assign(S.a, keep(o.a)); got.push('탑승자'); }
+  if (o.b && typeof o.b === 'object') Object.assign(S.b, keep(o.b));
+  if (o.current != null) { S.current = o.current; got.push('현재 역'); }
+  if (o.dir) S.dir = String(o.dir).toLowerCase();
+  if (o.aView) Object.assign(S.aView, o.aView);
+  if (o.bView) { Object.assign(S.bView, o.bView); got.push('체감 위치'); }
+  if (o.next) { Object.assign(S.next, o.next); got.push('다음 역'); }
+  ['title', 'sub', 'period', 'verdict'].forEach(k => { if (o[k]) S[k] = o[k]; });
+  if (o.title || o.verdict) got.push('승차권');
+  return got;
+}
+
+/* ── OOC ── */
+function prompts() {
+  const p1 = `*[OOC: 롤플레잉 잠시 중단. 「둘의 노선도」 기록.
+NPC와 PC의 관계를 냅(Knapp)의 관계 발전 10단계에 대입해 지하철 노선도로 기록한다. 놀이용 창작이며 진단이 아니다.
+▪ 노선: 1 시작(첫인상) 2 실험(서로 떠보기) 3 강화(특별해짐) 4 통합(주변이 한 쌍으로 봄) 5 결속(약속한 사이) 6 분화(나와 너가 커짐) 7 제한(피하는 주제가 늘어남) 8 정체(같은 자리 맴돎) 9 회피(거리 두기) 10 종결
+▪ 근거: 지금까지의 설정·성격·말투·관계와 RP에서 실제 있었던 일만. 없는 사건·가족·과거는 만들지 않는다. 말보다 행동을 본다.
+▪ stations: 실제로 지나온 역만. no 역 번호, date 작중 시점 12자, title 사건 이름 15자, text 행동 중심 2문장 90자, quote 그때 대표 대사 한 줄(입말 그대로)
+▪ current 지금 실제 역 / dir up(가까워지는 중) down(멀어지는 중) stop / aView·bView 각자 느끼는 역과 이유 45자(실제와 달라도 되고 그 차이가 핵심, bView는 PC의 실제 말·행동에서 읽히는 만큼만) / next 다음에 설 가능성이 큰 역·확률·근거
+▪ title 노선 이름 12자, sub 소개 40자, period 함께한 기간, verdict 기관사의 한마디 2문장
+▪ 역 순서: stations는 시간순 2~8개, no는 실제로 거친 단계 번호(건너뛴 단계는 빼도 된다), current는 마지막 역 번호와 같게.
+▪ quote는 그 역에서 실제로 오간 말(없으면 그 무렵 한 말), verdict는 기관사 안내 방송 말투로.
+▪ RP 밖 기록: PC의 말·행동·속마음은 RP에 실제 나온 것만 쓰고 지어내지 않는다. 여기서 만든 내용은 이후 RP의 사실로 삼지 않는다.
+▪ 품질: 작위적인 전개·뻔한 클리셰 없이, 이 두 사람만의 물건·장소·습관·말버릇 같은 구체적인 디테일로. 답이 길어 끊길 것 같으면 개수를 줄여서라도 JSON을 끝까지 닫는다.
+▪ 출력: 인사·설명 없이 JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만 쓰고 줄바꿈하지 않는다. 키 이름은 그대로, a=NPC, b=PC. 아래 값은 형식 예시일 뿐 그대로 쓰지 않는다.
+{"a":{"name":"","role":""},"b":{"name":"","role":""},"stations":[{"no":1,"date":"","title":"","text":"","quote":""}],"current":4,"dir":"up","aView":{"st":3,"why":""},"bView":{"st":5,"why":""},"next":{"st":5,"pct":60,"why":""},"title":"","sub":"","period":"","verdict":""}]*`;
+  return [{ label: '노선도 기록', sub: '정차 기록 · 체감 위치 · 승차권', text: p1 }];
+}
+function progress(S) {
+  const stops = S.stations.filter(s => s.title || s.text).length;
+  return [
+    { label: `정차 기록 ${stops}/${S.current}`, ok: stops > 0 },
+    { label: '체감 위치', ok: !!(S.aView.why || S.bView.why) },
+    { label: '다음 역', ok: !!S.next.why },
+    { label: '승차권', ok: !!(S.title && S.verdict) },
+  ];
+}
+
+/* ── 편집 폼 ── */
+function schema(S) {
+  const stOpts = ST.map((t, i) => [String(i + 1), `${i + 1} · ${t.n}역`]);
+  const stationFields = [];
+  ST.forEach((t, i) => {
+    stationFields.push({ sub: `${pad(i + 1)} ${t.n}역 · ${t.d}` });
+    stationFields.push({ k: `stations.${i}.title`, label: '사건 이름', ph: i < S.current ? '비우면 무정차 통과' : '아직 도착 전' });
+    stationFields.push({ k: `stations.${i}.date`, label: '작중 시점', ph: '3월 · 막차 플랫폼' });
+    stationFields.push({ k: `stations.${i}.text`, label: '무슨 일이 있었나', type: 'textarea', full: true });
+    stationFields.push({ k: `stations.${i}.quote`, label: '대표 대사', full: true });
+  });
+  return [
+    { title: '노선 정보', en: 'LINE', desc: '포스터 맨 위에 들어가요. 입력칸에 //를 넣으면 그 자리에서 줄이 바뀌어요.', fields: [
+      { k: 'title', label: '노선 이름', ph: '막차 다음 열차' },
+      { k: 'period', label: '운행 기간', ph: '8개월째' },
+      { k: 'sub', label: '한 줄 소개', full: true },
+    ] },
+    { title: '탑승자', en: 'RIDERS', fields: [
+      { k: 'a.name', label: 'NPC 이름' }, { k: 'b.name', label: 'PC 이름' },
+      { k: 'a.role', label: 'NPC 소개' }, { k: 'b.role', label: 'PC 소개' },
+      { k: 'a.color', label: 'NPC 색', type: 'color' }, { k: 'b.color', label: 'PC 색', type: 'color' },
+    ] },
+    { title: '현재 위치', en: 'NOW', desc: '실제 위치와, 두 사람이 각자 느끼는 위치는 다를 수 있어요.', fields: [
+      { k: 'current', label: '실제 현재 역', type: 'select', opts: stOpts, num: true },
+      { k: 'dir', label: '운행 방향', type: 'select', opts: [['up', '가까워지는 중'], ['down', '멀어지는 중'], ['stop', '정차 중']] },
+      { k: 'aView.st', label: 'NPC가 느끼는 역', type: 'select', opts: stOpts, num: true },
+      { k: 'bView.st', label: 'PC가 느끼는 역', type: 'select', opts: stOpts, num: true },
+      { k: 'aView.why', label: 'NPC가 그렇게 느끼는 이유', type: 'textarea', full: true },
+      { k: 'bView.why', label: 'PC가 그렇게 느끼는 이유', type: 'textarea', full: true },
+    ] },
+    { title: '정차 기록', en: 'STOPS', desc: '현재 역까지만 포스터에 나와요. 지나온 역을 비워 두면 무정차 통과로 표시돼요.', fields: stationFields },
+    { title: '다음 역과 승차권', en: 'TICKET', fields: [
+      { k: 'next.st', label: '다음 정차 예정 역', type: 'select', opts: stOpts, num: true },
+      { k: 'next.pct', label: '도착 확률', type: 'range' },
+      { k: 'next.why', label: '그렇게 보는 이유', type: 'textarea', full: true },
+      { k: 'verdict', label: '기관사의 한마디', type: 'textarea', full: true, rows: 3 },
+    ] },
+  ];
+}
+
+/* ── 노선 형태: 넓으면 가로 순환선, 좁으면 세로 순환선 ── */
+function geometry(vertical) {
+  if (!vertical) {
+    const XS = [110, 305, 500, 695, 890], YT = 150, YB = 330, R = 90;
+    return {
+      vb: '0 0 1000 480', step: 195, upLen: 780, arc: Math.PI * R,
+      pos: i => (i < 5 ? { x: XS[i], y: YT } : { x: XS[9 - i], y: YB }),
+      full: `M${XS[0]},${YT} L${XS[4]},${YT} A${R},${R} 0 0 1 ${XS[4]},${YB} L${XS[0]},${YB}`,
+      up: `M${XS[0]},${YT} L${XS[4]},${YT}`,
+      dn: `M${XS[4]},${YT} A${R},${R} 0 0 1 ${XS[4]},${YB} L${XS[0]},${YB}`,
+      label: (i, p) => i < 5 ? { x: p.x, y: p.y + 50, a: 'middle', ey: p.y + 66 } : { x: p.x, y: p.y - 48, a: 'middle', ey: p.y - 32 },
+      pin: (i, p, slot) => i < 5 ? { x: p.x + slot * 30, y: p.y - 70, lx: p.x + slot * 30, ly: p.y - 94, from: p.y - 26 } : { x: p.x + slot * 30, y: p.y + 70, lx: p.x + slot * 30, ly: p.y + 104, from: p.y + 26 },
+      tag: (i, p) => i < 5 ? { x: p.x - 48, y: p.y + 80 } : { x: p.x - 48, y: p.y - 100 },
+      caps: [{ x: XS[0] - 40, y: YT + 4, t: '출발', a: 'end' }, { x: XS[0] - 40, y: YB + 4, t: '종착', a: 'end' }],
+      pinLabels: true,
+    };
+  }
+  const XL = 140, XR = 280, YS = [90, 240, 390, 540, 690], R = 70;
+  return {
+    vb: '0 0 420 820', step: 150, upLen: 600, arc: Math.PI * R,
+    pos: i => (i < 5 ? { x: XL, y: YS[i] } : { x: XR, y: YS[9 - i] }),
+    full: `M${XL},${YS[0]} L${XL},${YS[4]} A${R},${R} 0 0 0 ${XR},${YS[4]} L${XR},${YS[0]}`,
+    up: `M${XL},${YS[0]} L${XL},${YS[4]}`,
+    dn: `M${XL},${YS[4]} A${R},${R} 0 0 0 ${XR},${YS[4]} L${XR},${YS[0]}`,
+    label: (i, p) => i < 5 ? { x: p.x - 34, y: p.y + 2, a: 'end', ey: p.y + 18 } : { x: p.x + 34, y: p.y + 2, a: 'start', ey: p.y + 18 },
+    pin: (i, p, slot) => i < 5 ? { x: p.x + 44, y: p.y + slot * 30, from: p.x + 24, h: true } : { x: p.x - 44, y: p.y + slot * 30, from: p.x - 24, h: true },
+    tag: (i, p) => i < 5 ? { x: p.x - 130, y: p.y + 28 } : { x: p.x + 34, y: p.y + 28 },
+    caps: [{ x: XL, y: YS[0] - 36, t: '출발', a: 'middle' }, { x: XR, y: YS[0] - 36, t: '종착', a: 'middle' }],
+    pinLabels: false,
+  };
+}
+const lenAt = (G, i) => (i < 5 ? i * G.step : G.upLen + G.arc + (i - 5) * G.step);
+
+function pinSVG(G, stIdx, who, color, label, slot) {
+  const p = G.pos(stIdx), q = G.pin(stIdx, p, slot);
+  const line = q.h
+    ? `<line x1="${q.from}" y1="${p.y}" x2="${q.x}" y2="${q.y}" stroke="${esc(color)}" stroke-width="2" stroke-dasharray="3 3"/>`
+    : `<line x1="${q.x}" y1="${q.from}" x2="${q.x}" y2="${q.y}" stroke="${esc(color)}" stroke-width="2" stroke-dasharray="3 3"/>`;
+  return `<g class="pin hide" data-pin>${line}
+    <circle cx="${q.x}" cy="${q.y}" r="15" fill="${esc(color)}" stroke="#fff" stroke-width="3"/>
+    <text class="pin-i" x="${q.x}" y="${q.y + 4.5}" text-anchor="middle">${esc(who)}</text>
+    ${G.pinLabels ? `<text class="pin-l" x="${q.lx}" y="${q.ly}" text-anchor="middle">${esc(label)}</text>` : ''}</g>`;
+}
+
+function mapSVG(S, G) {
+  const cur = S.current - 1, nx = S.next.st - 1;
+  let st = '';
+  ST.forEach((t, i) => {
+    const p = G.pos(i), l = G.label(i, p), isCur = i === cur;
+    st += `<g class="st ${i > cur ? 'off' : ''} ${isCur ? 'cur' : ''}" style="--lc:${lineColor(i)}">
+      ${isCur ? `<circle class="halo" cx="${p.x}" cy="${p.y}" r="22"/><circle class="cur-o" cx="${p.x}" cy="${p.y}" r="27"/>` : ''}
+      <circle class="ring" cx="${p.x}" cy="${p.y}" r="${isCur ? 22 : 15}"/>
+      <text class="st-num" x="${p.x}" y="${p.y + 4}" text-anchor="middle">${pad(i + 1)}</text>
+      <text class="st-name" x="${l.x}" y="${l.y}" text-anchor="${l.a}">${t.n}</text>
+      <text class="st-en" x="${l.x}" y="${l.ey}" text-anchor="${l.a}">${t.en}</text></g>`;
+  });
+  let nextSVG = '';
+  if (nx !== cur) {
+    const np = G.pos(nx), tg = G.tag(nx, np);
+    nextSVG = `<g data-next opacity="0" style="transition:opacity .6s">
+      <circle class="next-ring" cx="${np.x}" cy="${np.y}" r="25"/>
+      <g class="tag" transform="translate(${tg.x},${tg.y})"><rect width="96" height="22" rx="11"/><text x="48" y="15" text-anchor="middle">다음 정차 ${S.next.pct}%</text></g></g>`;
+  }
+  const same = S.aView.st === S.bView.st;
+  const pins = same
+    ? pinSVG(G, S.aView.st - 1, initial(S.a.name), S.a.color, `${S.a.name}의 체감`, -0.55) + pinSVG(G, S.bView.st - 1, initial(S.b.name), S.b.color, `${S.b.name}의 체감`, 0.55)
+    : pinSVG(G, S.aView.st - 1, initial(S.a.name), S.a.color, `${S.a.name}의 체감`, 0) + pinSVG(G, S.bView.st - 1, initial(S.b.name), S.b.color, `${S.b.name}의 체감`, 0);
+  /* 가로형: 아래 줄에 핀이 없으면 아래 여백을 줄인다 */
+  const vb = G.pinLabels ? `0 36 1000 ${(S.aView.st > 5 || S.bView.st > 5) ? 420 : 350}` : G.vb;
+  return `<svg class="map" viewBox="${vb}" role="img" aria-label="관계 노선도, 현재 ${stName(S.current)}">
+    <path d="${G.full}" fill="none" stroke="var(--rail)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="rail-up" d="${G.up}" fill="none" stroke="var(--up)" stroke-width="12" stroke-linecap="round" stroke-dasharray="0 99999"/>
+    <path id="rail-dn" d="${G.dn}" fill="none" stroke="var(--down)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0 99999"/>
+    <path id="rail-full" d="${G.full}" fill="none" stroke="none"/>
+    ${G.caps.map(c => `<text class="cap" x="${c.x}" y="${c.y}" text-anchor="${c.a}">${c.t}</text>`).join('')}
+    ${nextSVG}${st}${pins}
+    <g id="train" opacity="0"><g id="train-body">
+      <rect x="-22" y="-10" width="44" height="20" rx="9" fill="var(--ink)" stroke="#fff" stroke-width="2.5"/>
+      <rect x="-14" y="-4" width="8" height="7" rx="2" fill="#fff"/><rect x="-3" y="-4" width="8" height="7" rx="2" fill="#fff"/><rect x="8" y="-4" width="7" height="7" rx="2" fill="#ffb21e"/>
+    </g></g>
+  </svg>`;
+}
+
+/* ── 포스터 ── */
+function boardHTML(who, color, view, label) {
+  const i = view.st - 1;
+  const prev = i > 0 ? `← ${ST[i - 1].n}` : '출발역';
+  const next = i < 9 ? `${ST[i + 1].n} →` : '종착역';
+  return `<div class="sign" style="--c:${esc(color)};--lc:${lineColor(i)}">
+    <div class="sign-top"><span class="av">${esc(initial(who))}</span>${esc(label)}</div>
+    <div class="board"><span class="side">${prev}</span>
+      <span class="main"><b>${ST[i].n}</b><span><i>${pad(view.st)}</i>번째 역</span></span>
+      <span class="side r">${next}</span></div>
+    <p>${br(view.why) || '-'}</p></div>`;
+}
+
+function posterHTML(S, G) {
+  const d = DIRS[S.dir], cur = S.current - 1;
+  const gap = S.aView.st - S.bView.st, ag = Math.abs(gap);
+  const ahead = gap > 0 ? S.a.name : S.b.name;
+  const gapText = ag === 0 ? '두 사람이 같은 역에 서 있다고 느껴요' : `${esc(ahead)} 쪽이 ${ag}정거장 더 가 있다고 느껴요`;
+  const stops = S.stations.slice(0, S.current).map((s, i) => {
+    const skip = !(s.title || s.text);
+    return `<div class="stop ${skip ? 'skip' : ''}" style="--lc:${lineColor(i)}">
+      <div class="when">${skip ? '' : esc(s.date)}</div>
+      <div class="rail"><span class="dot">${pad(i + 1)}</span></div>
+      <div class="body">${skip
+        ? `<div class="meta"><b>무정차 통과</b><span class="stn">${ST[i].n}역</span></div>`
+        : `<div class="meta"><span class="when-m">${esc(s.date)}</span><b>${esc(s.title)}</b><span class="stn">${ST[i].n}역</span></div>
+           ${s.text ? `<p>${br(s.text)}</p>` : ''}${s.quote ? `<div class="q">${esc(s.quote)}</div>` : ''}`}
+      </div></div>`;
+  }).join('');
+  const ahead2 = ST.slice(S.current).map((t, j) => `<span class="${S.current + j + 1 === S.next.st ? 'nx' : ''}">${pad(S.current + j + 1)} ${t.n}</span>`).join('');
+  const tno = String([...(S.a.name + S.b.name + S.title)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % 1000000).padStart(6, '0');
+  const now = new Date(); const ymd = `${now.getFullYear()}.${pad(now.getMonth() + 1)}.${pad(now.getDate())}`;
+  const ledMsg = `<span class="on">이번 역은 <b>${stName(S.current)}</b>입니다</span><span>다음 정차 예정 <b>${stName(S.next.st)}</b> · 도착 확률 ${S.next.pct}%</span><span>${esc(S.a.name)} ⇄ ${esc(S.b.name)} 승객 여러분, ${d.t === '정차 중' ? '잠시 정차합니다' : d.t === '가까워지는 중' ? '열차가 가까워지는 방향으로 운행 중입니다' : '열차가 멀어지는 방향으로 운행 중입니다'}</span>`;
+  const legendPins = `<span><i class="av" style="background:${esc(S.a.color)}">${esc(initial(S.a.name))}</i>${esc(S.a.name)}의 체감 위치</span><span><i class="av" style="background:${esc(S.b.color)}">${esc(initial(S.b.name))}</i>${esc(S.b.name)}의 체감 위치</span>`;
+  return `
+  <header class="p-head">
+    <div class="line-badge">2</div>
+    <div class="p-title"><small>관계 2호선</small><h1>${br(S.title || '이름 없는 노선')}</h1>${S.sub ? `<p>${br(S.sub)}</p>` : ''}</div>
+    <div class="p-meta"><span class="dir-chip" style="--c:${d.c}"><i></i>${d.t}</span>${S.period ? `<span class="period">운행 ${esc(S.period)}</span>` : ''}</div>
+  </header>
+  <div class="led" aria-hidden="true"><div class="led-track">${ledMsg}</div></div>
+  <div class="riders">
+    <span class="rider" style="--c:${esc(S.a.color)}"><span class="av">${esc(initial(S.a.name))}</span><span><b>${esc(S.a.name)}</b>${S.a.role ? `<small>${esc(S.a.role)}</small>` : ''}</span></span>
+    <span class="x">⇄</span>
+    <span class="rider" style="--c:${esc(S.b.color)}"><span class="av">${esc(initial(S.b.name))}</span><span><b>${esc(S.b.name)}</b>${S.b.role ? `<small>${esc(S.b.role)}</small>` : ''}</span></span>
+  </div>
+  <div class="map-wrap">${mapSVG(S, G)}</div>
+  <div class="legend">
+    <span><i style="--c:var(--up)"></i>가까워지는 노선</span><span><i style="--c:var(--down)"></i>멀어지는 노선</span>
+    <span><i class="dash"></i>다음 정차 예정</span>${G.pinLabels ? '' : legendPins}
+  </div>
+
+  <section class="sec">
+    <div class="sec-h"><span class="k"></span><b>지금 어디쯤이라고 느낄까</b></div>
+    <div class="signs">
+      ${boardHTML(S.a.name, S.a.color, S.aView, `${S.a.name}가 느끼는 위치`.replace(/([가-힣])가 느끼는/, (m, c) => c + ((c.charCodeAt(0) - 0xac00) % 28 ? '이가' : '가') + ' 느끼는'))}
+      <div class="gap"><b>${ag}<small>정거장</small></b><span>${gapText}</span></div>
+      ${boardHTML(S.b.name, S.b.color, S.bView, `${S.b.name}가 느끼는 위치`.replace(/([가-힣])가 느끼는/, (m, c) => c + ((c.charCodeAt(0) - 0xac00) % 28 ? '이가' : '가') + ' 느끼는'))}
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><span class="k"></span><b>정차 기록</b><small>${S.current}개 역</small></div>
+    <div class="log">${stops}</div>
+    ${ahead2 ? `<div class="ahead">${ahead2}</div>` : ''}
+  </section>
+
+  <div class="ticket-wrap"><div class="ticket" style="--lc:${lineColor(cur)}">
+    <span class="notch t"></span><span class="notch b"></span>
+    <div class="t-main">
+      <div class="t-top"><span>관계선 승차권 · 1회용</span><span>${ymd}</span></div>
+      <div class="t-route"><div><small>출발</small><b>시작역</b></div><span class="arr"></span><div><small>현재</small><b>${stName(S.current)}</b></div></div>
+      <dl class="t-dl">
+        <div><dt>탑승자</dt><dd>${esc(S.a.name)} · ${esc(S.b.name)}</dd></div>
+        <div><dt>운행</dt><dd>${esc(S.period || '-')}</dd></div>
+        <div><dt>다음 정차</dt><dd>${stName(S.next.st)}</dd></div>
+      </dl>
+      ${S.verdict ? `<p class="t-say"><b>기관사</b>${br(S.verdict)}</p>` : ''}
+      ${S.next.why ? `<p class="t-why">다음 역 근거 · ${br(S.next.why)}</p>` : ''}
+    </div>
+    <div class="t-stub">
+      <span class="no">No. ${tno}</span>
+      <div><div class="pct">${S.next.pct}<small>%</small></div><div class="pct-l">${stName(S.next.st)} 도착 확률</div></div>
+      <div class="barcode"></div>
+      <span class="punch" id="punch"></span>
+    </div>
+  </div></div>
+  <footer class="p-foot"><span>냅(Knapp)의 관계 발전 모델을 바탕으로 한 놀이용 노선도예요. 실제 심리 진단이 아니에요.</span><span>둘의 노선도</span></footer>`;
+}
+
+/* ── 운행 연출 ── */
+let raf, last = null, lastVertical = null;
+const isVertical = () => $('#poster').clientWidth < 640;
+setInterval(() => { const sp = [...document.querySelectorAll(".led-track span")]; if (sp.length < 2) return; const i = sp.findIndex(x => x.classList.contains("on")); sp.forEach(x => x.classList.remove("off")); if (i >= 0) { sp[i].classList.remove("on"); sp[i].classList.add("off"); } sp[(i + 1) % sp.length].classList.add("on"); }, 4500);
+function render(S, { animate }) {
+  cancelAnimationFrame(raf);
+  last = S;
+  const el = $('#poster');
+  const vertical = isVertical(); lastVertical = vertical;
+  const G = geometry(vertical);
+  el.innerHTML = posterHTML(S, G);
+  const full = el.querySelector('#rail-full'), up = el.querySelector('#rail-up'), dn = el.querySelector('#rail-dn');
+  const train = el.querySelector('#train'), body = el.querySelector('#train-body');
+  const sts = [...el.querySelectorAll('.st')];
+  const target = lenAt(G, S.current - 1);
+  const total = full.getTotalLength(), k = total / (G.upLen * 2 + G.arc);
+  const draw = L => {
+    up.setAttribute('stroke-dasharray', `${Math.min(L, G.upLen) * k} 99999`);
+    dn.setAttribute('stroke-dasharray', `${Math.max(0, L - G.upLen) * k} 99999`);
+    const at = Math.min(total, L * k), p = full.getPointAtLength(at), q = full.getPointAtLength(Math.min(total, at + 1)), q0 = full.getPointAtLength(Math.max(0, at - 1));
+    const ang = Math.atan2(q.y - q0.y, q.x - q0.x) * 180 / Math.PI;
+    train.setAttribute('transform', `translate(${p.x},${p.y})`);
+    body.setAttribute('transform', `rotate(${ang})`);
+    sts.forEach((s, i) => { if (lenAt(G, i) <= L + .5 && !s.classList.contains('lit')) { s.classList.add('lit'); if (animate) s.classList.add('pop'); } });
+  };
+  const finish = () => {
+    train.style.transition = 'opacity .4s'; train.setAttribute('opacity', '0');
+    el.querySelector('.halo')?.classList.add('on');
+    el.querySelectorAll('[data-pin]').forEach((p, i) => setTimeout(() => p.classList.remove('hide'), animate ? 200 + i * 240 : 0));
+    el.querySelector('[data-next]')?.setAttribute('opacity', '1');
+    setTimeout(() => el.querySelector('#punch')?.classList.add('on'), animate ? 700 : 0);
+  };
+  if (!animate) { draw(target); finish(); return; }
+  el.querySelectorAll('.sec, .ticket-wrap').forEach((s, i) => { s.classList.add('fade-in'); s.style.animationDelay = (0.3 + i * 0.12) + 's'; });
+  train.setAttribute('opacity', '1');
+  const dur = 700 + target * (vertical ? 1.6 : 1.25), t0 = performance.now();
+  const ease = t => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  let done = false;
+  const end = () => { if (done) return; done = true; cancelAnimationFrame(raf); draw(target); finish(); };
+  const step = now => { const t = Math.min(1, (now - t0) / dur); draw(target * ease(t)); if (t < 1) raf = requestAnimationFrame(step); else end(); };
+  draw(0); raf = requestAnimationFrame(step);
+  /* 탭이 가려져 애니메이션이 멈춰도 결과는 반드시 그려지게 */
+  setTimeout(() => { if (last === S) end(); }, dur + 400);
+}
+window.addEventListener('resize', debounce(() => {
+  if (last && document.body.dataset.mode === 'view' && isVertical() !== lastVertical) render(last, { animate: false });
+}, 200));
+
+Core.app({
+  key: '2inbun:line', sample, blank, normalize, schema, prompts, apply, progress, render,
+  fileName: S => `노선도_${S.a.name}_${S.b.name}`,
+});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>미연시</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%20shape-rendering%3D%27crispEdges%27%3E%3Crect%20width%3D%2716%27%20height%3D%2716%27%20rx%3D%273%27%20fill%3D%27%23e0508f%27%2F%3E%3Cpath%20d%3D%27M3%205h2V4h2v1h2V4h2v1h2v3h-1v1h-1v1h-1v1H9v1H7v-1H6v-1H5V9H4V8H3z%27%20fill%3D%27%23fff%27%2F%3E%3C%2Fsvg%3E">
+<meta name="description" content="AI가 쓴 선택지 대본을 내 캐릭터로 직접 플레이하는 비주얼노벨 플레이어. 호감도와 엔딩 도감까지">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css" crossorigin="anonymous">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="stylesheet" href="../assets/y2k.css">
+<style>
+/* 콘셉트: 2000년대 PC 미연시. 분홍 체크 배경 · 도트 테두리 · 픽셀 폰트 · 하트 호감도 · 이모티콘 표정 */
+:root {
+  --bg: #ffe3ee;
+  --ink: #3b2233;
+  --muted: #9a6f86;
+  --accent: #ff5c9a;
+  --pink: #ff8fbd;
+  --pink2: #ffc4dc;
+  --deep: #c2386f;
+  --cream: #fff8fb;
+  --px: "Galmuri11", "Galmuri9", "Pretendard Variable", monospace;
+  --pxb: "Galmuri11 Bold", "Galmuri11", "Pretendard Variable", monospace;
+}
+body { background: var(--bg) repeating-conic-gradient(#ffd6e6 0 25%, #ffe9f1 0 50%) 0 0 / 32px 32px; }
+.poster { width: min(1040px, 100%); display: flex; flex-direction: column; gap: 22px; font-family: var(--px); }
+.poster.capturing { background: var(--bg); padding: 24px; }
+/* 도트 테두리: 계단 모서리 */
+.pxbox { box-shadow: 0 -4px 0 0 var(--ink), 0 4px 0 0 var(--ink), -4px 0 0 0 var(--ink), 4px 0 0 0 var(--ink), 0 0 0 4px var(--cream) inset, 8px 8px 0 0 rgba(59,34,51,.18); }
+.game { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: #2a1830; color: var(--ink); user-select: none; cursor: pointer; isolation: isolate; image-rendering: pixelated; box-shadow: 0 -6px 0 0 var(--ink), 0 6px 0 0 var(--ink), -6px 0 0 0 var(--ink), 6px 0 0 0 var(--ink), 0 0 0 6px var(--pink) inset, 0 0 0 10px var(--cream) inset, 12px 12px 0 0 rgba(59,34,51,.22); }
+.game::after { content: ""; position: absolute; inset: 0; z-index: 8; pointer-events: none; background: linear-gradient(rgba(255,255,255,.04) 50%, rgba(0,0,0,.05) 50%) 0 0 / 100% 4px; }
+.scene-bg { position: absolute; inset: 10px; transition: opacity .1s; }
+.scene-bg.fade { animation: dissolve .5s steps(6) forwards; }
+@keyframes dissolve { to { opacity: 0; } }
+/* 장면: 단계가 뚜렷한(도트 느낌) 색 띠 + 4px 픽셀 격자 */
+.scene-bg::before, .scene-bg::after { content: ""; position: absolute; }
+.scene-bg { background-blend-mode: normal; }
+.scene-bg > .grid { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,.05) 1px, transparent 1px) 0 0 / 4px 4px, linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px) 0 0 / 4px 4px; }
+.bg-교실 { background: linear-gradient(180deg, #ffe7c2 0 12%, #ffd9a8 12% 24%, #ffcf97 24% 56%, #d99a6a 56% 60%, #b97b4e 60% 100%); }
+.bg-교실::before { left: 8%; right: 8%; top: 10%; height: 40%; background: linear-gradient(90deg, transparent 0 32%, #f2c58a 32% 35%, transparent 35% 65%, #f2c58a 65% 68%, transparent 68%), linear-gradient(180deg, #bfe3ff 0 50%, #e6f4ff 50%); box-shadow: 0 0 0 8px #f2c58a; }
+.bg-카페 { background: linear-gradient(180deg, #8a5a4a 0 20%, #9c6a56 20% 60%, #6e4436 60% 64%, #5a362b 64% 100%); }
+.bg-카페::before { left: 10%; top: 14%; width: 14px; height: 14px; background: #ffd27a; box-shadow: 120px 20px 0 #ffd27a, 260px -4px 0 #ffd27a, 420px 16px 0 #ffd27a, 560px 2px 0 #ffd27a, 700px 22px 0 #ffd27a; }
+.bg-밤거리 { background: linear-gradient(180deg, #1b1446 0 30%, #2a1e5c 30% 58%, #3a2e6a 58% 62%, #241c40 62% 100%); }
+.bg-밤거리::before { left: 0; right: 0; bottom: 38%; height: 26%; background: linear-gradient(90deg, #120d2c 0 10%, transparent 10% 13%, #120d2c 13% 24%, transparent 24% 28%, #120d2c 28% 36%, transparent 36% 60%, #120d2c 60% 76%, transparent 76% 80%, #120d2c 80%); }
+.bg-밤거리::after { left: 20%; top: 12%; width: 6px; height: 6px; background: #fff6b0; box-shadow: 90px 30px 0 #fff, 300px 10px 0 #fff6b0, 480px 40px 0 #fff, 620px 6px 0 #fff6b0, 160px 70px 0 #ffb3d1; }
+.bg-방 { background: linear-gradient(180deg, #ffe6ef 0 66%, #e8a6bf 66% 70%, #c98aa3 70% 100%); }
+.bg-방::before { right: 10%; top: 10%; width: 28%; height: 38%; background: linear-gradient(180deg, #a8d8ff 0 50%, #d6efff 50%); box-shadow: 0 0 0 8px #fff, 0 0 0 12px #e8a6bf; }
+.bg-바다 { background: linear-gradient(180deg, #a6e1ff 0 20%, #8dd4ff 20% 44%, #3fa0e0 44% 56%, #2a86c8 56% 72%, #ffe3b0 72% 100%); }
+.bg-비 { background: linear-gradient(180deg, #6d7ea0 0 40%, #56668a 40% 70%, #3e4a68 70% 100%); }
+.bg-비::after { inset: 0; background: linear-gradient(transparent 0 70%, rgba(220,235,255,.7) 70%) 0 0 / 2px 24px, linear-gradient(transparent 0 70%, rgba(220,235,255,.5) 70%) 11px 9px / 2px 31px; animation: rain 1.6s linear infinite; }
+@keyframes rain { to { background-position: 0 24px, 11px 40px; } }
+.bg-도서관 { background: linear-gradient(#3a2418 0 10px, transparent 10px) 0 0 / 100% 25%, repeating-linear-gradient(90deg, #c96a6a 0 18px, #e8c07a 18px 30px, #6a8ac9 30px 46px, #7ab08a 46px 58px, #b07ab0 58px 74px, #f2e6c8 74px 82px, #4a2e22 82px 88px) 0 10px / 100% 25%; background-color: #4a2e22; }
+.bg-공연장 { background: linear-gradient(180deg, #1a0f24 0 70%, #2c1a3a 70% 100%); }
+.bg-공연장::before { left: 35%; width: 30%; top: 0; bottom: 30%; background: linear-gradient(180deg, rgba(255,240,180,.55), rgba(255,240,180,.05)); clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%); }
+.bg-공연장::after { left: 0; right: 0; bottom: 30%; height: 6px; background: #ff8fbd; }
+.bg-옥상 { background: linear-gradient(180deg, #ffb36b 0 18%, #ff8f8f 18% 36%, #d77aa8 36% 54%, #8a6bb0 54% 72%, #5a4a80 72% 100%); }
+.bg-옥상::before { left: 0; right: 0; bottom: 22%; height: 14%; background: linear-gradient(90deg, #2c1f3c 0 4px, transparent 4px) 0 0 / 40px 100%, linear-gradient(#2c1f3c 0 4px, transparent 4px); }
+.bg-공원 { background: linear-gradient(180deg, #c2ecff 0 40%, #a8e0ff 40% 58%, #7cc46a 58% 64%, #63ab55 64% 100%); }
+.bg-공원::before { left: 12%; bottom: 30%; width: 90px; height: 120px; background: #3f8a46; box-shadow: 520px 10px 0 #3f8a46, 640px -20px 0 #4f9a54; }
+.bg-거리 { background: linear-gradient(180deg, #e8eef6 0 52%, #a6b0c0 52% 56%, #cfd6e0 56% 100%); }
+.bg-거리::before { left: 0; right: 0; top: 16%; height: 36%; background: linear-gradient(90deg, #ffc4dc 0 16%, transparent 16% 19%, #c4d8ff 19% 35%, transparent 35% 39%, #ffe0b0 39% 56%, transparent 56% 60%, #d4f0d0 60% 80%, transparent 80% 84%, #ffc4dc 84%); }
+.bg-버스 { background: linear-gradient(180deg, #3b2a4a 0 16%, #9fd0f0 16% 56%, #3b2a4a 56% 62%, #6a5a7a 62% 100%); }
+.bg-검정 { background: #1b0f1f; }
+
+.sprite { position: absolute; z-index: 2; bottom: 10px; left: 50%; height: 84%; transform: translateX(-50%); display: flex; align-items: flex-end; justify-content: center; transition: opacity .3s steps(4); }
+.sprite.hide { opacity: 0; }
+.sprite img { height: 100%; width: auto; object-fit: contain; image-rendering: auto; filter: drop-shadow(4px 4px 0 rgba(59,34,51,.35)); }
+.portrait { height: 92%; aspect-ratio: 3 / 4.2; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; color: var(--ink); }
+.portrait .sil { height: 72%; width: auto; shape-rendering: crispEdges; filter: drop-shadow(4px 4px 0 rgba(59,34,51,.3)); }
+.portrait b { font-family: var(--px); font-size: clamp(14px, 2vw, 18px); color: #fff; background: var(--deep); padding: 2px 10px; }
+.portrait span { font-family: var(--px); font-size: clamp(12px, 1.4vw, 14px); color: var(--ink); background: var(--cream); padding: 1px 8px; margin-bottom: 30%; }
+.sprite.f-당황 { animation: shake .3s steps(3); } .sprite.f-웃음 { animation: hop .4s steps(4); } .sprite.f-화남 { animation: shake .25s steps(3) 2; } .sprite.f-수줍음 .portrait { background: #ffeaf3; }
+@keyframes shake { 33% { transform: translateX(calc(-50% - 8px)); } 66% { transform: translateX(calc(-50% + 8px)); } }
+@keyframes hop { 50% { transform: translateX(-50%) translateY(-14px); } }
+
+.hud { position: absolute; z-index: 4; left: 22px; top: 18px; right: 22px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+.hud .tt { font-family: var(--px); font-size: clamp(11px, 1.5vw, 14px); color: #fff; background: var(--deep); padding: 4px 10px; box-shadow: 3px 3px 0 rgba(0,0,0,.25); }
+.love { position: relative; display: flex; align-items: center; gap: 8px; background: var(--cream); padding: 5px 10px; box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); }
+.love .lb { font-size: 11px; color: var(--deep); }
+.hearts { display: flex; gap: 1px; font-size: clamp(11px, 1.6vw, 15px); line-height: 1; }
+.hearts i { font-style: normal; color: #f2c6d6; }
+.hearts i.on { color: var(--accent); }
+.love .pop { position: absolute; right: 4px; top: 30px; font-size: 13px; color: var(--deep); animation: popd 1.2s steps(6) forwards; }
+@keyframes popd { to { opacity: 0; transform: translateY(-16px); } }
+
+.box { position: absolute; z-index: 5; left: 4%; right: 4%; bottom: 6%; min-height: 26%; background: var(--cream); padding: clamp(16px, 2.6vw, 26px) clamp(18px, 3vw, 30px); box-shadow: 0 -5px 0 0 var(--ink), 0 5px 0 0 var(--ink), -5px 0 0 0 var(--ink), 5px 0 0 0 var(--ink), 0 0 0 5px var(--pink2) inset, 8px 8px 0 0 rgba(59,34,51,.3); }
+.box .nm { position: absolute; top: -22px; left: 18px; padding: 5px 14px; background: var(--c, var(--deep)); color: #fff; font-family: var(--px); font-size: clamp(12px, 1.6vw, 15px); box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); }
+.box .tx { font-family: var(--px); font-size: clamp(14px, 2vw, 19px); line-height: 1.8; min-height: 3.6em; word-break: keep-all; color: var(--ink); }
+.box.narr .tx { color: #5a3a4e; }
+.box .nx { position: absolute; right: 18px; bottom: 10px; font-size: 16px; color: var(--accent); }
+.box .nx::before { content: "♥"; }
+.choices { position: absolute; z-index: 6; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; background: rgba(59,34,51,.35); padding: 0 8% 12%; }
+.choices button { position: relative; width: min(560px, 100%); padding: 14px 18px 14px 40px; border: 0; background: var(--cream); font-family: var(--px); font-size: clamp(13px, 1.9vw, 17px); color: var(--ink); text-align: left; cursor: pointer; box-shadow: 0 -4px 0 0 var(--ink), 0 4px 0 0 var(--ink), -4px 0 0 0 var(--ink), 4px 0 0 0 var(--ink), 6px 6px 0 0 rgba(59,34,51,.3); animation: chIn .3s steps(3) both; }
+.choices button::before { content: "♡"; position: absolute; left: 14px; color: var(--pink); }
+.choices button:hover, .choices button:focus-visible { background: var(--pink); color: #fff; outline: none; }
+.choices button:hover::before, .choices button:focus-visible::before { content: "♥"; color: #fff; }
+.choices button:nth-child(2) { animation-delay: .08s; } .choices button:nth-child(3) { animation-delay: .16s; }
+@keyframes chIn { from { opacity: 0; transform: translateY(8px); } }
+.title-card, .end-card { position: absolute; z-index: 7; inset: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 6%; color: #fff; background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(43,20,40,.88), rgba(43,20,40,.62)); }
+.title-card { background: #6d3f72; overflow: hidden; }
+.title-card > :not(.tbg) { position: relative; z-index: 1; }
+.title-card .tbg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+.title-card::after { content: ""; position: absolute; inset: 0; z-index: 0; background: radial-gradient(ellipse 46% 38% at 50% 48%, rgba(74,28,72,.55), transparent 70%); pointer-events: none; }
+.title-card .pt { animation: petal linear infinite; }
+@keyframes petal { to { transform: translate(-40px, 200px) rotate(200deg); } }
+.title-card h1 { text-shadow: 3px 3px 0 var(--deep), -2px -2px 0 var(--ink), 2px -2px 0 var(--ink), -2px 2px 0 var(--ink), 0 0 18px rgba(255,143,189,.6); }
+.title-card small { color: #fff; text-shadow: 1px 1px 0 var(--deep); }
+.title-card p { text-shadow: 2px 2px 0 var(--ink), -1px -1px 0 var(--ink); }
+.title-card small, .end-card small { font-family: var(--px); font-size: 12px; letter-spacing: .3em; color: var(--pink2); }
+.title-card h1 { margin: 0; font-family: var(--px); font-size: clamp(26px, 5vw, 50px); color: #fff; text-shadow: 4px 4px 0 var(--deep), -2px -2px 0 var(--ink); text-wrap: balance; }
+.title-card p { margin: 0; max-width: 46ch; font-family: var(--px); font-size: clamp(14px, 1.7vw, 16px); line-height: 1.7; text-shadow: 2px 2px 0 var(--ink); }
+.title-card button, .end-card button { margin-top: 10px; padding: 12px 26px; border: 0; background: var(--cream); color: var(--deep); font-family: var(--px); font-size: 15px; cursor: pointer; box-shadow: 0 -4px 0 0 var(--ink), 0 4px 0 0 var(--ink), -4px 0 0 0 var(--ink), 4px 0 0 0 var(--ink), 6px 6px 0 0 rgba(0,0,0,.3); }
+
+.title-card button:hover, .end-card button:hover { background: var(--pink); color: #fff; animation: none; }
+.end-card h2 { margin: 0; font-family: var(--px); font-size: clamp(22px, 4.2vw, 40px); color: #fff; text-shadow: 3px 3px 0 var(--deep); text-wrap: balance; }
+.end-card p { margin: 0; max-width: 48ch; font-family: var(--px); font-size: clamp(13px, 1.7vw, 16px); line-height: 1.85; }
+.end-card .lv { font-size: 13px; color: var(--pink2); }
+.end-card .row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+.dex { background: var(--cream); padding: 20px 22px 22px; box-shadow: 0 -4px 0 0 var(--ink), 0 4px 0 0 var(--ink), -4px 0 0 0 var(--ink), 4px 0 0 0 var(--ink), 8px 8px 0 0 rgba(59,34,51,.18); }
+.dex-h { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+.dex-h b { font-family: var(--px); font-size: 17px; color: var(--deep); }
+.dex-h small { font-family: var(--px); font-size: 12px; color: var(--muted); }
+.dex-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+.dex-item { padding: 12px 14px; background: #fff; box-shadow: 0 0 0 3px var(--pink2); }
+.dex-item small { font-size: 11px; color: var(--muted); }
+.dex-item b { display: block; font-family: var(--px); font-size: 15px; margin-top: 4px; color: var(--ink); }
+.dex-item.lock { background: #fbeef4; }
+.dex-item.lock b { color: #9a6f86; }
+.dex-item.lock b::before { content: "🔒 "; }
+.dex-item span { display: block; font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.6; }
+.ctl-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; font-size: 12.5px; color: var(--muted); font-family: var(--ui-font); }
+.ctl-row label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.capturing .ctl-row { display: none; }
+@media (max-width: 640px) {
+  .game { aspect-ratio: 3 / 4.2; }
+  .sprite { height: 66%; bottom: 26%; }
+  .box { min-height: 30%; left: 5%; right: 5%; }
+  .choices { padding-bottom: 32%; }
+  .hud { left: 14px; right: 14px; top: 14px; }
+  .love .lb { display: none; }
+}
+
+/* ───────── 미연시: 허브와 같은 흑백 창 UI 위에 게임 화면 하나. 분홍은 게임 안과 하트에만 ───────── */
+body[data-mode="view"] { background-color: #f6d4e3; background-image: radial-gradient(#e8a9c6 1px, transparent 1.2px); background-size: 8px 8px; }
+.poster { position: relative; background: #f7f7f7; border: 1px solid #111; box-shadow: 4px 4px 0 #111; padding: 38px 16px 18px; gap: 16px; }
+.poster::before { content: "미연시 · 연애 시뮬레이션"; position: absolute; left: 0; right: 0; top: 0; height: 24px; border-bottom: 1px solid #111; background: repeating-linear-gradient(180deg, #ececec 0 2px, #a3a3a3 2px 3px); font: 400 12px/24px "Galmuri11", var(--ui-font); text-align: center; color: #111; }
+.poster.capturing { box-shadow: none; padding: 38px 16px 18px; }
+.game, .game.pxbox, .pxbox.game { border-radius: 0; box-shadow: 0 0 0 1px #111; }
+.title-card { border-radius: 0; }
+.box { border-radius: 0; background: #fffafc; box-shadow: 0 0 0 2px #3b2233, 4px 4px 0 2px rgba(59,34,51,.35); }
+.box .nm { border-radius: 0; background: var(--c, var(--deep)); border: 0; box-shadow: 0 0 0 2px #3b2233; }
+.choices button { border-radius: 0; background: #fffafc; box-shadow: 0 0 0 2px #3b2233, 4px 4px 0 2px rgba(59,34,51,.35); }
+.choices button:hover, .choices button:focus-visible { background: var(--pink); color: #fff; box-shadow: 0 0 0 2px #3b2233, 4px 4px 0 2px rgba(59,34,51,.35); }
+.love { border-radius: 0; background: #fffafc; box-shadow: 0 0 0 2px #3b2233; }
+.dex { position: relative; border-radius: 0; background: #fff; box-shadow: none; border: 1px solid #111; padding-top: 0; }
+.dex-h { margin: 0 -22px 14px; padding: 7px 14px; border-bottom: 1px solid #111; background: #ececec; }
+.dex-h b { color: #111; } .dex-h b::before { content: "♥ "; color: var(--accent); }
+.dex-item { border-radius: 0; background: #fff; box-shadow: none; border: 1px solid #bbb; }
+.dex-item.lock { background: #f4f4f4; }
+.ctl-row { font-family: "Galmuri9", var(--ui-font); color: #555; }
+
+/* ── 툴 색 (분홍) ── */
+.poster { background: #fff6fa; border-color: #3b2233; box-shadow: 4px 4px 0 #3b2233; }
+.poster::before { background: repeating-linear-gradient(180deg, #ffe2ef 0 2px, #eaa3c3 2px 3px); color: #3b2233; border-color: #3b2233; }
+body[data-mode] header.bar { background: linear-gradient(#fff3f8, #f8cfe1); border-bottom-color: #3b2233; }
+body[data-mode] .brand, body[data-mode] .bar-title, body[data-mode] .tabs button { color: #3b2233; }
+body[data-mode] .brand::before { background: #e0508f; box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px #3b2233; }
+body[data-mode] .tabs button[aria-selected="true"] { background: #e0508f; color: #fff; }
+body[data-mode] .actions { background: #f8cfe1; border-color: #3b2233; box-shadow: 3px 3px 0 #3b2233; }
+body[data-mode] .actions .btn { background: #fff3f8; border-color: #3b2233; color: #3b2233; box-shadow: inset -1px -1px 0 #eaa3c3, inset 1px 1px 0 #fff; }
+body[data-mode] .actions .btn.primary { background: #e0508f; color: #fff; box-shadow: inset -1px -1px 0 #a52a62, inset 1px 1px 0 rgba(255,255,255,.4); }
+body[data-mode] .shared-note { background: #fff6fa; border-color: #3b2233; color: #3b2233; box-shadow: 2px 2px 0 #3b2233; }
+
+.dex { border-color: #3b2233; background: #fff; }
+.dex-h { background: #ffe2ef; border-color: #3b2233; }
+.dex-item { border-color: #f3bcd4; }
+body[data-mode] .stage .btn:not(.actions .btn) { background: #fff3f8; border-color: #3b2233; color: #3b2233; }
+
+/* 바탕은 단색·그라데이션만 */
+body[data-mode="view"] { background: linear-gradient(180deg, #fde6f0 0%, #f2c9dc 100%) fixed; }
+
+/* 만들기 화면 툴 색 */
+body { --e-main:#e0508f;--e-dark:#a52a62;--e-ink:#3b2233;--e-win:#fff6fa;--e-s1:#ffe2ef;--e-s2:#eaa3c3;--e-bg1:#fde6f0;--e-bg2:#f2c9dc; }
+</style>
+</head>
+<body data-mode="view" data-noframe>
+<header class="bar">
+  <a class="brand" href="../">귀환의 블로그</a>
+  <span class="bar-title">미연시</span>
+  <span class="bar-spacer"></span>
+  <div class="tabs" role="tablist"><button data-mode="view" role="tab">보기</button><button data-mode="edit" role="tab">만들기</button></div>
+</header>
+<main class="stage only-view">
+  <p class="shared-note" id="shared-note" hidden>공유받은 미연시예요. 만들기에서 고치면 내 브라우저에만 저장돼요.</p>
+  <article class="poster" id="poster"></article>
+  <nav class="actions">
+    <button class="btn primary" id="btn-png">이미지 저장</button>
+    <button class="btn" id="btn-link">링크 복사</button>
+    <button class="btn" id="btn-replay">처음부터</button>
+  </nav>
+</main>
+<main class="editor only-edit" id="editor"></main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/modern-screenshot@4.6.8/dist/index.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(() => {
+const { esc, br, clamp, num, $, store } = Core;
+const NSC = 8, NEND = 4;
+const BGS = ['교실', '카페', '밤거리', '방', '바다', '비', '도서관', '공연장', '옥상', '공원', '거리', '버스', '검정'];
+const FACES = ['기본', '웃음', '당황', '화남', '슬픔', '수줍음'];
+const emptyScene = (i) => ({ id: 's' + (i + 1), bg: '카페', script: '', choices: '', next: '' });
+const emptyEnd = () => ({ title: '', min: 0, text: '' });
+const blank = () => ({ v: 1, title: '', sub: '', a: { name: 'NPC', color: '#c2405a' }, b: { name: 'PC' }, scenes: Array.from({ length: NSC }, (_, i) => emptyScene(i)), endings: Array.from({ length: NEND }, emptyEnd) });
+const sample = () => ({
+  v: 1, title: '연체 사흘째', sub: '반납하러 갔는데, 사서가 오늘따라 말을 건다.',
+  a: { name: 'NPC', color: '#c2405a' }, b: { name: 'PC' },
+  scenes: [
+    { id: 's1', bg: '도서관', script: 'n: 금요일 오후. 연체 사흘째 된 악보집을 들고 반납대 앞에 섰다.\na(기본): 사흘 늦으셨어요\na(기본): 연체료 300원이에요\nb: 오늘은 진짜 반납하러 온 거예요\na(수줍음): 오늘은요?', choices: '> 사실 NPC 씨 보러 온 거예요 | s2 | +12\n> 공연 연습하느라 바빴어요 | s3 | +3\n> 연체료 대신 공연 티켓 드리면 안 돼요? | s4 | +8', next: '' },
+    { id: 's2', bg: '도서관', script: 'a(당황): ……\na(당황): 여기 도서관이에요\nb: 알아요\na(수줍음): 연체료 그냥 안 받을게요\nn: NPC가 반납 도장을 두 번 찍었다.', choices: '', next: 's5' },
+    { id: 's3', bg: '도서관', script: 'a(기본): 그렇겠죠\na(기본): 다음엔 기한 지켜 주세요\nn: NPC는 영수증을 건네며 눈을 피했다.', choices: '> 다음 주 공연 오실래요? | s4 | +10\n> 네 다음엔 꼭 지킬게요 | s5 | -5', next: '' },
+    { id: 's4', bg: '공연장', script: 'n: 공연 날. 맨 앞줄 자리가 하나 비어 있었다.\na(수줍음): 티켓에 자리가 적혀 있길래요\nb: 맨 앞줄은 제가 일부러 비워 둔 거예요\na(웃음): 그럼 앙코르곡도 일부러예요?', choices: '> 네. NPC 씨 들으라고요 | s6 | +15\n> 그건 비밀이에요 | s5 | +5', next: '' },
+    { id: 's5', bg: '비', script: 'n: 도서관 앞, 비가 쏟아지기 시작했다.\na(기본): 우산 없으세요?\nb: 원래 이렇게 비 맞으면서 다녀요\na(화남): 감기 걸려요', choices: '> 우산 같이 써도 돼요? | s6 | +10\n> 뛰어가면 돼요 | s7 | -8', next: '' },
+    { id: 's6', bg: '밤거리', script: 'n: 한 우산 아래, 어깨가 자꾸 닿는다.\na(수줍음): 연체료 그거\na(수줍음): 사실 한 번도 안 받으려고 했어요\nb: 알고 있었어요', choices: '', next: '' },
+    { id: 's7', bg: '비', script: 'n: 빗속을 뛰어가다 뒤를 돌아봤다. NPC는 아직 문 앞에 서 있었다.\na(슬픔): ……\nn: 다음 주에도 반납하러 와야겠다.', choices: '', next: '' },
+    emptyScene(7),
+  ],
+  endings: [
+    { title: '연체 기록 영구 보존', min: 80, text: 'NPC는 그날 이후 PC의 대출 기록만은 지우지 않았다. 반납일은 언제나 다음 약속이 되었다.' },
+    { title: '한 우산 아래', min: 60, text: '우산이 하나뿐이라는 핑계는 다음 비 오는 날에도 쓸 수 있다.' },
+    { title: '다음 주 반납일', min: 40, text: '아직은 반납대 앞에서만 만나는 사이. 그래도 연체료는 조금씩 깎이고 있다.' },
+    { title: '기한 엄수', min: 0, text: '악보집은 제때 반납되었고, NPC는 더 이상 공연 날짜를 묻지 않았다.' },
+  ],
+});
+function normalize(s) {
+  const b = blank(); s = s && typeof s === 'object' ? s : {};
+  const o = { ...b, ...s, a: { ...b.a, ...(s.a || {}) }, b: { ...b.b, ...(s.b || {}) } };
+  o.scenes = Array.from({ length: NSC }, (_, i) => { const x = { ...emptyScene(i), ...((s.scenes || [])[i] || {}) }; if (!BGS.includes(x.bg)) x.bg = '카페'; return x; });
+  o.endings = Array.from({ length: NEND }, (_, i) => { const e = { ...emptyEnd(), ...((s.endings || [])[i] || {}) }; e.min = clamp(Math.round(num(e.min, 0)), 0, 100); return e; });
+  return o;
+}
+/* AI JSON 의 장면(lines 배열)을 대본 글로 바꿔 넣는다 */
+function toScript(lines) {
+  return (Array.isArray(lines) ? lines : []).map(l => {
+    if (!l || typeof l !== 'object') return '';
+    const who = l.who === 'b' ? 'b' : l.who === 'a' ? 'a' : 'n';
+    const f = who === 'a' && l.face && l.face !== '기본' ? `(${l.face})` : who === 'a' ? '(기본)' : '';
+    return `${who}${f}: ${String(l.text || '').replace(/\n/g, ' ')}`;
+  }).filter(Boolean).join('\n');
+}
+function toChoices(cs) { return (Array.isArray(cs) ? cs : []).map(c => `> ${c.text || ''} | ${c.to || ''} | ${Number(c.love) >= 0 ? '+' : ''}${Number(c.love) || 0}`).join('\n'); }
+function apply(S, o) {
+  const got = [];
+  for (const k of ['a', 'b']) if (o[k] && typeof o[k] === 'object') { Object.entries(o[k]).forEach(([kk, v]) => { if (v) S[k][kk] = v; }); if (!got.includes('인물')) got.push('인물'); }
+  if (Array.isArray(o.scenes)) {
+    o.scenes.forEach(sc => {
+      if (!sc || typeof sc !== 'object') return;
+      const conv = { id: String(sc.id || ''), bg: BGS.includes(sc.bg) ? sc.bg : '카페', script: typeof sc.script === 'string' ? sc.script : toScript(sc.lines), choices: typeof sc.choices === 'string' ? sc.choices : toChoices(sc.choices), next: String(sc.next || '') };
+      const idx = S.scenes.findIndex(x => x.id === conv.id);
+      const at = idx >= 0 ? idx : S.scenes.findIndex(x => !x.script);
+      if (at >= 0) S.scenes[at] = conv;
+    });
+    got.push('장면');
+  }
+  if (Array.isArray(o.endings)) { S.endings = Array.from({ length: NEND }, emptyEnd); o.endings.slice(0, NEND).forEach((e, i) => { if (e && typeof e === 'object') S.endings[i] = { ...emptyEnd(), ...e }; }); got.push('엔딩'); }
+  ['title', 'sub'].forEach(k => { if (o[k]) S[k] = o[k]; });
+  return got;
+}
+
+/* ── OOC (로판AI 1,500자 기준, 2개 · 대본이 길어서 장면을 반씩) ── */
+function prompts() {
+  const fmt = `▪ scenes: id "s1" 형식, bg ${BGS.join(' ')} 중 하나, lines: who a(NPC) b(PC, 꼭 필요할 때만. PC의 말은 주로 선택지로) n(내레이션), face(a만) ${FACES.join(' ')}, text 40자(입말 그대로, 지문 없이) / choices 0~3개: text 25자, to 이동할 장면 id, love 호감도 변화 -15~+15 / 선택지가 없으면 next에 다음 장면 id, next도 없으면 엔딩`;
+  const p1 = `*[OOC: 롤플레잉 잠시 중단. 「미연시 · 앞부분」 기록.
+NPC를 공략 대상, PC를 플레이어로 하는 짧은 비주얼노벨 대본을 쓴다. 플레이어가 고르는 선택지마다 NPC의 호감도(50에서 시작)가 오르내려 엔딩이 갈린다.
+▪ 근거: 지금까지의 설정·성격·말투·관계와 RP에서 실제 있었던 일만. 없는 사건·가족·과거는 만들지 않는다. 말보다 행동을 본다.
+▪ 이번엔 장면 s1~s4, 장면마다 lines 4~7개. 선택지는 NPC의 성격상 좋아할 것과 싫어할 것이 분명히 갈리고, 실제로 다른 장면으로 이어진다(s5~s8은 다음에).
+${fmt}
+▪ NPC의 말투·호칭·버릇은 RP 그대로. 선택지는 성향이 서로 다르게(다가가기·장난·거리 두기 등), 호감도가 오르는 쪽은 NPC가 실제로 좋아하는 것을 따른다.
+▪ title 게임 제목 15자, sub 부제 30자. 첫 장면은 RP 속 지금 관계 단계에서 시작한다.
+▪ RP 밖 기록: PC의 말·행동·속마음은 RP에 실제 나온 것만 쓰고 지어내지 않는다. 여기서 만든 내용은 이후 RP의 사실로 삼지 않는다.
+▪ 품질: 작위적인 전개·뻔한 클리셰 없이, 이 두 사람만의 물건·장소·습관·말버릇 같은 구체적인 디테일로. 답이 길어 끊길 것 같으면 개수를 줄여서라도 JSON을 끝까지 닫는다.
+▪ 출력: 인사·설명 없이 JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만 쓰고 줄바꿈하지 않는다. 키 이름은 그대로, a=NPC, b=PC. 아래 값은 형식 예시일 뿐 그대로 쓰지 않는다.
+{"a":{"name":""},"b":{"name":""},"title":"","sub":"","scenes":[{"id":"s1","bg":"카페","lines":[{"who":"n","text":""},{"who":"a","face":"웃음","text":""}],"choices":[{"text":"","to":"s2","love":10}],"next":""}]}]*`;
+  const p2 = `*[OOC: 롤플레잉 잠시 중단. 「미연시 · 뒷부분」 기록.
+앞에서 쓴 대본에 이어서, 앞 장면들이 가리키는 s5~s8을 쓴다. 장면마다 lines 3~7개. 마지막 장면들은 선택지와 next를 비워 엔딩으로 이어지게 한다. 그다음 엔딩 4개: 호감도 높은 순, min은 그 엔딩이 나오는 최소 호감도(예 80 60 40 0), title 15자, text 2문장 90자.
+${fmt}
+▪ 엔딩 넷은 같은 두 사람의 다른 결말: 가장 높은 건 RP가 향하는 방향, 가장 낮은 건 지금의 어긋남이 굳어진 결말. 앞부분의 장소·말버릇을 다시 불러온다.
+▪ RP 밖 기록: PC의 말·행동·속마음은 RP에 실제 나온 것만 쓰고 지어내지 않는다. 여기서 만든 내용은 이후 RP의 사실로 삼지 않는다.
+▪ 품질: 작위적인 전개·뻔한 클리셰 없이, 이 두 사람만의 물건·장소·습관·말버릇 같은 구체적인 디테일로. 답이 길어 끊길 것 같으면 개수를 줄여서라도 JSON을 끝까지 닫는다.
+▪ 출력: 인사·설명 없이 JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만 쓰고 줄바꿈하지 않는다. 키 이름은 그대로, a=NPC, b=PC. 아래 값은 형식 예시일 뿐 그대로 쓰지 않는다.
+{"scenes":[{"id":"s5","bg":"비","lines":[{"who":"a","face":"기본","text":""}],"choices":[],"next":""}],"endings":[{"title":"","min":80,"text":""},{"title":"","min":60,"text":""},{"title":"","min":40,"text":""},{"title":"","min":0,"text":""}]}]*`;
+  return [{ label: '대본 앞부분', sub: '장면 s1~s4 · 선택지', text: p1 }, { label: '대본 뒷부분 · 엔딩', sub: '장면 s5~s8 · 엔딩 4개', text: p2 }];
+}
+function progress(S) { return [{ label: `장면 ${S.scenes.filter(x => x.script.trim()).length}개`, ok: S.scenes.some(x => x.script.trim()) }, { label: `엔딩 ${S.endings.filter(e => e.title).length}개`, ok: S.endings.some(e => e.title) }]; }
+function schema(S) {
+  const sc = [];
+  S.scenes.forEach((x, i) => {
+    sc.push({ sub: `장면 ${i + 1}` });
+    sc.push({ k: `scenes.${i}.id`, label: '장면 id', ph: 's1' });
+    sc.push({ k: `scenes.${i}.bg`, label: '배경', type: 'select', opts: BGS.map(b => [b, b]) });
+    sc.push({ k: `scenes.${i}.script`, label: '대본 (한 줄에 하나 · a(표정): 대사 / b: 대사 / n: 내레이션)', type: 'textarea', full: true, rows: 6 });
+    sc.push({ k: `scenes.${i}.choices`, label: '선택지 (한 줄에 하나 · > 선택지 | 이동할 장면 id | +10)', type: 'textarea', full: true, rows: 3 });
+    sc.push({ k: `scenes.${i}.next`, label: '선택지가 없을 때 다음 장면 id (비우면 엔딩)' });
+  });
+  const en = [];
+  S.endings.forEach((e, i) => { en.push({ sub: `엔딩 ${i + 1}` }); en.push({ k: `endings.${i}.title`, label: '제목' }); en.push({ k: `endings.${i}.min`, label: '최소 호감도', type: 'range' }); en.push({ k: `endings.${i}.text`, label: '내용', type: 'textarea', full: true }); });
+  return [
+    { title: '작품', en: 'TITLE', desc: `표정: ${FACES.join(' · ')}. NPC 스탠딩 그림은 보기 화면 아래에서 올릴 수 있어요.`, fields: [{ k: 'title', label: '제목', full: true }, { k: 'sub', label: '소개', full: true }, { k: 'a.name', label: '공략 대상 (NPC)' }, { k: 'b.name', label: '플레이어 (PC)' }, { k: 'a.color', label: 'NPC 색', type: 'color' }] },
+    { title: '엔딩', en: 'ENDINGS', desc: '플레이가 끝났을 때 호감도가 이 값 이상인 엔딩 중 가장 높은 것이 나와요.', fields: en },
+    { title: '장면', en: 'SCENES', desc: '첫 장면은 장면 1이에요. 선택지는 이동할 장면 id로 이어져요.', fields: sc },
+  ];
+}
+
+/* ── 플레이어 ── */
+const parseScript = t => String(t || '').split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+  const m = /^([abn])\s*(?:\(([^)]*)\))?\s*:\s*(.*)$/i.exec(l);
+  return m ? { who: m[1].toLowerCase(), face: m[2] || '기본', text: m[3] } : { who: 'n', face: '', text: l };
+});
+const parseChoices = t => String(t || '').split('\n').map(l => l.trim().replace(/^>\s*/, '')).filter(Boolean).map(l => { const [text, to = '', love = '0'] = l.split('|').map(x => x.trim()); return { text, to, love: num(love, 0) }; }).filter(c => c.text);
+const IMG_KEY = '2inbun:novel:sprite';
+const KAO = { '기본': '( ・ω・)', '웃음': '(≧▽≦)', '당황': '(°ロ°;)', '화남': '(｀へ´)', '슬픔': '(；ω；)', '수줍음': '(〃▽〃)' };
+function titleBG() {
+  const sky = ['#a99cf2', '#b9a1ef', '#caa6ea', '#dcabe3', '#ecb1da', '#f8b8d0', '#ffc1c6', '#ffcbbc', '#ffd6b3', '#ffe0ae'];
+  let r = sky.map((c, i) => `<rect x="0" y="${i * 16}" width="320" height="17" fill="${c}"/>`).join('');
+  /* 줄무늬 해 */
+  for (let y = -34; y <= 34; y += 2) { const w = Math.round(Math.sqrt(34 * 34 - y * y)); if (y > 6 && (y / 2) % 3 === 0) continue; r += `<rect x="${160 - w}" y="${128 + y}" width="${w * 2}" height="2" fill="#fff4c7"/>`; }
+  /* 구름 */
+  const cloud = (x, y, s) => [[0, 4, 10 * s, 4], [3 * s, 0, 5 * s, 4], [6 * s, 2, 6 * s, 4], [2 * s, 6, 12 * s, 3]].map(([a, b, w, h]) => `<rect x="${x + a}" y="${y + b}" width="${w}" height="${h}" fill="#fff" opacity=".9"/>`).join('');
+  r += cloud(30, 26, 3) + cloud(230, 40, 2.6) + cloud(120, 14, 2) + cloud(262, 12, 1.6);
+  /* 반짝이 */
+  [[56, 18], [210, 22], [290, 64], [98, 52], [180, 8]].forEach(([x, y]) => r += `<rect x="${x}" y="${y - 2}" width="1" height="5" fill="#fff"/><rect x="${x - 2}" y="${y}" width="5" height="1" fill="#fff"/>`);
+  /* 도서관과 동네 지붕선 */
+  r += '<rect x="0" y="158" width="320" height="22" fill="#6d3f72"/>';
+  [[0, 144, 40, 36], [36, 150, 30, 30], [64, 138, 50, 42], [204, 142, 40, 38], [242, 150, 30, 30], [270, 136, 50, 44]].forEach(([x, y, w, h]) => {
+    r += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#5a3262"/>`;
+    for (let wy = y + 6; wy < 172; wy += 9) for (let wx = x + 5; wx < x + w - 5; wx += 8) if ((wx * 7 + wy * 3) % 7 < 3) r += `<rect x="${wx}" y="${wy}" width="4" height="4" fill="${(wx + wy) % 3 ? '#ffe49c' : '#ffc5d9'}"/>`; });
+  /* 도서관: 박공지붕 + 시계 */
+  r += '<path d="M128 146h64l-32-18z" fill="#4a2752"/><rect x="134" y="146" width="52" height="34" fill="#4a2752"/><rect x="156" y="134" width="8" height="8" fill="#fff4c7"/><rect x="159" y="136" width="1" height="3" fill="#4a2752"/><rect x="159" y="138" width="3" height="1" fill="#4a2752"/><rect x="154" y="162" width="12" height="18" fill="#ffe49c"/><rect x="140" y="152" width="6" height="6" fill="#ffe49c"/><rect x="174" y="152" width="6" height="6" fill="#ffe49c"/>';
+  /* 앞쪽 벚꽃 가지: 계단식으로 내려오는 가지 + 잔가지, 꽃은 둥근 다섯 칸 송이(바깥 분홍 · 안쪽 연분홍 · 가운데 진분홍) */
+  r += '<g transform="scale(1.7)">';
+  [[0, 5, 16, 3], [14, 7, 12, 3], [24, 9, 10, 2], [32, 11, 9, 2], [39, 13, 7, 2], [45, 15, 5, 2], [12, 2, 2, 5], [11, 1, 2, 2], [30, 6, 2, 4], [29, 4, 2, 3], [40, 15, 2, 4], [41, 18, 2, 2]].forEach(([x, y, w, h]) => r += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#4a2338"/>`);
+  const flower = (x, y, c1, c2) => `<rect x="${x + 1}" y="${y}" width="3" height="5" fill="${c1}"/><rect x="${x}" y="${y + 1}" width="5" height="3" fill="${c1}"/><rect x="${x + 1}" y="${y + 1}" width="3" height="3" fill="${c2}"/><rect x="${x + 2}" y="${y + 2}" width="1" height="1" fill="#d6457f"/>`;
+  [[4, 1], [9, 5], [17, 3], [21, 8], [26, 4], [33, 7], [36, 12], [43, 10], [47, 16], [51, 13], [7, 8], [28, 12]].forEach(([x, y], k) => r += flower(x, y, k % 3 === 0 ? '#ff8fbd' : '#ffb3d1', k % 3 === 0 ? '#ffd6e7' : '#fff0f6')); r += '</g>';
+  /* 떨어지는 꽃잎 (느리게) */
+  const petals = Array.from({ length: 10 }, (_, i) => `<rect class="pt" x="${20 + i * 31}" y="-6" width="3" height="2" fill="#ffc4dc" style="animation-delay:-${(i * 1.7).toFixed(1)}s;animation-duration:${9 + (i % 4) * 2}s"/>`).join('');
+  return `<svg class="tbg" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" shape-rendering="crispEdges" aria-hidden="true">${r}${petals}</svg>`;
+}
+const dexKey = S => '2inbun:novel:dex:' + (S.title || '');
+let G = { S: null, sc: null, li: 0, love: 50, typing: null, full: '', done: false, ended: false };
+
+function posterHTML(S) {
+  const got = store.get(dexKey(S)) || [];
+  const ends = S.endings.filter(e => e.title).sort((x, y) => y.min - x.min);
+  return `
+  <div class="game" id="game" style="--c:${esc(S.a.color)}">
+    <div class="scene-bg" id="bgl"></div><div class="scene-bg"><span class="grid"></span></div>
+    <div class="sprite hide" id="sprite"></div>
+    <div class="hud"><span class="tt">${esc(S.title)}</span><span class="love"><span class="lb">${esc(S.a.name)} 호감도</span><span class="hearts" id="hearts"></span><span class="d" id="lvn" hidden>50</span></span></div>
+    <div class="box" id="box" hidden><span class="nm" id="nm"></span><div class="tx" id="tx"></div><span class="nx" id="nx" hidden></span></div>
+    <div id="layer"></div>
+  </div>
+  <div class="ctl-row"><label><input type="file" id="spr-file" accept="image/*" hidden><span class="btn small">NPC 스탠딩 그림 올리기</span></label><button class="btn small ghost" id="spr-clear">그림 지우기</button><span>그림은 이 브라우저에만 저장되고 공유 링크에는 들어가지 않아요. 배경이 없는 PNG가 잘 어울려요.</span></div>
+  <section class="dex"><div class="dex-h"><b>엔딩 도감</b><small>${got.filter(t => ends.some(e => e.title === t)).length} / ${ends.length}</small></div>
+    <div class="dex-list">${ends.map(e => { const has = got.includes(e.title); return `<div class="dex-item ${has ? '' : 'lock'}"><small>호감도 ${e.min} 이상</small><b>${has ? esc(e.title) : '???'}</b>${has ? `<span>${esc(e.text)}</span>` : ''}</div>`; }).join('')}</div></section>`;
+}
+function setBg(bg) { const l = $('#bgl'); if (!l) return; l.className = 'scene-bg fade'; setTimeout(() => { l.className = 'scene-bg bg-' + bg; }, 200); }
+function setLove(v, delta) {
+  G.love = clamp(v, 0, 100); $('#lvn').textContent = G.love;
+  $('#hearts').innerHTML = Array.from({ length: 10 }, (_, i) => `<i class="${i < Math.round(G.love / 10) ? 'on' : ''}">♥</i>`).join('');
+  if (delta) { const p = document.createElement('span'); p.className = 'pop'; p.textContent = (delta > 0 ? '+' : '') + delta;  $('.love').append(p); setTimeout(() => p.remove(), 1300); }
+}
+function showSprite(face) {
+  const sp = $('#sprite'); const S = G.S; const img = store.get(IMG_KEY);
+  sp.className = 'sprite f-' + face;
+  sp.innerHTML = img ? `<img src="${img}" alt="${esc(S.a.name)}">` : `<div class="portrait"><svg class="sil" viewBox="0 0 16 20" aria-hidden="true"><path fill="var(--deep)" d="M6 2h4v1h1v1h1v4h-1v1h-1v1h-4v-1h-1v-1h-1v-4h1v-1h1zM7 10h2v2h-2zM3 12h10v1h1v1h1v6h-14v-6h1v-1h1z"/><path fill="#fff" opacity=".5" d="M6 3h2v1h-1v2h-1z"/></svg><b>${esc(S.a.name)}</b><span>${esc(face)}</span></div>`;
+}
+function typeLine(l) {
+  const S = G.S; const box = $('#box'); box.hidden = false;
+  box.classList.toggle('narr', l.who === 'n');
+  const nm = $('#nm'); nm.hidden = l.who === 'n';
+  nm.textContent = l.who === 'a' ? S.a.name : S.b.name;
+  box.style.setProperty('--c', l.who === 'a' ? S.a.color : '#3d3a40');
+  if (l.who === 'a') showSprite(l.face || '기본');
+  clearInterval(G.typing); G.full = l.text; G.done = false; $('#nx').hidden = true;
+  const tx = $('#tx'); const chars = [...l.text]; let i = 0; tx.textContent = '';
+  G.typing = setInterval(() => { i++; tx.textContent = chars.slice(0, i).join(''); if (i >= chars.length) { clearInterval(G.typing); G.done = true; $('#nx').hidden = false; } }, 34);
+}
+function goScene(id) {
+  const S = G.S; const sc = S.scenes.find(x => x.id === id && x.script.trim());
+  $('#layer').innerHTML = '';
+  if (!sc) return ending();
+  G.sc = { ...sc, lines: parseScript(sc.script), ch: parseChoices(sc.choices) }; G.li = 0;
+  setBg(sc.bg);
+  if (!G.sc.lines.length) return afterLines();
+  setTimeout(() => typeLine(G.sc.lines[0]), 250);
+}
+function afterLines() {
+  const sc = G.sc;
+  if (sc.ch.length) {
+    const L = $('#layer'); L.innerHTML = `<div class="choices">${sc.ch.map((c, i) => `<button data-c="${i}">${esc(c.text)}</button>`).join('')}</div>`;
+    L.querySelectorAll('[data-c]').forEach(b => b.onclick = e => { e.stopPropagation(); const c = sc.ch[Number(b.dataset.c)]; setLove(G.love + c.love, c.love); goScene(c.to); });
+  } else if (sc.next) goScene(sc.next);
+  else ending();
+}
+function advance() {
+  if (G.ended || !G.sc || $('#layer').children.length) return;
+  if (!G.done) { clearInterval(G.typing); $('#tx').textContent = G.full; G.done = true; $('#nx').hidden = false; return; }
+  G.li++;
+  if (G.li < G.sc.lines.length) typeLine(G.sc.lines[G.li]); else { $('#box').hidden = true; afterLines(); }
+}
+function ending() {
+  const S = G.S; G.ended = true; clearInterval(G.typing); $('#box').hidden = true;
+  const ends = S.endings.filter(e => e.title).sort((x, y) => y.min - x.min);
+  const e = ends.find(x => G.love >= x.min) || ends[ends.length - 1] || { title: 'END', text: '' };
+  const got = store.get(dexKey(S)) || []; if (e.title && !got.includes(e.title)) store.set(dexKey(S), [...got, e.title]);
+  setBg('검정'); $('#sprite').classList.add('hide');
+  $('#layer').innerHTML = `<div class="end-card"><small>♥ ENDING ${ends.indexOf(e) + 1} ♥</small><h2>${br(e.title)}</h2>${e.text ? `<p>${br(e.text)}</p>` : ''}<span class="lv">최종 호감도 ${"♥".repeat(Math.round(G.love / 10))}${"♡".repeat(10 - Math.round(G.love / 10))} ${G.love}</span><div class="row"><button class="main" id="again">다시 하기</button></div></div>`;
+  $('#again').onclick = ev => { ev.stopPropagation(); render(S, { animate: false }); start(); };
+  /* 도감 새로 그리기 */
+  const dex = document.querySelector('.dex'); if (dex) { const tmp = document.createElement('div'); tmp.innerHTML = posterHTML(S); dex.replaceWith(tmp.querySelector('.dex')); }
+}
+function start() { G.ended = false; setLove(50); const first = G.S.scenes.find(x => x.script.trim()); $('#sprite').classList.remove('hide'); goScene(first?.id); }
+function render(S, { animate }) {
+  clearInterval(G.typing); G = { S, sc: null, li: 0, love: 50, typing: null, full: '', done: false, ended: false };
+  $('#poster').innerHTML = posterHTML(S);
+  const first = S.scenes.find(x => x.script.trim());
+  setBg(first?.bg || '카페'); setTimeout(() => $('#bgl') && ($('#bgl').className = 'scene-bg bg-' + (first?.bg || '카페')), 250);
+  showSprite('기본'); $('#sprite').classList.add('hide'); setLove(50);
+  $('#layer').innerHTML = `<div class="title-card">${titleBG()}<small>♥ LOVE SIMULATION ♥</small><h1>${br(S.title || '제목 없음')}</h1>${S.sub ? `<p>${br(S.sub)}</p>` : ''}<p>PLAYER ${esc(S.b.name)} · TARGET ${esc(S.a.name)}</p><button class="main" id="go">▶ PRESS START</button></div>`;
+  $('#go').onclick = e => { e.stopPropagation(); start(); };
+  $('#game').onclick = advance;
+  $('#spr-file').onchange = async ev => { const f = ev.target.files[0]; if (!f) return; const url = await shrink(f); store.set(IMG_KEY, url); showSprite('기본'); Core.toast('스탠딩 그림을 넣었어요'); };
+  $('#spr-clear').onclick = () => { try { localStorage.removeItem(IMG_KEY); } catch (e) {} showSprite('기본'); };
+}
+function shrink(file) { return new Promise((res, rej) => { const img = new Image(); img.onload = () => { const k = Math.min(1, 700 / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = img.width * k; c.height = img.height * k; c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); res(c.toDataURL('image/png')); }; img.onerror = rej; img.src = URL.createObjectURL(file); }); }
+document.addEventListener('keydown', e => { if (document.body.dataset.mode === 'view' && (e.key === ' ' || e.key === 'Enter') && !e.target.closest('input,textarea,button')) { e.preventDefault(); advance(); } });
+
+Core.app({
+  key: '2inbun:novel', what: '미연시 대본', sample, blank, normalize, schema, prompts, apply, progress, render,
+  fileName: S => `미연시_${S.title || S.a.name}`,
+});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>각인 신고 결재 · A440</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%20shape-rendering%3D%27crispEdges%27%3E%3Crect%20width%3D%2716%27%20height%3D%2716%27%20rx%3D%273%27%20fill%3D%27%230b1018%27%2F%3E%3Cpath%20d%3D%27M1%208h2V5h2v6h2V3h2v10h2V5h2v3h2%27%20fill%3D%27none%27%20stroke%3D%27%23e5484d%27%20stroke-width%3D%271.2%27%2F%3E%3C%2Fsvg%3E">
+<meta name="description" content="A440 세계관: 센티넬과 가이드의 각인 신고서가 접수·매칭 심사·본부 결재를 거쳐 승인되는 페어 OOC 툴">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700;900&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="stylesheet" href="../../assets/base.css">
+<link rel="stylesheet" href="../a440.css">
+<style>
+/* 콘셉트: A440 서식 제7호 각인 신고서. 단말기 남색 위에 놓인 밝은 공문 한 장.
+   우리 공문서 관례(오른쪽 위 결재란, 표로 된 신고인란, "위와 같이 신고합니다", 날짜, 귀중)에
+   세계관 표지(남색 머리띠, 430–450 눈금, 공명 파형)를 얹는다. 도장은 붉은 인주. */
+.poster { width: min(900px, 100%); }
+.sheet { position: relative; background: #f4f2ec; color: #1b2230; box-shadow: 0 30px 70px -24px rgba(0,0,0,.7); }
+.sheet .lh { display: flex; align-items: center; gap: 18px; background: #0b1018; color: #e4e9f0; padding: 16px 30px 14px; border-bottom: 3px solid var(--accent); }
+.lh .mk { font-family: var(--serif); font-weight: 900; font-size: 30px; line-height: 1; color: var(--accent); letter-spacing: .02em; }
+.lh .nm { font-size: 13px; font-weight: 700; line-height: 1.4; }
+.lh .nm small { display: block; font-weight: 500; font-size: 11.5px; color: #98a4b4; }
+.lh .rl { margin-left: auto; width: 190px; position: relative; height: 30px; }
+.lh .rl::before { content: ""; position: absolute; left: 0; right: 0; top: 4px; height: 10px; background: repeating-linear-gradient(90deg, rgba(255,255,255,.35) 0 1px, transparent 1px 10%); }
+.lh .rl::after { content: ""; position: absolute; left: 50%; top: 0; width: 2px; height: 18px; background: var(--accent); }
+.lh .rl span { position: absolute; top: 17px; font-size: 10.5px; font-weight: 800; color: #98a4b4; transform: translateX(-50%); white-space: nowrap; }
+.lh .rl span:first-child { transform: none; } .lh .rl span:last-child { transform: translateX(-100%); }
+.lh .rl span.c { color: var(--accent); }
+
+.body { padding: 26px 30px 30px; }
+.top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: start; }
+.top .form-no { font-size: 12px; font-weight: 700; color: #5a6b86; }
+.top h1 { margin: 6px 0 0; font-family: var(--serif); font-weight: 900; font-size: clamp(32px, 5vw, 46px); letter-spacing: .14em; color: #10161f; }
+/* 결재란: 담당 · 심사 · 본부 */
+.gyeol { display: grid; grid-template-columns: 22px repeat(3, 70px); border: 1.5px solid #1b2230; }
+.gyeol .v { grid-row: span 2; display: grid; place-items: center; writing-mode: vertical-rl; font-size: 11px; font-weight: 800; letter-spacing: .3em; border-right: 1px solid #1b2230; background: #e7e4dc; }
+.gyeol .h { font-size: 11px; font-weight: 800; text-align: center; padding: 4px 0; border-bottom: 1px solid #1b2230; border-left: 1px solid #b9b5ab; }
+.gyeol .h:nth-child(2) { border-left: 0; }
+.gyeol .c { height: 66px; display: grid; place-items: center; border-left: 1px solid #b9b5ab; position: relative; }
+.gyeol .c:nth-child(6) { border-left: 0; }
+.ink { --ink-c: #c8372d; width: 54px; height: 54px; border-radius: 50%; border: 2.5px solid var(--ink-c); color: var(--ink-c); display: grid; place-items: center; text-align: center; font-family: var(--serif); font-weight: 900; font-size: 13px; line-height: 1.15; opacity: 0; transform: rotate(var(--r, -8deg)) scale(1.4); mix-blend-mode: multiply; }
+.ink small { display: block; font-family: var(--ui-font); font-size: 9.5px; font-weight: 800; }
+.ink.on { animation: ink .45s cubic-bezier(.2,.9,.3,1.2) forwards; }
+@keyframes ink { to { opacity: .9; transform: rotate(var(--r, -8deg)) scale(1); } }
+
+.meta { margin-top: 18px; display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid #1b2230; font-size: 12.5px; }
+.meta div { padding: 7px 10px; border-left: 1px solid #b9b5ab; display: flex; gap: 8px; }
+.meta div:first-child { border-left: 0; }
+.meta b { color: #5a6b86; font-weight: 700; white-space: nowrap; }
+.meta span { font-family: var(--mono); font-weight: 600; }
+
+.sec { margin-top: 22px; }
+.sec h2 { margin: 0 0 8px; font-size: 14px; font-weight: 800; display: flex; align-items: baseline; gap: 8px; }
+.sec h2 i { font-style: normal; font-family: var(--mono); color: #2c5fb8; }
+/* 신고인 표 */
+.who { border-top: 1.5px solid #1b2230; border-bottom: 1.5px solid #1b2230; }
+.who .r { display: grid; grid-template-columns: 54px 1.2fr 1fr .8fr 56px 1.5fr .9fr; align-items: center; border-top: 1px solid #c9c5bb; }
+.who .r:first-child { border-top: 0; background: #e7e4dc; font-size: 11.5px; font-weight: 800; color: #3a4558; }
+.who .r > * { padding: 9px 10px; min-width: 0; }
+.who .r > :first-child { font-weight: 800; text-align: center; border-right: 1px solid #c9c5bb; }
+.who .code { font-family: var(--serif); font-weight: 900; font-size: 17px; }
+.who .gr { display: inline-grid; place-items: center; width: 26px; height: 26px; font-weight: 900; font-size: 13px; color: #fff; background: var(--g); }
+.who .k { display: none; font-style: normal; }
+/* 공명 측정 */
+.res { border: 1px solid #1b2230; background: #0e1520; color: #e4e9f0; padding: 14px 16px 10px; }
+.res .rh { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.res .rh > span { font-size: 12.5px; color: #c3ccd8; }
+.res .rh > span b { color: var(--accent); margin-left: 4px; }
+.res .rh strong { font-family: var(--mono); font-weight: 600; font-size: 34px; line-height: 1; color: #fff; }
+.res .rh strong small { font-size: 15px; color: #98a4b4; }
+.res svg { display: block; width: 100%; height: auto; margin-top: 6px; }
+.res .ax { position: relative; height: 16px; font-size: 11.5px; font-weight: 700; color: #98a4b4; }
+.res .ax span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.res .ax span:first-child { transform: none; } .res .ax span:last-child { transform: translateX(-100%); }
+.res .ax .hl { color: #8fb8ff; }
+.res .lg { display: flex; gap: 16px; font-size: 12px; color: #c3ccd8; margin-top: 4px; }
+.res .lg i { display: inline-block; width: 18px; height: 3px; margin-right: 6px; vertical-align: middle; background: var(--c); }
+
+.reason p { margin: 0; font-size: 14.5px; line-height: 1.85; padding: 12px 14px; border: 1px solid #c9c5bb; background: #fbfaf6; }
+.vows { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.vow { border: 1px solid #c9c5bb; background: #fbfaf6; padding: 12px 14px 10px; display: grid; grid-template-rows: auto 1fr auto; gap: 8px; min-height: 140px; }
+.vow small { font-size: 11.5px; font-weight: 800; color: #5a6b86; }
+.vow p { margin: 0; font-family: var(--serif); font-size: 15.5px; line-height: 1.7; color: #10161f; }
+.vow p.none { font-family: var(--ui-font); font-size: 13px; color: #8a93a3; }
+.vow .sg { display: flex; justify-content: flex-end; align-items: baseline; gap: 8px; font-size: 12.5px; border-top: 1px dashed #b9b5ab; padding-top: 6px; }
+.vow .sg b { font-family: var(--serif); font-size: 16px; }
+.vow .sg em { font-style: normal; color: #8a93a3; }
+.terms { display: grid; gap: 6px; font-size: 13.5px; }
+.terms label { display: flex; gap: 10px; align-items: flex-start; }
+.terms i { flex: none; width: 15px; height: 15px; margin-top: 3px; border: 1.5px solid #1b2230; position: relative; }
+.terms i.on::after { content: ""; position: absolute; left: 3px; top: -1px; width: 5px; height: 10px; border: solid #1b2230; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+
+.close { position: relative; margin-top: 30px; text-align: center; padding-bottom: 6px; }
+.close p { margin: 0; font-family: var(--serif); font-weight: 700; font-size: 16px; }
+.close .dt { margin-top: 12px; font-family: var(--mono); font-weight: 600; font-size: 14px; letter-spacing: .08em; }
+.close .to { margin-top: 18px; font-family: var(--serif); font-weight: 900; font-size: 20px; letter-spacing: .12em; }
+.close .note { margin-top: 18px; display: inline-block; font-size: 12.5px; color: #3a4558; border: 1px solid #c9c5bb; padding: 6px 14px; background: #fbfaf6; }
+.close .note b { color: #5a6b86; margin-right: 6px; }
+.close .big { --ink-c: #c8372d; position: absolute; right: 10px; top: -6px; width: 118px; height: 118px; border-width: 3.5px; font-size: 20px; --r: -12deg; }
+.close .big::before { content: ""; position: absolute; inset: 6px; border-radius: 50%; border: 1px solid var(--ink-c); }
+.close .big small { font-size: 10px; margin-top: 3px; }
+.foot-doc { display: flex; justify-content: space-between; font-size: 11px; color: #8a93a3; border-top: 1px solid #c9c5bb; margin-top: 22px; padding-top: 8px; }
+.poster.capturing .ink { opacity: .9 !important; transform: rotate(var(--r, -8deg)) !important; animation: none !important; }
+
+@media (max-width: 720px) {
+  .sheet .lh { padding: 12px 16px; } .lh .rl { display: none; }
+  .body { padding: 18px 16px 22px; }
+  .top { grid-template-columns: 1fr; } .gyeol { justify-self: end; grid-template-columns: 20px repeat(3, 60px); } .gyeol .c { height: 58px; } .ink { width: 46px; height: 46px; font-size: 11.5px; }
+  .meta { grid-template-columns: 1fr; } .meta div { border-left: 0; border-top: 1px solid #b9b5ab; } .meta div:first-child { border-top: 0; }
+  .who .r:first-child { display: none; }
+  .who .r { grid-template-columns: 1fr 1fr; padding: 6px 0; }
+  .who .r > :first-child { grid-column: 1 / -1; text-align: left; border-right: 0; background: #e7e4dc; }
+  .who .r > * { padding: 5px 10px; }
+  .who .k { display: block; font-size: 11px; color: #5a6b86; font-weight: 700; }
+  .vows { grid-template-columns: 1fr; }
+  .res .ax span:last-child { display: none; }
+  .close .big { position: relative; right: auto; top: auto; margin: 18px auto 0; }
+}
+
+/* 단말 창: 결과물을 요원 단말의 창 안에 띄운다(저장되는 이미지는 창 안쪽만) */
+.poster { position: relative; background: rgba(13,20,33,.92); border: 1px solid #000; box-shadow: 0 0 0 1px rgba(143,184,255,.3), 5px 5px 0 #000; padding: 44px 18px 18px; }
+.poster::before { content: "결재함 · 서식 제7호 각인 신고서"; position: absolute; left: 0; right: 0; top: 0; height: 28px; display: flex; align-items: center; padding: 0 12px; background: var(--glass); border-bottom: 1px solid #000; font: 400 12.5px var(--px); color: #e4ecfa; }
+.poster::after { content: ""; position: absolute; right: 10px; top: 7px; width: 13px; height: 13px; border: 1px solid #000; background: linear-gradient(180deg, #9fb3d6, #4c5f82); box-shadow: -18px 0 0 -1px #4c5f82, -18px 0 0 0 #000; }
+@media (max-width: 640px) { .poster { padding: 38px 8px 8px; } }
+.foot-doc, .vow .sg em, .vow p.none { color: #5f6878 !important; }
+
+/* 바탕은 단색·그라데이션만 */
+body[data-mode="view"] { background: linear-gradient(180deg, #15284a 0%, #07101c 100%) fixed; } body[data-mode="view"]::after { display: none; }
+
+/* 만들기 화면 강조색 */
+body[data-mode="edit"] { --t: #e5484d; }
+</style>
+</head>
+<body data-mode="view">
+<header class="bar"><a class="brand" href="../" data-keep>A440</a><span class="bar-title">각인 신고 결재</span><span class="bar-spacer"></span>
+<div class="tabs" role="tablist"><button data-mode="view" role="tab">보기</button><button data-mode="edit" role="tab">만들기</button></div></header>
+<main class="stage only-view"><p class="shared-note" id="shared-note" hidden>공유받은 신고서예요. 만들기에서 고치면 내 브라우저에만 저장돼요.</p><div class="poster" id="poster"></div>
+<nav class="actions"><button class="btn primary" id="btn-png">신고서 저장</button><button class="btn" id="btn-link">링크 복사</button><button class="btn" id="btn-replay">다시 결재</button></nav></main>
+<main class="editor only-edit" id="editor"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/modern-screenshot@4.6.8/dist/index.js"></script>
+<script src="../../assets/core.js"></script>
+<script>
+(() => {
+const { esc, br, clamp, num, $ } = Core;
+const GC = { S: '#e5484d', A: '#ec8a55', B: '#e8b866', C: '#7cc47f', D: '#8fb8ff', E: '#9aa3b2' };
+const DEC = { 승인: '#8fb8ff', 보류: '#e8b866', 반려: '#ff6b76' };
+const TERMS = ['각인된 센티넬은 해당 가이드에게만 가이딩을 받을 수 있음을 확인합니다.', '한쪽이 사망하면 남은 쪽도 버티지 못함을 확인합니다.', '각인 해제는 현재 연구 중이며 보장되지 않음을 확인합니다.'];
+const person = (code, name, role, grade, team, years = '') => ({ code, name, role, grade, team, years });
+const blank = () => ({ v: 3, docNo: '', date: '', a: person('', '', '센티넬', 'S', ''), b: person('', '', '가이드', 'A', ''), match: 90, reason: '', vowA: '', vowB: '', final: { decision: '승인', note: '' } });
+const sample = () => ({ v: 3, docNo: 'A440-각-2611-019', date: '15.11.14 (금)',
+  a: person('스케르초', 'NPC', '센티넬', 'S', '특별관리 1팀 팀장', '발현 15년'), b: person('PC', 'PC', '가이드', 'A', '가이드 1팀', '발현 3년'),
+  match: 93, reason: '전담 가이드 네 명을 돌려보낸 대상자가 신고자의 가이딩만은 거부하지 않음. 마포 작전 중 수치 26에서 접촉 가이딩으로 47까지 회복.',
+  vowA: '네 손 아니면 안 받는다. 그러니까 먼저 죽지 마라. 그건 내가 못 버틴다.', vowB: '', final: { decision: '승인', note: '숙소동 상층 단독실 연결 배정' } });
+function normalize(s) {
+  const b = blank(); s = s && typeof s === 'object' ? s : {};
+  const o = { ...b, ...s, a: { ...b.a, ...(s.a || {}) }, b: { ...b.b, ...(s.b || {}) }, final: { ...b.final, ...(s.final || {}) } };
+  o.match = clamp(Math.round(num(o.match, 90)), 0, 100);
+  if (!DEC[o.final.decision]) o.final.decision = '승인';
+  ['a', 'b'].forEach(k => { if (!GC[o[k].grade]) o[k].grade = 'E'; if (!['센티넬', '가이드'].includes(o[k].role)) o[k].role = k === 'a' ? '센티넬' : '가이드'; });
+  delete o.line; delete o.org; delete o.bond; delete o.terms; delete o.matchLabel;
+  return o;
+}
+function apply(S, o) {
+  const got = [];
+  ['a', 'b'].forEach(k => { if (o[k] && typeof o[k] === 'object') { Object.assign(S[k], o[k]); if (!got.includes('신고인')) got.push('신고인'); } });
+  if (o.final && typeof o.final === 'object') { Object.assign(S.final, o.final); got.push('결재'); }
+  ['docNo', 'date', 'match', 'reason', 'vowA', 'vowB'].forEach(k => { if (o[k] != null && o[k] !== '') S[k] = o[k]; });
+  if (o.reason) got.push('사유');
+  return got;
+}
+function prompts() {
+  return [{ label: '각인 신고서', sub: '두 요원 · 사유 · 서약 · 결재', text: `*[OOC: 롤플레잉 잠시 중단. A440 세계관 「각인 신고서」 기록.
+NPC와 PC가 A440에 각인을 신고했다고 보고 신고서를 만든다. 사이트가 접수·매칭 심사·본부 결재를 차례로 처리해 보여 준다.
+▪ 근거: 세계관(매칭률 60 이상 페어, 90 이상 각인. 각인 후엔 그 가이드에게만 가이딩, 한쪽이 죽으면 남은 쪽도 못 버팀, 해제는 연구 중, 코드네임은 음악 용어)과 지금까지의 설정·RP만.
+▪ 나오는 사람은 NPC와 PC 둘뿐. 결재자·팀장·동료 같은 다른 캐릭터의 이름·대사·의견은 쓰지 않는다.
+▪ a=NPC, b=PC: code(코드네임) name(본명, 모르면 "") role(센티넬|가이드) grade(S~E) team(소속) years(발현 몇 년)
+▪ match: 지금 두 사람의 실제 매칭률. 아직 각인할 사이가 아니면 90 밑으로 정직하게.
+▪ reason: 각인 사유. RP에서 실제 있었던 일을 근거로 2문장, 공문 말투.
+▪ vowA: NPC가 신고서에 적을 서약 한두 문장, 그 사람 말투 그대로.
+▪ vowB: PC가 RP에서 실제로 한 말 중 서약이 될 만한 한 문장을 그대로 옮긴다. 없으면 "".
+▪ final: decision(승인|보류|반려, 매칭률과 RP 상황에 맞게) note(본부가 붙이는 배정·조건 한 줄, 사람 이름 없이)
+▪ docNo date(YY.MM.DD (요일))
+▪ reason은 날짜·장소가 들어간 사실 위주로 감정 묘사 없이. vowA는 서식에 억지로 맞춘 그 사람다운 문장(퉁명하거나 서툰 말투면 그대로).
+▪ years·grade·team은 설정에 있으면 그대로, 없으면 "".
+▪ RP 밖 기록: PC의 말·행동·속마음은 RP에 실제 나온 것만 쓰고 지어내지 않는다. 여기서 만든 내용은 이후 RP의 사실로 삼지 않는다.
+▪ 품질: 작위적인 감동 대신 이 두 사람다운 디테일로.
+▪ 출력: 인사·설명 없이 JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만 쓰고 줄바꿈하지 않는다. 값은 형식 예시일 뿐.
+{"docNo":"","date":"","a":{"code":"","name":"","role":"센티넬","grade":"","team":"","years":""},"b":{"code":"","name":"","role":"가이드","grade":"","team":"","years":""},"match":90,"reason":"","vowA":"","vowB":"","final":{"decision":"승인","note":""}}]*` }];
+}
+function progress(S) { return [{ label: '신고인', ok: !!(S.a.code && S.b.code) }, { label: '사유', ok: !!S.reason }, { label: '서약', ok: !!S.vowA }, { label: '결재', ok: !!S.final.note }]; }
+function schema(S) {
+  const per = k => [{ k: `${k}.code`, label: '코드네임' }, { k: `${k}.name`, label: '본명' }, { k: `${k}.role`, label: '센티넬/가이드', type: 'select', opts: [['센티넬', '센티넬'], ['가이드', '가이드']] }, { k: `${k}.grade`, label: '등급', type: 'select', opts: Object.keys(GC).map(g => [g, g]) }, { k: `${k}.team`, label: '소속' }, { k: `${k}.years`, label: '발현' }];
+  return [
+    { title: '신고서', en: 'FORM', fields: [{ k: 'docNo', label: '문서 번호' }, { k: 'date', label: '신고일' }, { k: 'match', label: '매칭률', type: 'range' }, { k: 'reason', label: '각인 사유', type: 'textarea', full: true }] },
+    { title: 'NPC', en: 'APPLICANT A', fields: [...per('a'), { k: 'vowA', label: '서약', type: 'textarea', full: true }] },
+    { title: 'PC', en: 'APPLICANT B', desc: 'PC 서약은 RP에서 실제로 한 말만 넣어 주세요. 비워 두면 서명란이 비어 있어요.', fields: [...per('b'), { k: 'vowB', label: '서약', type: 'textarea', full: true }] },
+    { title: '본부 결재', en: 'APPROVAL', fields: [{ k: 'final.decision', label: '결정', type: 'select', opts: Object.keys(DEC).map(d => [d, d]) }, { k: 'final.note', label: '배정 · 조건', full: true }] },
+  ];
+}
+let tok = 0;
+const wait = ms => new Promise(r => setTimeout(r, ms));
+/* 공명 파형: 두 사람의 파동. 매칭률이 높을수록 위상 차가 줄어 두 선이 겹친다 */
+const WW = 760, WH = 96, MID = 46, AMP = 28, CYC = 3.5;
+const wave = ph => { let d = ''; for (let x = 0; x <= WW; x += 6) { const y = MID + AMP * Math.sin(x / WW * CYC * 2 * Math.PI + ph); d += (x ? 'L' : 'M') + x + ' ' + y.toFixed(1); } return d; };
+const gap = m => (100 - m) / 100 * Math.PI;
+function setWave(ph) { const b = document.getElementById('wb'); if (b) b.setAttribute('d', wave(ph)); }
+async function run(S) {
+  const my = ++tok;
+  /* 처음엔 반대 위상(가장 먼 상태)에서 시작해 실제 매칭률 위치로 맞춰진다 */
+  const from = Math.PI, to = gap(S.match), t0 = performance.now(), dur = 1800;
+  setWave(from);
+  let fin = false;
+  const tick = now => { if (my !== tok || fin) return; const t = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - t, 3); setWave(from + (to - from) * e); if (t < 1) requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+
+  const n = document.getElementById('mnum'); const n0 = performance.now();
+  const cnt = now => { if (my !== tok || fin) return; const t = Math.min(1, (now - n0) / dur); n.textContent = Math.round(S.match * (1 - Math.pow(1 - t, 3))); if (t < 1) requestAnimationFrame(cnt); };
+  requestAnimationFrame(cnt);
+  /* 브라우저가 그리기를 멈춰도 끝 상태는 반드시 맞춘다 */
+  setTimeout(() => { if (my !== tok) return; fin = true; setWave(to); n.textContent = S.match; }, dur + 100);
+  await wait(dur + 200);
+  for (const s of document.querySelectorAll('.gyeol .ink')) { if (my !== tok) return; s.classList.add('on'); await wait(650); }
+  for (const c of document.querySelectorAll('.terms i')) { if (my !== tok) return; c.classList.add('on'); await wait(280); }
+  await wait(450); if (my === tok) document.getElementById('seal').classList.add('on');
+}
+function render(S) {
+  tok++;
+  const f = S.final;
+  const fit = S.match >= 90 ? '적합' : S.match >= 60 ? '조건부' : '부적합';
+  const tier = S.match >= 90 ? '각인 가능' : S.match >= 60 ? '페어 범위 · 각인 기준 미달' : '페어 기준 미달';
+  const row = (k, p) => `<div class="r"><span>${k}</span>
+      <span><i class="k">코드네임</i><span class="code">${esc(p.code || (k === '갑' ? 'NPC' : 'PC'))}</span></span>
+      <span><i class="k">본명</i>${esc(p.name || '-')}</span>
+      <span><i class="k">구분</i>${esc(p.role)}</span>
+      <span><i class="k">등급</i><span class="gr" style="--g:${GC[p.grade]}">${esc(p.grade)}</span></span>
+      <span><i class="k">소속</i>${esc(p.team || '-')}</span>
+      <span><i class="k">발현</i>${esc(p.years || '-')}</span></div>`;
+  const vow = (k, p, v) => `<div class="vow"><small>신고인 ${k} 서약</small>${v ? `<p>${br(v)}</p>` : '<p class="none">적힌 서약이 없어요. RP에서 직접 한 말이 생기면 채워 주세요.</p>'}
+      <div class="sg"><span>신고인 ${k}</span><b>${esc(p.code || (k === '갑' ? 'NPC' : 'PC'))}</b><em>(서명)</em></div></div>`;
+  const tx = m => 20 + m / 100 * (WW - 40);
+  $('#poster').innerHTML = `<article class="sheet" id="form">
+    <div class="lh"><span class="mk">A440</span><span class="nm">국제 센티넬·가이드 관리 기구<small>International Sentinel & Guide Agency</small></span>
+      <span class="rl" aria-hidden="true"><span style="left:0">430</span><span class="c" style="left:50%">440</span><span style="left:100%">450</span></span></div>
+    <div class="body">
+      <div class="top"><div><div class="form-no">서식 제7호 · 보존 기한 영구</div><h1>각인 신고서</h1></div>
+        <div class="gyeol" aria-label="결재란"><span class="v">결재</span><span class="h">담당</span><span class="h">심사</span><span class="h">본부</span>
+          <span class="c"><span class="ink" style="--r:-6deg">접수<small>A440</small></span></span>
+          <span class="c"><span class="ink" style="--r:7deg${fit === '부적합' ? '' : ''}">${fit}<small>매칭 ${S.match}</small></span></span>
+          <span class="c"><span class="ink" style="--r:-10deg${f.decision === '승인' ? '' : ';--ink-c:#a4561a'}">${esc(f.decision)}<small>본부</small></span></span></div></div>
+      <div class="meta"><div><b>문서 번호</b><span>${esc(S.docNo || '-')}</span></div><div><b>신고일</b><span>${esc(S.date || '-')}</span></div><div><b>처리</b><span>${esc(f.decision)}</span></div></div>
+
+      <div class="sec"><h2><i>1</i>신고인</h2>
+        <div class="who"><div class="r"><span>구분</span><span>코드네임</span><span>본명</span><span>센티넬/가이드</span><span>등급</span><span>소속</span><span>발현</span></div>${row('갑', S.a)}${row('을', S.b)}</div></div>
+
+      <div class="sec"><h2><i>2</i>공명 측정</h2>
+        <div class="res"><div class="rh"><span>매칭률<b>${tier}</b></span><strong><span id="mnum">${S.match}</span><small>%</small></strong></div>
+          <svg viewBox="0 0 ${WW} 110" aria-label="두 사람의 파형">
+            <line x1="0" x2="${WW}" y1="${MID}" y2="${MID}" stroke="rgba(255,255,255,.12)"/>
+            <path id="wa" d="${wave(0)}" fill="none" stroke="#ff9d6b" stroke-width="2.5" stroke-linejoin="round"/>
+            <path id="wb" d="${wave(gap(S.match))}" fill="none" stroke="#8fb8ff" stroke-width="2.5" stroke-linejoin="round" opacity=".95"/>
+            <g transform="translate(0 100)">
+              <rect x="${tx(60)}" y="0" width="${tx(90) - tx(60)}" height="5" fill="rgba(143,184,255,.35)"/><rect x="${tx(90)}" y="0" width="${tx(100) - tx(90)}" height="5" fill="#8fb8ff"/>
+              ${Array.from({ length: 11 }, (_, i) => `<line x1="${tx(i * 10)}" x2="${tx(i * 10)}" y1="-6" y2="${i % 5 ? 0 : 2}" stroke="rgba(255,255,255,.4)"/>`).join('')}
+              <path d="M${tx(S.match)} -10 l-5 -7 h10 z" fill="#fff"/>
+              
+            </g>
+          </svg>
+          <div class="ax"><span style="left:${tx(0) / WW * 100}%">0</span><span style="left:${tx(60) / WW * 100}%">60 페어</span><span class="hl" style="left:${tx(90) / WW * 100}%">90 각인</span><span style="left:${tx(100) / WW * 100}%">100</span></div>
+          <div class="lg"><span><i style="--c:#ff9d6b"></i>${esc(S.a.code || 'NPC')} · ${esc(S.a.role)}</span><span><i style="--c:#8fb8ff"></i>${esc(S.b.code || 'PC')} · ${esc(S.b.role)}</span></div></div></div>
+
+      <div class="sec reason"><h2><i>3</i>각인 사유</h2><p>${br(S.reason || '-')}</p></div>
+      <div class="sec"><h2><i>4</i>서약</h2><div class="vows">${vow('갑', S.a, S.vowA)}${vow('을', S.b, S.vowB)}</div></div>
+      <div class="sec"><h2><i>5</i>확인 사항</h2><div class="terms">${TERMS.map(t => `<label><i></i>${t}</label>`).join('')}</div></div>
+
+      <div class="close"><p>위와 같이 각인을 신고합니다.</p><div class="dt">${esc(S.date || '')}</div>
+        <div class="to">A440 본부 귀중</div>
+        ${f.note ? `<div class="note"><b>본부 처리</b>${esc(f.note)}</div>` : ''}
+        <span class="ink big" id="seal" style="${f.decision === '승인' ? '' : '--ink-c:#a4561a'}">각인<br>${esc(f.decision)}<small>A440 본부</small></span></div>
+      <div class="foot-doc"><span>A440-서식7 · 각인 신고서</span><span>기준음 A4 = 440Hz</span></div>
+    </div>
+  </article>`;
+  run(S);
+}
+Core.app({ key: 'a440:imprint', what: '각인 신고서', sample, blank, normalize, schema, prompts, apply, progress, render, posterSel: '#form', fileName: S => `A440_각인신고서_${S.a.code}_${S.b.code}` });
+})();
+</script>
+</body>
+</html>

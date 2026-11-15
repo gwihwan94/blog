@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no, interactive-widget=resizes-visual" />
+    <meta name="theme-color" content="#000000" />
+    <!-- 보안 규칙: 이 사이트가 불러올 수 있는 곳을 제한 (외부 스크립트·플러그인 차단) -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; manifest-src 'self'; script-src 'self' 'unsafe-inline' https://www.youtube.com https://s.ytimg.com; frame-src https://www.youtube-nocookie.com https://www.youtube.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; media-src 'self' data: blob: https://*.apple.com; connect-src 'self' ws: wss: https://*.supabase.co https://api.anthropic.com https://www.youtube.com https://i.ytimg.com https://open.spotify.com https://*.scdn.co https://*.spotifycdn.com https://itunes.apple.com https://*.mzstatic.com https://lrclib.net; object-src 'none'; base-uri 'self'; form-action 'none'"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>NPC의 폰</title>
+    <!-- 링크 공유하면 카톡 · 트위터 등에서 보이는 미리보기 -->
+    <meta name="description" content="NPC가 하루 동안 폰을 쓰는 모습을 재생하고, 그 폰을 직접 열어 보는 OOC 툴" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="NPC의 폰" />
+    <meta property="og:description" content="OOC로 채우는 NPC의 아이폰과 하루 재생" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- 휴대폰 홈 화면에 추가하면 앱처럼 전체 화면 -->
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='14' y='4' width='36' height='56' rx='9' fill='%23111'/%3E%3Crect x='26' y='8' width='12' height='4' rx='2' fill='%23444'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=IBM+Plex+Mono:wght@400;600&display=swap" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

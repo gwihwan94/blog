@@ -1,0 +1,8 @@
+.claude/
+phone-src/node_modules/
+phone-src/dist/
+.env
+*.local
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A440 요원 단말</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%20shape-rendering%3D%27crispEdges%27%3E%3Crect%20width%3D%2716%27%20height%3D%2716%27%20rx%3D%273%27%20fill%3D%27%230b1018%27%2F%3E%3Cpath%20d%3D%27M1%208h2V5h2v6h2V3h2v10h2V5h2v3h2%27%20fill%3D%27none%27%20stroke%3D%27%238fb8ff%27%20stroke-width%3D%271.2%27%2F%3E%3C%2Fsvg%3E">
+<meta name="description" content="센티넬버스 세계관 A440 전용 OOC 툴 모음">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700;900&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="a440.css">
+<style>
+/* A440 요원 단말: 기구 내부 단말기의 바탕 화면. 남색 브라운관(주사선·모눈), 위에 상태 줄(기준음·시계),
+   두 파동이 440Hz로 모이는 화면, 등급·가이딩 체계 안내, 프로그램 창 셋. */
+:root { --px: "Galmuri11", var(--ui-font); --px9: "Galmuri9", "Galmuri11", var(--ui-font); --glass: linear-gradient(180deg, #2b3a55 0%, #1a2539 48%, #121b2c 52%, #1d2a42 100%); }
+body { background: #070b12; }
+.crt { position: relative; min-height: 100vh; background:
+  linear-gradient(rgba(143,184,255,.05) 1px, transparent 1px) 0 0 / 28px 28px, linear-gradient(90deg, rgba(143,184,255,.05) 1px, transparent 1px) 0 0 / 28px 28px,
+  radial-gradient(ellipse 80% 60% at 50% 20%, #15284a, #08101d 70%); }
+.crt::after { content: ""; position: fixed; inset: 0; pointer-events: none; background: repeating-linear-gradient(180deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px); z-index: 50; }
+.status { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 14px; height: 32px; padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); background: var(--glass); border-bottom: 1px solid #000; box-shadow: 0 1px 0 rgba(143,184,255,.25); font: 400 12px var(--px9); color: #c9d8f2; white-space: nowrap; }
+.status a { color: #fff; text-decoration: none; font: 400 13px var(--px); }
+.status .sp { flex: 1; }
+.status .ok { color: #8ff0c8; } .status .ok::before { content: ""; display: inline-block; width: 7px; height: 7px; background: #6fd6b8; margin-right: 6px; box-shadow: 0 0 6px #6fd6b8; }
+.status time { font-family: var(--mono); color: #fff; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 26px max(16px, env(safe-area-inset-right, 0px)) 70px max(16px, env(safe-area-inset-left, 0px)); display: grid; gap: 22px; }
+
+/* 창 공통 */
+.w { background: rgba(13,20,33,.92); border: 1px solid #000; box-shadow: 0 0 0 1px rgba(143,184,255,.28), 4px 4px 0 #000; min-width: 0; }
+.wt { display: flex; align-items: center; gap: 8px; height: 26px; padding: 0 8px; background: var(--glass); border-bottom: 1px solid #000; font: 400 12.5px var(--px); color: #e4ecfa; }
+.wt i { font-style: normal; width: 13px; height: 13px; border: 1px solid #000; background: linear-gradient(180deg, #9fb3d6, #4c5f82); }
+.wt .sp { flex: 1; }
+.wb { padding: 16px 18px; }
+
+/* 첫 화면: 두 파동이 기준음으로 */
+.hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 22px; align-items: stretch; }
+.tune .wb { padding: 22px 22px 18px; position: relative; overflow: hidden; }
+.tune small { font: 400 12px var(--px9); color: #8fb8ff; }
+.tune h1 { margin: 6px 0 0; font: 900 clamp(64px, 11vw, 120px)/1.08 "Pretendard Variable", var(--ui-font); letter-spacing: -.02em;
+  background: linear-gradient(180deg, #ffffff 0%, #dbe6ff 42%, #6f86b8 50%, #c8d6f4 66%, #ffffff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 18px rgba(143,184,255,.35)); }
+.tune .hz { margin-top: 6px; font: 400 15px var(--px); color: #8fb8ff; letter-spacing: .3em; }
+.tune svg { display: block; width: 100%; height: 120px; margin-top: 14px; }
+.tune .cap { margin: 4px 0 0; font: 900 19px var(--serif); color: #fff; }
+.tune .ruler { margin-top: 10px; }
+.notice .wb { font-size: 14px; line-height: 1.8; color: #d5def0; display: grid; gap: 14px; }
+.notice p { margin: 0; }
+.notice .kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 13px; }
+.notice .kv dt { font: 400 12px var(--px9); color: #8fb8ff; padding-top: 2px; }
+.notice .kv dd { margin: 0; }
+.grades { display: flex; gap: 4px; }
+.grades span { flex: 1; text-align: center; padding: 4px 0; font: 400 13px var(--px); color: var(--g); border: 1px solid var(--g); background: color-mix(in srgb, var(--g) 14%, transparent); }
+.guide { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; font: 400 11.5px var(--px9); }
+.guide span { padding: 5px 6px; border-top: 3px solid var(--gc); background: rgba(255,255,255,.04); color: #d5def0; }
+.guide b { display: block; font: 400 14px var(--px); color: var(--gc); }
+
+/* 프로그램 창 셋 */
+.progs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.prog { display: flex; flex-direction: column; text-decoration: none; color: inherit; transition: transform .15s ease, box-shadow .15s ease; }
+.prog:hover { transform: translate(-2px, -2px); box-shadow: 0 0 0 1px var(--c), 6px 6px 0 #000, 0 0 26px color-mix(in srgb, var(--c) 30%, transparent); }
+.prog .wt b { font-weight: 400; color: var(--c); }
+.prog .wb { flex: 1; display: grid; grid-template-rows: auto auto 1fr auto; gap: 10px; }
+.prog .ic { width: 64px; height: 64px; display: grid; place-items: center; background: #050a12; border: 1px solid color-mix(in srgb, var(--c) 60%, #000); box-shadow: inset 0 0 14px color-mix(in srgb, var(--c) 25%, transparent); }
+.prog .ic svg { width: 40px; height: 40px; }
+.prog h2 { margin: 0; font: 900 21px var(--serif); color: #fff; }
+.prog p { margin: 0; font-size: 13.5px; line-height: 1.7; color: #b9c6dc; }
+.prog .run { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 10px; border-top: 1px dashed rgba(143,184,255,.25); font: 400 12px var(--px9); color: #8fa2c4; }
+.prog .run span:last-child { padding: 5px 12px; background: linear-gradient(180deg, color-mix(in srgb, var(--c) 70%, #fff), var(--c)); color: #0b1018; border: 1px solid #000; box-shadow: 2px 2px 0 #000; font: 400 13px var(--px); }
+.foot-a { font: 400 12px var(--px9); color: #5d6a7c; }
+@media (max-width: 900px) { .hero { grid-template-columns: 1fr; } .progs { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .status .hide-s { display: none; } .guide { grid-template-columns: repeat(2, 1fr); } .tune svg { height: 90px; } }
+
+/* 바탕은 그라데이션만 */
+.crt { background: linear-gradient(180deg, #15284a 0%, #07101c 100%); } .crt::after { display: none; }
+</style>
+</head>
+<body>
+<div class="crt">
+  <div class="status"><a href="../">◀ 귀환의 블로그</a><span class="hide-s">국제 센티넬·가이드 관리 기구 · 요원 단말</span><span class="sp"></span><span class="ok">기준음 440.0Hz</span><time id="clock">--:--</time></div>
+  <main class="wrap">
+    <section class="hero">
+      <div class="w tune"><div class="wt"><i></i><span>기준음 조율기</span><span class="sp"></span><span>균열 이후 15년</span></div>
+        <div class="wb"><small>A4 = 440Hz</small><h1>A440</h1><div class="hz">440 Hz</div>
+          <svg viewBox="0 0 600 120" aria-label="두 파동이 같은 음으로 모이는 모습"><line x1="0" x2="600" y1="60" y2="60" stroke="rgba(143,184,255,.18)"/>
+            <path id="w1" fill="none" stroke="#ff9d6b" stroke-width="2.5"/><path id="w2" fill="none" stroke="#8fb8ff" stroke-width="2.5"/></svg>
+          <div class="ruler"><span style="left:0%">430</span><span style="left:25%">435</span><span class="c" style="left:50%">440</span><span style="left:75%">445</span><span style="left:100%">450</span></div></div></div>
+      <div class="w notice"><div class="wt"><i></i><span>단말 공지</span><span class="sp"></span><span>읽음</span></div>
+        <div class="wb">
+          <p>NPC = AI 캐릭터 · PC = 내 캐릭터</p>
+          <dl class="kv"><dt>등급</dt><dd><div class="grades"><span style="--g:var(--S)">S</span><span style="--g:var(--A)">A</span><span style="--g:var(--B)">B</span><span style="--g:var(--C)">C</span><span style="--g:var(--D)">D</span><span style="--g:var(--E)">E</span></div></dd>
+            <dt>가이딩</dt><dd><div class="guide"><span style="--gc:var(--warn)"><b>50↓</b>감각 과민</span><span style="--gc:var(--call)"><b>30↓</b>가이드 호출</span><span style="--gc:var(--iso)"><b>10↓</b>격리</span><span style="--gc:#ff3b4a"><b>0</b>폭주</span></div></dd></dl>
+        </div></div>
+    </section>
+
+    <section class="progs" aria-label="프로그램">
+      <a class="w prog" href="gate/" style="--c:#ec8a55"><div class="wt"><i></i><b>상황판</b><span class="sp"></span><span>작전</span></div>
+        <div class="wb"><span class="ic"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 1h16v12H0z" fill="#ec8a55"/><path d="M1 2h4v4H1zM6 2h5v2H6zM12 2h3v4h-3zM1 7h6v5H1zM8 5h3v7H8zM12 7h3v5h-3z" fill="#0b1018"/><path d="M9 8h1v1H9z" fill="#ff6b76"/></svg></span>
+          <h2>게이트 작전 리플레이</h2><div class="run"><span>작전 지도 · 보고서</span><span>열기</span></div></div></a>
+      <a class="w prog" href="imprint/" style="--c:#e8b866"><div class="wt"><i></i><b>결재함</b><span class="sp"></span><span>서식 제7호</span></div>
+        <div class="wb"><span class="ic"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M2 0h10l2 2v14H2z" fill="#e8b866"/><path d="M4 3h7v1H4zM4 5h8v1H4zM4 7h6v1H4z" fill="#0b1018"/><path d="M7 9h6v6H7z" fill="#c8372d"/><path d="M8 10h4v4H8z" fill="#e8b866"/><path d="M9 11h2v2H9z" fill="#c8372d"/></svg></span>
+          <h2>각인 신고서</h2><div class="run"><span>각인 신고 · 결재</span><span>열기</span></div></div></a>
+      <a class="w prog" href="score/" style="--c:#c79bff"><div class="wt"><i></i><b>기록실</b><span class="sp"></span><span>음악</span></div>
+        <div class="wb"><span class="ic"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M6 1h9v2H6z" fill="#c79bff"/><path d="M6 3h1v8H6zM14 3h1v8h-1z" fill="#c79bff"/><path d="M2 10h5v4H2zM10 10h5v4h-5z" fill="#c79bff"/></svg></span>
+          <h2>두 사람의 노래</h2><div class="run"><span>이중주 · 악보 · MP3</span><span>열기</span></div></div></a>
+    </section>
+    <p class="foot-a">PC에서 보시는 걸 추천드려요</p>
+  </main>
+</div>
+<script>
+/* 두 파동이 반대 위상에서 출발해 천천히 하나로 겹치고, 잠시 멈췄다가 다시 벌어진다 */
+const W = 600, wave = (ph, amp) => { let d = ''; for (let x = 0; x <= W; x += 5) d += (x ? 'L' : 'M') + x + ' ' + (60 + amp * Math.sin(x / W * 6 * Math.PI + ph)).toFixed(1); return d; };
+const w1 = document.getElementById('w1'), w2 = document.getElementById('w2'); let t0 = performance.now();
+const tick = now => { const t = ((now - t0) / 1000) % 10, k = t < 6 ? 1 - Math.pow(1 - t / 6, 3) : t < 8 ? 1 : 1 - (t - 8) / 2;
+  w1.setAttribute('d', wave(0, 34)); w2.setAttribute('d', wave(Math.PI * (1 - k), 34)); requestAnimationFrame(tick); };
+w1.setAttribute('d', wave(0, 34)); w2.setAttribute('d', wave(0, 34)); requestAnimationFrame(tick);
+const clk = () => { const d = new Date(); document.getElementById('clock').textContent = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+clk(); setInterval(clk, 15000);
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+/* A440 공통: 세계관 소개 이미지·단말기 트래커와 같은 톤.
+   짙은 남색 바탕, 하늘색 기준선, 430–450 눈금자, 모서리 브래킷, 등급 색(S~E), 가이딩 구간 색. */
+:root {
+  --bg: #0b1018; --panel: #141a24; --panel2: #1a212d; --ink: #e4e9f0; --muted: #98a4b4; --hair: rgba(255,255,255,.09);
+  --accent: #8fb8ff; --accent-ink: #0b1018; --field: #0f1520;
+  --S: #e5484d; --A: #ec8a55; --B: #e8b866; --C: #7cc47f; --D: #8fb8ff; --E: #9aa3b2;
+  --ok: #6fd6b8; --warn: #e8b866; --call: #ec8a55; --iso: #ff6b76;
+  --paper: #eef1f6; --paper-ink: #1b2230;
+  --serif: "Noto Serif KR", "Nanum Myeongjo", serif;
+}
+body { background: radial-gradient(ellipse 70% 40% at 50% 0%, #142238, transparent 70%), var(--bg); background-attachment: fixed; color: var(--ink); }
+
+/* 세계관 이미지의 섹션 머리: 짧은 색 줄 + 작은 라벨 + 굵은 제목 + 흐린 큰 숫자 */
+.sec-h { position: relative; padding-top: 14px; border-top: 1px solid var(--hair); }
+.sec-h::before { content: ""; position: absolute; left: 0; top: -1px; width: 42px; height: 3px; background: var(--c, var(--accent)); }
+.sec-h small { display: block; font-size: 12px; font-weight: 800; letter-spacing: .04em; color: var(--c, var(--accent)); }
+.sec-h h2 { margin: 4px 0 0; font-family: var(--serif); font-weight: 900; font-size: clamp(22px, 3.4vw, 30px); color: #fff; }
+.sec-h .num { position: absolute; right: 0; top: 4px; font-size: clamp(54px, 9vw, 86px); font-weight: 900; line-height: 1; color: rgba(255,255,255,.04); pointer-events: none; }
+
+/* 모서리 브래킷 프레임 */
+.bracket { position: relative; padding: 22px; }
+.bracket::before, .bracket::after { content: ""; position: absolute; width: 22px; height: 22px; border: 2px solid var(--accent); opacity: .8; pointer-events: none; }
+.bracket::before { left: 0; top: 0; border-right: 0; border-bottom: 0; }
+.bracket::after { right: 0; bottom: 0; border-left: 0; border-top: 0; }
+
+/* 카드 */
+.a-card { background: var(--panel); border: 1px solid var(--hair); border-radius: 16px; padding: 18px 20px; }
+.a-card h3 { margin: 0 0 8px; font-size: 16px; display: flex; gap: 8px; align-items: baseline; }
+.a-card h3 em { font-style: normal; font-size: 13px; color: var(--accent); font-weight: 800; }
+
+/* 등급 칩·바 */
+.grade { display: inline-grid; place-items: center; min-width: 26px; height: 26px; padding: 0 6px; border-radius: 7px; font-weight: 900; font-size: 13px; color: var(--g); background: color-mix(in srgb, var(--g) 16%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--g) 45%, transparent); }
+.gradebar { display: grid; grid-template-columns: repeat(7, 1fr); border-radius: 10px; overflow: hidden; border: 1px solid var(--hair); }
+.gradebar span { padding: 8px 0 7px; text-align: center; font-weight: 900; color: var(--g); border-top: 3px solid var(--g); background: color-mix(in srgb, var(--g) 7%, var(--panel)); opacity: .45; }
+.gradebar span.on { opacity: 1; background: color-mix(in srgb, var(--g) 22%, var(--panel)); }
+
+/* 가이딩 수치 막대 (트래커 구간 색) */
+.gauge { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; font-size: 12px; }
+.gauge i { height: 6px; border-radius: 3px; background: rgba(255,255,255,.08); position: relative; overflow: hidden; }
+.gauge i b { position: absolute; inset: 0 auto 0 0; width: var(--v); background: var(--gc, var(--ok)); border-radius: 3px; transition: width .8s cubic-bezier(.2,.8,.2,1), background-color .4s; }
+.gauge strong { font-variant-numeric: tabular-nums; font-weight: 800; min-width: 3ch; text-align: right; }
+
+/* 440 눈금자 */
+.ruler { position: relative; height: 46px; margin-top: 8px; background: repeating-linear-gradient(90deg, rgba(255,255,255,.22) 0 1px, transparent 1px 10px) 0 6px / 100% 12px no-repeat; }
+.ruler::after { content: ""; position: absolute; left: 50%; top: 0; width: 2px; height: 26px; background: var(--accent); }
+.ruler span { white-space: nowrap; position: absolute; top: 24px; transform: translateX(-50%); font-size: 11px; font-weight: 800; color: var(--muted); }
+.ruler span.c { color: var(--accent); }
+.ruler-cap { text-align: center; font-family: var(--serif); font-weight: 900; color: var(--muted); font-size: 14px; }
+
+.foot-a { font-size: 11px; color: #5d6a7c; text-align: center; margin-top: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+@media (prefers-reduced-motion: reduce) { * { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* ── A440 툴 화면 공통: 요원 단말(남색 브라운관 · 모눈 · 주사선 · 유리 제목 막대 · 딱딱한 그림자 · 도트 글씨) ── */
+body[data-mode] { --px: "Galmuri11", var(--ui-font); --px9: "Galmuri9", "Galmuri11", var(--ui-font); --glass: linear-gradient(180deg, #2b3a55 0%, #1a2539 48%, #121b2c 52%, #1d2a42 100%); }
+body[data-mode="view"] { background: linear-gradient(rgba(143,184,255,.05) 1px, transparent 1px) 0 0 / 28px 28px, linear-gradient(90deg, rgba(143,184,255,.05) 1px, transparent 1px) 0 0 / 28px 28px, radial-gradient(ellipse 80% 60% at 50% 10%, #15284a, #07101c 70%) fixed; }
+body[data-mode="view"]::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 40; background: repeating-linear-gradient(180deg, rgba(0,0,0,.16) 0 1px, transparent 1px 3px); }
+body[data-mode] header.bar { height: 34px; background: var(--glass); border-bottom: 1px solid #000; box-shadow: 0 1px 0 rgba(143,184,255,.25); }
+body[data-mode] .brand { font: 400 13px var(--px); color: #fff; }
+body[data-mode] .brand::before { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+body[data-mode] .bar-title { font: 400 13px var(--px); border-left-color: rgba(143,184,255,.3); }
+body[data-mode] .tabs button { font: 400 13px var(--px); }
+body[data-mode] .tabs button[aria-selected="true"]::after { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+body[data-mode] .actions { background: var(--glass); border: 1px solid #000; border-radius: 0; box-shadow: 0 0 0 1px rgba(143,184,255,.3), 4px 4px 0 #000; }
+body[data-mode] .actions .btn { color: #e4ecfa; font: 400 13px var(--px); border-left-color: rgba(143,184,255,.2); }
+body[data-mode] .actions .btn.primary { background: linear-gradient(180deg, #b9d3ff, #6f9ae6); color: #07101c; }
+body[data-mode] .shared-note { background: rgba(13,20,33,.9); color: #c9d8f2; border: 1px solid rgba(143,184,255,.4); border-radius: 0; font: 400 12.5px var(--px9); box-shadow: 3px 3px 0 #000; }
+
+/* ── A440 만들기 화면: 요원 단말 창. 툴마다 --t(강조색)만 다르다 ── */
+body[data-mode="edit"] { --t: var(--accent); --m-paper: #0d1420; --m-field: #131b29; --m-ink: #e4e9f0; --m-sub: #9aa8bc; --m-line: rgba(143,184,255,.2); --m-hot: var(--t); background: linear-gradient(180deg, #0f1a2d 0%, #07101c 100%) fixed; color: var(--m-ink); }
+body[data-mode="edit"] .editor .card, body[data-mode="edit"] .f-sec { position: relative; background: var(--m-field); border: 1px solid #000; border-radius: 0; box-shadow: 0 0 0 1px rgba(143,184,255,.22), 4px 4px 0 #000; padding: 0 16px 16px; }
+body[data-mode="edit"] .editor .card > h3, body[data-mode="edit"] .f-sec > h3 { margin: 0 -16px 12px; height: 28px; padding: 0 12px; display: flex; align-items: center; gap: 8px; background: var(--glass); border-bottom: 1px solid #000; border-left: 3px solid var(--t); color: #fff; font: 400 13px var(--px); }
+body[data-mode="edit"] .f-sec > h3 small, body[data-mode="edit"] .f-sec > h3 em { color: var(--t); font: 400 11px var(--px9); }
+body[data-mode="edit"] .f-lab { font: 400 12px var(--px9); color: var(--m-sub); }
+body[data-mode="edit"] .f-lab output { color: var(--t); }
+body[data-mode="edit"] .f input[type="text"], body[data-mode="edit"] .f input[type="search"], body[data-mode="edit"] .f textarea, body[data-mode="edit"] .f select, body[data-mode="edit"] .paste { background: var(--m-paper); color: var(--m-ink); border: 1px solid rgba(143,184,255,.28); border-radius: 0; }
+body[data-mode="edit"] .f select option { background: #0d1420; color: #e4e9f0; }
+body[data-mode="edit"] .f input[type="color"] { border-radius: 0; background: var(--m-paper); border-color: rgba(143,184,255,.28); }
+body[data-mode="edit"] .f input[type="range"] { accent-color: var(--t); }
+body[data-mode="edit"] .editor .how { border-color: var(--m-line); }
+body[data-mode="edit"] .editor .how b { color: var(--t); font: 400 13px var(--px); }
+body[data-mode="edit"] .btn { border-radius: 0; border: 1px solid rgba(143,184,255,.35); background: #1a2333; color: var(--m-ink); font: 400 13px var(--px); }
+body[data-mode="edit"] .btn:hover { background: #222d42; }
+body[data-mode="edit"] .btn.primary { background: var(--t); color: #0b1018; border-color: var(--t); }
+body[data-mode="edit"] .btn.primary:hover { background: var(--t); filter: brightness(1.1); }
+body[data-mode="edit"] .btn.done { background: transparent; color: var(--m-sub); }
+body[data-mode="edit"] .progress span { border-radius: 0; font: 400 11.5px var(--px9); }
+body[data-mode="edit"] .progress span.ok { background: var(--t); color: #0b1018; border-color: var(--t); }
+body[data-mode="edit"] .paste.is-err { background: #2a1416; }
+body[data-mode="edit"] .toast { border-radius: 0; background: var(--t); color: #0b1018; font: 400 13px var(--px); }
+body[data-mode] .tabs button { color: rgba(228,236,250,.6); height: 34px; min-height: 34px; }
+body[data-mode] .tabs button[aria-selected="true"] { color: #fff; }
+body[data-mode="edit"] .progress .live-note { flex-basis: 100%; font: 400 11.5px var(--px9); font-style: normal; color: var(--m-sub); }

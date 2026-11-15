@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>두 행성</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%20shape-rendering%3D%27crispEdges%27%3E%3Crect%20width%3D%2716%27%20height%3D%2716%27%20rx%3D%273%27%20fill%3D%27%230d1330%27%2F%3E%3Cpath%20d%3D%27M3%206h4v4H3z%27%20fill%3D%27%23ffb067%27%2F%3E%3Cpath%20d%3D%27M10%205h3v3h-3z%27%20fill%3D%27%238fd3ff%27%2F%3E%3Cpath%20d%3D%27M2%2012h12v1H2z%27%20fill%3D%27%23fff%27%20opacity%3D%27.35%27%2F%3E%3C%2Fsvg%3E">
+<meta name="description" content="러스벌트의 투자 모델 점수로 두 사람을 두 행성으로 만들고, 실제 중력 계산으로 궤도를 돌려 결말을 정하는 메이커">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="stylesheet" href="../assets/y2k.css">
+<style>
+/* 레이아웃: 관측 기록지. 왼쪽 궤도 플롯(모눈 + 잉크 궤적) · 오른쪽 관측값과 사건 기록 · 아래 판정 카드 */
+:root {
+  --bg: #dfe4e8;
+  --paper: #eef2f4;
+  --ink: #18222e;
+  --muted: #5d6b78;
+  --grid: rgba(24, 34, 46, .08);
+  --grid2: rgba(24, 34, 46, .16);
+  --accent: #b8452f;
+  --hair: rgba(24, 34, 46, .16);
+}
+.poster { width: min(1060px, 100%); background: var(--paper); color: var(--ink); border-radius: 4px; box-shadow: 0 1px 0 rgba(24,34,46,.1), 0 22px 50px -18px rgba(24,34,46,.35); overflow: hidden; }
+.poster.capturing { border-radius: 0; box-shadow: none; }
+
+/* 기록지 머리 */
+.head { display: grid; grid-template-columns: 1fr auto; gap: 18px; padding: 26px 32px 18px; border-bottom: 1.5px solid var(--ink); }
+.head .kick { font-size: 13px; font-weight: 700; color: var(--muted); }
+.head h1 { margin: 6px 0 0; font-size: 32px; font-weight: 800; letter-spacing: -.045em; line-height: 1.2; word-break: keep-all; text-wrap: balance; }
+.head p { margin: 8px 0 0; font-size: 14.5px; color: #3a4754; line-height: 1.65; max-width: 60ch; }
+.stamp { align-self: start; text-align: right; font-family: var(--mono); font-size: 11px; line-height: 1.9; color: var(--muted); }
+.stamp b { color: var(--ink); font-weight: 600; }
+
+.body { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
+.plot { position: relative; padding: 18px; border-right: 1px solid var(--hair); }
+.plot canvas { display: block; width: 100%; aspect-ratio: 1; background: #05070d; border: 1px solid var(--ink); }
+.plot .axis { position: absolute; left: 27px; top: 27px; font-family: "Galmuri9", var(--mono); font-size: 11.5px; color: #c9d3ef; background: rgba(5,7,13,.7); padding: 3px 6px; }
+.side { padding: 20px 24px 22px; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.blk h3 { margin: 0 0 10px; font-size: 13px; font-weight: 800; color: var(--ink); }
+
+/* 관측 대상: 투자 모델 세 값 */
+.bodies { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.bd .nm { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 16px; margin-bottom: 8px; }
+.bd .nm i { width: 14px; height: 14px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1.5px var(--ink); }
+.meter { display: grid; grid-template-columns: 52px 1fr 26px; gap: 8px; align-items: center; font-size: 12px; margin-top: 5px; }
+.meter span:first-child { color: var(--muted); }
+.meter .tr { height: 6px; background: var(--grid2); position: relative; }
+.meter .tr i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ink); width: var(--w); }
+.meter b { font-family: var(--mono); font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.bd .note { margin: 8px 0 0; font-size: 12.5px; line-height: 1.6; color: #3a4754; }
+
+/* 실시간 관측값 */
+.live { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--ink); }
+.live div { padding: 8px 10px; border-right: 1px solid var(--hair); }
+.live div:last-child { border-right: 0; }
+.live small { display: block; font-size: 12px; color: var(--muted); }
+.live b { font-family: var(--mono); font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* 사건 기록 */
+.evs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+.evs li { display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--hair); font-size: 13px; line-height: 1.5; transition: background .3s; }
+.evs li .n { width: 22px; height: 22px; display: grid; place-items: center; font-family: var(--mono); font-size: 11px; font-weight: 600; border: 1.5px solid var(--ink); transform: rotate(45deg); }
+.evs li .n span { transform: rotate(-45deg); }
+.evs li b { display: block; font-size: 13.5px; }
+.evs li .k { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+.evs li.hit { background: rgba(184,69,47,.08); }
+.evs li.hit .n { background: var(--ink); color: var(--paper); }
+
+.ctrl { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ctrl .play { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--ink); color: var(--paper); display: grid; place-items: center; cursor: pointer; }
+.seg { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 999px; overflow: hidden; }
+.seg button { border: 0; background: transparent; padding: 6px 11px; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--ink); min-height: 34px; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.capturing .ctrl { display: none; }
+
+/* 판정 */
+.verdict { display: grid; grid-template-columns: auto 1fr auto; gap: 22px; align-items: center; padding: 22px 32px 26px; border-top: 1.5px solid var(--ink); }
+.verdict .ty { width: 88px; height: 88px; border: 1.5px solid var(--ink); border-radius: 50%; display: grid; place-items: center; position: relative; }
+.verdict .ty svg { width: 64px; height: 64px; }
+.verdict small { font-size: 13px; font-weight: 700; color: var(--accent); }
+.verdict h2 { margin: 4px 0 6px; font-size: 24px; font-weight: 800; letter-spacing: -.04em; text-wrap: balance; }
+.verdict p { margin: 0; font-size: 14.5px; line-height: 1.75; max-width: 62ch; }
+.commit { font-family: var(--mono); font-size: 12px; line-height: 2; text-align: right; color: var(--muted); white-space: nowrap; }
+.commit b { color: var(--ink); font-size: 18px; font-variant-numeric: tabular-nums; }
+.verdict.pending h2, .verdict.pending p { color: var(--muted); }
+.foot { display: flex; justify-content: space-between; gap: 12px; padding: 12px 32px; border-top: 1px solid var(--hair); font-size: 11px; color: var(--muted); }
+
+@media (max-width: 820px) {
+  .head { grid-template-columns: 1fr; padding: 20px 18px 14px; }
+  .head h1 { font-size: 25px; }
+  .stamp { text-align: left; }
+  .body { grid-template-columns: 1fr; }
+  .plot { border-right: 0; border-bottom: 1px solid var(--hair); padding: 12px; }
+  .side { padding: 16px 16px 18px; }
+  .live { grid-template-columns: repeat(2, 1fr); }
+  .live div:nth-child(2) { border-right: 0; }
+  .live div:nth-child(-n+2) { border-bottom: 1px solid var(--hair); }
+  .verdict { grid-template-columns: auto 1fr; padding: 18px; }
+  .commit { grid-column: 1 / -1; text-align: left; }
+  .foot { flex-direction: column; padding: 12px 18px; }
+}
+
+/* ───────── Y2K 우주 관측 프로그램: 은색 크롬 머리판 · 남색 우주 몸체 · 하늘·보라 그라데이션 계기판 · 도트 글씨 ───────── */
+:root { --px: "Galmuri11", var(--ui-font); --px9: "Galmuri9", "Galmuri11", var(--ui-font); --neo: #8ff3ff; --neo2: #ff8de2; --sp: #0d1330;
+  --chrome: linear-gradient(180deg, #ffffff 0%, #e6e8ee 40%, #c3c8d3 52%, #e9ebf1 78%, #f8f9fb 100%); }
+.poster { border-radius: 0; border: 1px solid #000; box-shadow: 5px 5px 0 #000; background: linear-gradient(160deg, #11183d 0%, #0b0f26 55%, #1d1240 100%); color: #e8ecff; }
+.poster.capturing { box-shadow: none; }
+.head { background: var(--chrome); color: #11141d; border-bottom: 1px solid #000; }
+.head .kick { font-family: var(--px9); font-weight: 400; color: #4a4e58; }
+.head h1 { font-family: var(--px); font-weight: 400; letter-spacing: 0; }
+.head p { color: #3c404a; }
+.stamp { font-family: var(--px9); color: #4a4e58; } .stamp b { color: #11141d; font-weight: 400; }
+.plot { border-right: 1px solid rgba(143,243,255,.25); }
+.plot canvas { border: 1px solid rgba(143,243,255,.5); box-shadow: 0 0 0 1px #000, 0 0 24px rgba(120,160,255,.25); }
+.side { color: #e8ecff; }
+.blk h3 { font-family: var(--px); font-weight: 400; color: var(--neo); font-size: 13.5px; }
+.bd .nm { font-family: var(--px); font-weight: 400; color: #fff; }
+.bd .nm i { border-radius: 50%; box-shadow: 0 0 0 1.5px #fff, 0 0 10px var(--c); }
+.meter span:first-child { color: #aab3d6; font-family: var(--px9); }
+.meter .tr { background: rgba(255,255,255,.1); height: 7px; }
+.meter .tr i { background: linear-gradient(90deg, var(--neo), #a58bff 60%, var(--neo2)); box-shadow: 0 0 6px rgba(143,243,255,.5); }
+.meter b { color: #fff; font-family: var(--px9); font-weight: 400; }
+.bd .note { color: #c3cae6; }
+.live { border: 1px solid rgba(143,243,255,.6); background: #050817; box-shadow: inset 2px 2px 0 #000; }
+.live div { border-right: 1px solid rgba(143,243,255,.2); }
+.live small { color: #7fa3c9; font-family: var(--px9); }
+.live b { color: #b6ffcf; font-family: var(--px); font-weight: 400; text-shadow: 0 0 6px rgba(140,255,180,.5); }
+.evs { border-top: 1px solid rgba(143,243,255,.4); }
+.evs li { border-bottom: 1px solid rgba(255,255,255,.1); color: #dfe4fa; }
+.evs li b { font-family: var(--px); font-weight: 400; color: #fff; }
+.evs li .n { border-color: var(--neo); color: var(--neo); font-family: var(--px9); }
+.evs li .k { color: #8b94bb; font-family: var(--px9); }
+.evs li.hit { background: linear-gradient(90deg, rgba(143,243,255,.14), rgba(255,141,226,.08)); }
+.evs li.hit .n { background: var(--neo); color: #06102a; }
+.ctrl .play { border-radius: 0; background: linear-gradient(180deg, #b9fbff, #57d6ef); color: #06102a; border: 1px solid #000; box-shadow: 2px 2px 0 #000; }
+.seg { border-radius: 0; border: 1px solid rgba(143,243,255,.7); }
+.seg button { color: #dfe4fa; font-family: var(--px9); font-weight: 400; }
+.seg button[aria-pressed="true"] { background: var(--neo); color: #06102a; }
+.verdict { border-top: 1px solid rgba(143,243,255,.4); background: linear-gradient(90deg, rgba(143,243,255,.08), rgba(165,139,255,.1) 50%, rgba(255,141,226,.08)); }
+.verdict .ty { border-color: var(--neo); color: var(--neo); box-shadow: 0 0 18px rgba(143,243,255,.3); }
+.verdict small { color: var(--neo2); font-family: var(--px9); font-weight: 400; }
+.verdict h2 { font-family: var(--px); font-weight: 400; letter-spacing: 0; color: #fff; }
+.verdict p { color: #d6dbf3; }
+.commit { color: #8b94bb; font-family: var(--px9); } .commit b { color: var(--neo); font-family: var(--px); font-weight: 400; }
+.verdict.pending h2, .verdict.pending p { color: #6f7898; }
+.foot { border-top: 1px solid rgba(255,255,255,.12); color: #8b94bb; font-family: var(--px9); }
+
+/* 지금 무슨 일인지: 궤도 화면 아래쪽 자막 */
+.plot .say { position: absolute; left: 30px; right: 30px; top: 56px; padding: 10px 14px; background: rgba(5,8,20,.84); border: 1px solid rgba(143,243,255,.45); color: #e8ecff; font-size: 14px; line-height: 1.55; min-height: 48px; transition: border-color .3s; }
+.plot .say b { display: block; font: 400 15px var(--px, sans-serif); color: var(--neo, #8ff3ff); margin-bottom: 2px; }
+.plot .say small { display: block; margin-top: 4px; font-size: 12px; color: #aab3d6; }
+.plot .say.pull { border-color: #8ff3ff; } .plot .say.push { border-color: #ff8de2; } .plot .say.push b { color: #ff8de2; } .plot .say.end b { color: #ffe08a; }
+.plot .how { margin: 10px 2px 0; font-size: 12.5px; color: #aab3d6; line-height: 1.5; }
+.capturing .plot .say { display: none; }
+@media (max-width: 820px) { .plot .say { left: 20px; right: 20px; top: 46px; font-size: 13px; } }
+
+/* 바깥: 깊은 우주 — 별 · 성운 · 어두운 유리 메뉴 줄 · 하늘색 네온 버튼 줄 */
+body[data-mode="view"] { background: radial-gradient(circle at 20% 30%, rgba(165,139,255,.25), transparent 35%), radial-gradient(circle at 80% 70%, rgba(143,243,255,.18), transparent 40%), radial-gradient(circle, rgba(255,255,255,.7) 1px, transparent 1.3px) 0 0 / 53px 53px, radial-gradient(circle, rgba(255,255,255,.45) 1px, transparent 1.3px) 17px 29px / 37px 37px, linear-gradient(180deg, #050816, #0d1330 60%, #1a1240) fixed; }
+body[data-mode] header.bar { background: linear-gradient(180deg, #1a2350, #0b1028); border-bottom: 1px solid #8ff3ff; color: #e8ecff; box-shadow: 0 0 12px rgba(143,243,255,.3); }
+body[data-mode] .brand, body[data-mode] .bar-title { color: #e8ecff; }
+body[data-mode] .brand::before { background: #8ff3ff; box-shadow: 0 0 6px #8ff3ff; }
+body[data-mode] .tabs button { color: #aab3d6; }
+body[data-mode] .tabs button[aria-selected="true"] { background: #8ff3ff; color: #06102a; }
+body[data-mode] .actions { background: rgba(11,16,40,.92); border: 1px solid #8ff3ff; box-shadow: 0 0 16px rgba(143,243,255,.35), 4px 4px 0 #000; }
+body[data-mode] .actions .btn { background: transparent; color: #e8ecff; border-color: rgba(143,243,255,.5); box-shadow: none; }
+body[data-mode] .actions .btn.primary { background: linear-gradient(180deg, #b9fbff, #57d6ef); color: #06102a; }
+body[data-mode] .shared-note { background: rgba(11,16,40,.92); color: #e8ecff; border: 1px solid #8ff3ff; box-shadow: 0 0 12px rgba(143,243,255,.3); }
+body[data-mode] .stage .btn:not(.actions .btn) { background: transparent; color: #e8ecff; border: 1px solid rgba(143,243,255,.6); box-shadow: none; }
+
+/* 바탕은 단색·그라데이션만 */
+body[data-mode="view"] { background: linear-gradient(180deg, #050816 0%, #0d1330 60%, #1a1240 100%) fixed; }
+
+/* 만들기 화면 툴 색 */
+body { --e-main:#3b5bd9;--e-dark:#1d2f80;--e-ink:#0d1330;--e-win:#f6f8ff;--e-s1:#e3e9ff;--e-s2:#97a8e6;--e-bg1:#0d1330;--e-bg2:#1a1240; }
+</style>
+</head>
+<body data-mode="view" data-noframe>
+<header class="bar">
+  <a class="brand" href="../">귀환의 블로그</a>
+  <span class="bar-title">두 행성</span>
+  <span class="bar-spacer"></span>
+  <div class="tabs" role="tablist"><button data-mode="view" role="tab">보기</button><button data-mode="edit" role="tab">만들기</button></div>
+</header>
+<main class="stage only-view">
+  <p class="shared-note" id="shared-note" hidden>공유받은 관측 기록이에요. 만들기에서 고치면 내 브라우저에만 저장돼요.</p>
+  <article class="poster" id="poster"></article>
+  <nav class="actions">
+    <button class="btn primary" id="btn-png">이미지 저장</button>
+    <button class="btn" id="btn-link">링크 복사</button>
+    <button class="btn" id="btn-replay">다시 관측</button>
+  </nav>
+</main>
+<main class="editor only-edit" id="editor"></main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/modern-screenshot@4.6.8/dist/index.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(() => {
+const { esc, br, clamp, num, $, pad, initial, today } = Core;
+const MAX_EV = 5;
+const OUT = {
+  circle:  { n: '원 궤도', d: '일정한 거리로 서로의 둘레를 도는 안정된 쌍성계' },
+  ellipse: { n: '타원 궤도', d: '가까워졌다 멀어지기를 되풀이하는 긴 궤도' },
+  collide: { n: '충돌', d: '거리를 버티지 못하고 하나로 합쳐짐' },
+  escape:  { n: '이탈', d: '서로의 중력을 벗어나 각자의 궤도로 떠남' },
+};
+
+const emptyEv = () => ({ at: 50, kind: 'pull', power: 40, title: '', text: '' });
+const blank = () => ({
+  v: 1, title: '', sub: '', dist: 50,
+  a: { name: 'NPC', color: '#d9822b', sat: 50, inv: 50, alt: 50, note: '' },
+  b: { name: 'PC', color: '#3b6fb6', sat: 50, inv: 50, alt: 50, note: '' },
+  events: Array.from({ length: MAX_EV }, emptyEv),
+  endings: Object.fromEntries(Object.keys(OUT).map(k => [k, { title: '', text: '' }])),
+});
+const sample = () => ({
+  v: 1,
+  title: '막차 이후의 쌍성계',
+  sub: '서로를 놓을 수 있는 대안은 적고, 투자한 시간은 많다. 남은 건 만족도의 문제다.',
+  dist: 42,
+  a: { name: 'NPC', color: '#d9822b', sat: 64, inv: 82, alt: 18, note: '연체료를 받지 않는 데에 이미 너무 많은 마음을 썼다. 떠날 곳이 없다기보다 떠날 생각이 없다.' },
+  b: { name: 'PC', color: '#3b6fb6', sat: 86, inv: 58, alt: 34, note: '공연이 끝나면 늘 맨 앞줄부터 본다. 다른 관객은 많지만 앙코르곡을 바꾸게 하는 사람은 하나다.' },
+  events: [
+    { at: 18, kind: 'pull', power: 62, title: '바뀐 앙코르곡', text: 'PC가 NPC가 좋아한다던 곡으로 앙코르을 바꿨다.' },
+    { at: 46, kind: 'push', power: 38, title: '지운 메시지', text: 'NPC가 보낸 말을 바로 지웠다. PC는 이유를 묻지 않았다.' },
+    { at: 70, kind: 'pull', power: 45, title: '두 번째 줄', text: '맨 앞줄 대신 두 번째 줄에 섰다. PC는 그걸 알아봤다.' },
+    emptyEv(), emptyEv(),
+  ],
+  endings: {
+    circle: { title: '서로를 중심에 둔 쌍성', text: '누가 먼저 다가가는지는 끝내 기록되지 않는다. 다만 두 행성은 같은 거리에서 같은 속도로 계속 돈다.' },
+    ellipse: { title: '반납일마다 가까워지는 궤도', text: '가까워질 때는 연체료가 쌓이고 멀어질 때는 답장이 늦어진다. 그래도 궤도는 매번 같은 지점으로 돌아온다.' },
+    collide: { title: '하나의 행성', text: '지운 메시지까지 전부 보내고 나면 더는 두 개로 셀 수 없게 된다.' },
+    escape: { title: '각자의 공전', text: '서로가 아니어도 굴러가는 하루가 더 무거워지는 순간, 두 행성은 조용히 멀어진다.' },
+  },
+});
+function normalize(s) {
+  const b = blank(); s = s && typeof s === 'object' ? s : {};
+  const fixP = (p, d) => { const o = { ...d, ...(p || {}) }; for (const k of ['sat', 'inv', 'alt']) o[k] = clamp(Math.round(num(o[k], 50)), 0, 100); return o; };
+  const o = { ...b, ...s, a: fixP(s.a, b.a), b: fixP(s.b, b.b) };
+  o.dist = clamp(Math.round(num(o.dist, 50)), 0, 100);
+  o.events = Array.from({ length: MAX_EV }, (_, i) => {
+    const e = { ...emptyEv(), ...((s.events || [])[i] || {}) };
+    e.at = clamp(Math.round(num(e.at, 50)), 1, 99); e.power = clamp(Math.round(num(e.power, 40)), 0, 100);
+    e.kind = e.kind === 'push' ? 'push' : 'pull'; return e;
+  });
+  o.endings = Object.fromEntries(Object.keys(OUT).map(k => [k, { ...b.endings[k], ...((s.endings || {})[k] || {}) }]));
+  return o;
+}
+function apply(S, o) {
+  const got = [];
+  for (const k of ['a', 'b']) if (o[k] && typeof o[k] === 'object') { Object.entries(o[k]).forEach(([kk, v]) => { if (v !== '' && v != null) S[k][kk] = v; }); if (!got.includes('두 행성')) got.push('두 행성'); }
+  if (o.dist != null) S.dist = o.dist;
+  if (Array.isArray(o.events)) { S.events = Array.from({ length: MAX_EV }, emptyEv); o.events.slice(0, MAX_EV).forEach((e, i) => { if (e && typeof e === 'object') S.events[i] = { ...emptyEv(), ...e }; }); got.push('사건'); }
+  if (o.endings && typeof o.endings === 'object') { Object.keys(OUT).forEach(k => { if (o.endings[k]) S.endings[k] = { ...S.endings[k], ...o.endings[k] }; }); got.push('결말'); }
+  ['title', 'sub'].forEach(k => { if (o[k]) S[k] = o[k]; });
+  return got;
+}
+
+/* ── OOC ── */
+function prompts() {
+  const p1 = `*[OOC: 롤플레잉 잠시 중단. 「두 행성」 기록.
+러스벌트(Rusbult)의 투자 모델로 NPC와 PC를 두 행성으로 만든다. 사이트가 이 값으로 실제 중력 계산을 돌려 궤도와 결말(원 궤도·타원 궤도·충돌·이탈)을 정한다. 결말은 AI가 고르지 않는다. 놀이용 창작이며 진단이 아니다.
+▪ 각자 0~100: sat 만족도(관계에서 얻는 기쁨 → 끌어당기는 중력) / inv 투자 크기(들인 시간·감정·추억 → 질량) / alt 대안의 매력(이 관계 아니어도 채워질 다른 삶 → 튕겨 나가는 속도). 두 사람 값은 달라야 한다.
+▪ 근거: 지금까지의 설정·성격·말투·관계와 RP에서 실제 있었던 일만. 없는 사건·가족·과거는 만들지 않는다. 말보다 행동을 본다.
+▪ note 각자 값의 근거 행동 2문장 90자 / dist 지금 심리적 거리 0(가까움)~100(멂)
+▪ events: 관계를 흔든 실제 사건 2~5개, 순서대로. at 관측 기간 중 시점 1~99, kind pull(끌어당김)|push(밀어냄), power 0~100, title 12자, text 50자
+▪ endings: 결과를 모르니 네 결말을 다 쓴다. circle(같은 거리로 안정) ellipse(가까워졌다 멀어지기 반복) collide(하나로 합쳐짐) escape(각자 떠남), 각 title 18자 text 2문장 100자
+▪ title 18자, sub 60자
+▪ 세 값은 RP 속 행동으로 설명되게. events의 at은 실제 순서대로 커지고, power는 그 사건이 관계를 흔든 크기. 네 결말은 같은 두 사람의 다른 미래로, 각자 말투가 묻어나게.
+▪ RP 밖 기록: PC의 말·행동·속마음은 RP에 실제 나온 것만 쓰고 지어내지 않는다. 여기서 만든 내용은 이후 RP의 사실로 삼지 않는다.
+▪ 품질: 작위적인 전개·뻔한 클리셰 없이, 이 두 사람만의 물건·장소·습관·말버릇 같은 구체적인 디테일로. 답이 길어 끊길 것 같으면 개수를 줄여서라도 JSON을 끝까지 닫는다.
+▪ 출력: 인사·설명 없이 JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만 쓰고 줄바꿈하지 않는다. 키 이름은 그대로, a=NPC, b=PC. 아래 값은 형식 예시일 뿐 그대로 쓰지 않는다.
+{"a":{"name":"","sat":0,"inv":0,"alt":0,"note":""},"b":{"name":"","sat":0,"inv":0,"alt":0,"note":""},"dist":50,"events":[{"at":20,"kind":"pull","power":50,"title":"","text":""}],"endings":{"circle":{"title":"","text":""},"ellipse":{"title":"","text":""},"collide":{"title":"","text":""},"escape":{"title":"","text":""}},"title":"","sub":""}]*`;
+  return [{ label: '두 행성 관측', sub: '투자 모델 값 · 사건 · 네 결말', text: p1 }];
+}
+function progress(S) {
+  return [
+    { label: '두 행성', ok: !!(S.a.note || S.b.note) },
+    { label: `사건 ${S.events.filter(e => e.title).length}개`, ok: S.events.some(e => e.title) },
+    { label: '결말 4개', ok: Object.values(S.endings).every(e => e.text) },
+  ];
+}
+function schema(S) {
+  const per = (k) => [
+    { k: `${k}.name`, label: '이름' }, { k: `${k}.color`, label: '색', type: 'color' },
+    { k: `${k}.sat`, label: '만족도 · 중력', type: 'range' }, { k: `${k}.inv`, label: '투자 크기 · 질량', type: 'range' },
+    { k: `${k}.alt`, label: '대안의 매력 · 튕겨 나가는 속도', type: 'range', full: true },
+    { k: `${k}.note`, label: '근거', type: 'textarea', full: true },
+  ];
+  const ev = [];
+  S.events.forEach((e, i) => {
+    ev.push({ sub: `사건 ${i + 1}` });
+    ev.push({ k: `events.${i}.title`, label: '이름', ph: '비우면 빠져요' });
+    ev.push({ k: `events.${i}.kind`, label: '종류', type: 'select', opts: [['pull', '끌어당김'], ['push', '밀어냄']] });
+    ev.push({ k: `events.${i}.at`, label: '언제 (관측 기간 %)', type: 'range', min: 1, max: 99 });
+    ev.push({ k: `events.${i}.power`, label: '세기', type: 'range' });
+    ev.push({ k: `events.${i}.text`, label: '무슨 일', full: true });
+  });
+  const en = [];
+  Object.entries(OUT).forEach(([k, v]) => { en.push({ sub: `${v.n} · ${v.d}` }); en.push({ k: `endings.${k}.title`, label: '제목', full: true }); en.push({ k: `endings.${k}.text`, label: '내용', type: 'textarea', full: true }); });
+  return [
+    { title: '관측 기록', en: 'RECORD', fields: [{ k: 'title', label: '제목', full: true }, { k: 'sub', label: '부제', type: 'textarea', full: true }, { k: 'dist', label: '처음 거리 (가까움 ↔ 멂)', type: 'range', full: true }] },
+    { title: `NPC · ${S.a.name}`, en: 'BODY A', fields: per('a') },
+    { title: `PC · ${S.b.name}`, en: 'BODY B', fields: per('b') },
+    { title: '사건', en: 'EVENTS', desc: '사건은 그 시점에 두 행성 사이 속도를 바꿔요. 끌어당김은 안쪽으로, 밀어냄은 바깥쪽으로.', fields: ev },
+    { title: '결말', en: 'ENDINGS', desc: '계산 결과로 고른 결말 하나만 판정 칸에 나와요.', fields: en },
+  ];
+}
+
+/* ── 물리: 두 질량의 상대 운동(무게중심 기준), 립프로그 적분 ── */
+const STEPS = 2600;
+function simulate(S) {
+  const mA = 1 + S.a.inv / 25, mB = 1 + S.b.inv / 25, M = mA + mB;
+  /* 만족도 평균 → 중력 0.5~1.5 · 대안 평균 → 처음 속도(기준 원 궤도 속도의 0.72~1.67배) */
+  const G = 0.5 + (S.a.sat + S.b.sat) / 200;
+  const r0 = 60 + S.dist * 1.2;
+  const vc0 = Math.sqrt(1 * M / r0);
+  const v0 = vc0 * (0.72 + (S.a.alt + S.b.alt) / 200 * 0.95);
+  const RA = 3 + mA * 1.2, RB = 3 + mB * 1.2;
+  const dt = 0.022 * Math.sqrt(r0 ** 3 / (G * M));
+  let x = r0, y = 0, vx = 0, vy = v0;
+  const evs = S.events.map((e, i) => ({ ...e, i, step: Math.round(e.at / 100 * STEPS) })).filter(e => e.title).sort((p, q) => p.step - q.step);
+  const path = []; const hits = []; let out = null, minR = r0, maxR = r0;
+  const acc = (px, py) => { const r = Math.hypot(px, py); const k = -G * M / (r * r * r); return [k * px, k * py]; };
+  let [ax, ay] = acc(x, y);
+  for (let s = 0; s <= STEPS; s++) {
+    for (const e of evs) if (e.step === s) {
+      const r = Math.hypot(x, y), ux = x / r, uy = y / r, vl = Math.sqrt(G * M / r);
+      const dv = (e.power / 100) * 0.5 * vl * (e.kind === 'pull' ? -1 : 1);
+      vx += ux * dv; vy += uy * dv;
+      // 끌어당김은 궤도를 조금 더 둥글게(접선 속도 보정), 밀어냄은 흔듦
+      hits.push({ s, i: e.i, x, y });
+    }
+    path.push([x, y]);
+    const r = Math.hypot(x, y); minR = Math.min(minR, r); maxR = Math.max(maxR, r);
+    if (r < RA + RB) { out = 'collide'; break; }
+    const E = 0.5 * (vx * vx + vy * vy) - G * M / r;
+    if (r > r0 * 5 && E >= 0) { out = 'escape'; break; }
+    vx += ax * dt / 2; vy += ay * dt / 2;
+    x += vx * dt; y += vy * dt;
+    [ax, ay] = acc(x, y);
+    vx += ax * dt / 2; vy += ay * dt / 2;
+  }
+  if (!out) {
+    const r = Math.hypot(x, y), E = 0.5 * (vx * vx + vy * vy) - G * M / r;
+    if (E >= 0) out = 'escape';
+    else {
+      const h = x * vy - y * vx; const e = Math.sqrt(Math.max(0, 1 + 2 * E * h * h / (G * M) ** 2));
+      out = e < 0.3 ? 'circle' : 'ellipse';
+    }
+  }
+  /* 마지막 구간의 이심률 · 주기 */
+  const rf = Math.hypot(x, y), Ef = 0.5 * (vx * vx + vy * vy) - G * M / rf, hf = x * vy - y * vx;
+  const ecc = Ef < 0 ? Math.sqrt(Math.max(0, 1 + 2 * Ef * hf * hf / (G * M) ** 2)) : 1;
+  const aSemi = Ef < 0 ? -G * M / (2 * Ef) : Infinity;
+  const period = isFinite(aSemi) ? 2 * Math.PI * Math.sqrt(aSemi ** 3 / (G * M)) : Infinity;
+  return { path, hits, out, mA, mB, M, RA, RB, r0, minR, maxR, ecc, period, dt };
+}
+/* 러스벌트: 헌신 = 만족 + 투자 − 대안 (0~100으로) */
+const commit = p => Math.round(clamp((p.sat + p.inv + (100 - p.alt)) / 3, 0, 100));
+
+/* ── 그리기: 검은 관측 화면 위 실제 같은 두 행성 ── */
+const STARS = Array.from({ length: 140 }, (_, i) => { const r = (n => () => (n = (n * 16807) % 2147483647) / 2147483647)(i * 7919 + 13); return [r(), r(), r() * 1.2 + .3, r() * .6 + .25]; });
+function shade(hex, f) { const n = parseInt(String(hex).replace('#', '').slice(0, 6), 16) || 0x888888; let r = n >> 16 & 255, g = n >> 8 & 255, b = n & 255;
+  if (f > 0) { r += (255 - r) * f; g += (255 - g) * f; b += (255 - b) * f; } else { r *= 1 + f; g *= 1 + f; b *= 1 + f; } return `rgb(${r | 0},${g | 0},${b | 0})`; }
+function drawPlot(cv, S, sim, upto) {
+  const dpr = Math.min(2.5, window.devicePixelRatio || 1);
+  const W = cv.clientWidth, H = W;
+  if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  /* 우주: 가운데가 살짝 밝은 남색, 별 */
+  const bg = g.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, W * .75); bg.addColorStop(0, '#16203a'); bg.addColorStop(1, '#05070d');
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  STARS.forEach(([x, y, s, a]) => { g.fillStyle = `rgba(230,236,255,${a})`; g.fillRect(x * W, y * H, s, s); });
+  /* 옅은 모눈 */
+  const step = W / 12; g.strokeStyle = 'rgba(160,180,230,.06)'; g.lineWidth = 1;
+  for (let i = 1; i < 12; i++) { g.beginPath(); g.moveTo(i * step + .5, 0); g.lineTo(i * step + .5, H); g.moveTo(0, i * step + .5); g.lineTo(W, i * step + .5); g.stroke(); }
+  /* 행성은 무게중심에서 거리의 일부만큼 떨어져 돈다: 화면을 그 크기에 맞춘다 */
+  const view = Math.min(sim.maxR, sim.r0 * 3.2) * Math.max(sim.mA, sim.mB) / sim.M * 1.18;
+  const k = (W / 2) / view;
+  const cx = W / 2, cy = H / 2;
+  const fa = sim.mB / sim.M, fb = sim.mA / sim.M;
+  const P = (p, f, sgn) => [cx + sgn * p[0] * f * k, cy - sgn * p[1] * f * k];
+  /* 거리 눈금 원 */
+  g.setLineDash([2, 5]); g.strokeStyle = 'rgba(190,205,240,.22)';
+  [1, 2, 3].forEach(m => { const rr = sim.r0 * m * k * 0.5; if (rr < W / 2) { g.beginPath(); g.arc(cx, cy, rr, 0, Math.PI * 2); g.stroke(); } });
+  g.setLineDash([]);
+  /* 무게중심 */
+  g.strokeStyle = 'rgba(230,236,255,.7)'; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(cx - 6, cy); g.lineTo(cx + 6, cy); g.moveTo(cx, cy - 6); g.lineTo(cx, cy + 6); g.stroke();
+  const n = Math.max(1, Math.min(sim.path.length, upto));
+  /* 궤적: 지나온 길은 흐리게, 최근 길은 진하고 빛나게 */
+  const trail = (f, sgn, color) => {
+    const from = 0; let prev = null;
+    for (let i = from; i < n; i += 2) { const p = P(sim.path[i], f, sgn); if (prev) { const t = i / n, recent = Math.max(0, 1 - (n - i) / 500);
+        g.strokeStyle = color; g.globalAlpha = .18 + .7 * recent; g.lineWidth = 1 + recent * 1.4; g.beginPath(); g.moveTo(prev[0], prev[1]); g.lineTo(p[0], p[1]); g.stroke(); } prev = p; }
+    g.globalAlpha = 1;
+  };
+  g.save(); g.shadowColor = S.a.color; g.shadowBlur = 6; trail(fa, -1, S.a.color); g.shadowColor = S.b.color; trail(fb, 1, S.b.color); g.restore();
+  /* 사건 표시 */
+  sim.hits.forEach((h, j) => {
+    if (h.s > n) return;
+    const [px, py] = P([h.x, h.y], fb, 1);
+    g.save(); g.translate(px, py); g.rotate(Math.PI / 4);
+    g.fillStyle = '#0b1020'; g.strokeStyle = '#f2f5ff'; g.lineWidth = 1.2; g.fillRect(-7, -7, 14, 14); g.strokeRect(-7, -7, 14, 14); g.restore();
+    g.fillStyle = '#f2f5ff'; g.font = '400 11px "Galmuri9", "IBM Plex Mono", monospace'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(j + 1), px, py + .5);
+  });
+  /* 행성: 빛 받는 쪽은 밝게, 반대쪽은 어둡게, 둘레엔 대기 빛 */
+  const cur = sim.path[n - 1];
+  const sphere = (px, py, rr, color) => {
+    const glow = g.createRadialGradient(px, py, rr * .8, px, py, rr * 2.4); glow.addColorStop(0, shade(color, .1).replace('rgb', 'rgba').replace(')', ',.35)')); glow.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = glow; g.beginPath(); g.arc(px, py, rr * 2.4, 0, Math.PI * 2); g.fill();
+    const body = g.createRadialGradient(px - rr * .4, py - rr * .45, rr * .1, px, py, rr); body.addColorStop(0, shade(color, .55)); body.addColorStop(.45, color); body.addColorStop(1, shade(color, -.62));
+    g.fillStyle = body; g.beginPath(); g.arc(px, py, rr, 0, Math.PI * 2); g.fill();
+  };
+  const label = (px, py, rr, name) => {
+    g.font = '400 13px "Galmuri11", "Pretendard Variable", sans-serif'; const w = g.measureText(name).width + 12, lx = px + rr + 8, ly = py - rr - 8;
+    g.fillStyle = 'rgba(5,7,13,.72)'; g.fillRect(lx - 1, ly - 10, w, 20); g.strokeStyle = 'rgba(230,236,255,.5)'; g.lineWidth = 1; g.strokeRect(lx - .5, ly - 9.5, w - 1, 19);
+    g.fillStyle = '#f2f5ff'; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText(name, lx + 5, ly + .5);
+  };
+  if (sim.out === 'collide' && n >= sim.path.length) {
+    const [px, py] = P(cur, fb, 1); const rr = Math.max(9, (sim.RA + sim.RB) * k * .8);
+    sphere(px, py, rr, S.a.color); const gr = g.createLinearGradient(px - rr, py, px + rr, py); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, S.b.color);
+    g.globalAlpha = .55; g.fillStyle = gr; g.beginPath(); g.arc(px, py, rr, 0, Math.PI * 2); g.fill(); g.globalAlpha = 1;
+    label(px, py, rr, `${S.a.name} + ${S.b.name}`);
+  } else {
+    const pa = P(cur, fa, -1), pb = P(cur, fb, 1), ra = Math.max(7, sim.RA * k), rb = Math.max(7, sim.RB * k);
+    sphere(pa[0], pa[1], ra, S.a.color); sphere(pb[0], pb[1], rb, S.b.color); label(pa[0], pa[1], ra, S.a.name); label(pb[0], pb[1], rb, S.b.name);
+  }
+  return { r: Math.hypot(cur[0], cur[1]) };
+}
+const outIcon = out => ({
+  circle: '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="32" cy="32" r="20" stroke-dasharray="3 3"/><circle cx="12" cy="32" r="4" fill="currentColor"/><circle cx="52" cy="32" r="5"/></svg>',
+  ellipse: '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="32" cy="32" rx="26" ry="13" stroke-dasharray="3 3"/><circle cx="8" cy="32" r="4" fill="currentColor"/><circle cx="46" cy="26" r="5"/></svg>',
+  collide: '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="32" cy="32" r="12"/><path d="M32 12v6M32 46v6M12 32h6M46 32h6M18 18l4 4M42 42l4 4M46 18l-4 4M18 46l4-4"/></svg>',
+  escape: '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 50 C24 40 30 30 28 12" stroke-dasharray="3 3"/><path d="M54 14 C40 24 34 34 36 52" stroke-dasharray="3 3"/><circle cx="28" cy="12" r="4" fill="currentColor"/><circle cx="36" cy="52" r="5"/></svg>',
+}[out]);
+
+function posterHTML(S, sim) {
+  const meter = (l, v) => `<div class="meter"><span>${l}</span><span class="tr"><i style="--w:${v}%"></i></span><b>${v}</b></div>`;
+  const body = (p, m) => `<div class="bd" style="--c:${esc(p.color)}"><div class="nm"><i></i>${esc(p.name)}</div>
+    ${meter('만족도', p.sat)}${meter('투자', p.inv)}${meter('대안', p.alt)}
+    <div class="meter"><span>질량</span><span class="tr"><i style="--w:${Math.round((m - 1) / 4 * 100)}%"></i></span><b>${m.toFixed(1)}</b></div>
+    ${p.note ? `<p class="note">${br(p.note)}</p>` : ''}</div>`;
+  const evs = S.events.filter(e => e.title).sort((p, q) => p.at - q.at);
+  const end = S.endings[sim.out];
+  return `
+  <header class="head">
+    <div><span class="kick">투자 모델 궤도 관측</span><h1>${br(S.title || '이름 없는 쌍성계')}</h1>${S.sub ? `<p>${br(S.sub)}</p>` : ''}</div>
+    <div class="stamp">관측일 <b>${today()}</b><br>대상 <b>${esc(S.a.name)} · ${esc(S.b.name)}</b><br>계산 <b>${STEPS.toLocaleString()} 단계</b></div>
+  </header>
+  <div class="body">
+    <div class="plot"><canvas id="cv" aria-label="두 행성의 궤도"></canvas><span class="axis">점선 원 = 처음 거리의 0.5 · 1 · 1.5배</span><div class="say" id="say" aria-live="polite"></div><p class="how">두 행성이 가까워질수록 관계도 가까워요. 궤도 위 ◇는 롤플에서 실제 있었던 사건이에요.</p></div>
+    <div class="side">
+      <div class="blk"><h3>관측 대상</h3><div class="bodies">${body(S.a, sim.mA)}${body(S.b, sim.mB)}</div></div>
+      <div class="blk"><h3>실시간 관측값</h3><div class="live">
+        <div><small>경과</small><b id="lv-t">0%</b></div><div><small>거리</small><b id="lv-r">${Math.round(sim.r0)}</b></div>
+        <div><small>가장 가까움</small><b id="lv-min">${Math.round(sim.minR)}</b></div><div><small>이심률</small><b id="lv-e">-</b></div></div></div>
+      <div class="ctrl"><button class="play" id="o-play" aria-label="관측 시작"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 2.5v11L13.5 8z"/></svg></button>
+        <span class="seg" id="o-speed"><button data-s="1" aria-pressed="true">1배</button><button data-s="2">2배</button><button data-s="4">4배</button></span></div>
+      ${evs.length ? `<div class="blk"><h3>사건 기록</h3><ol class="evs">${evs.map((e, j) => `<li data-ev="${j}"><span class="n"><span>${j + 1}</span></span><span><b>${esc(e.title)}</b>${esc(e.text)}</span><span class="k">${e.kind === 'pull' ? '끌어당김' : '밀어냄'} ${e.power}</span></li>`).join('')}</ol></div>` : ''}
+    </div>
+  </div>
+  <section class="verdict pending" id="verdict">
+    <span class="ty">${outIcon(sim.out)}</span>
+    <div><small>판정 · ${OUT[sim.out].n}</small><h2>${br(end.title || OUT[sim.out].d)}</h2><p>${br(end.text || OUT[sim.out].d)}</p></div>
+    <div class="commit">헌신도 ${esc(S.a.name)} <b>${commit(S.a)}</b><br>헌신도 ${esc(S.b.name)} <b>${commit(S.b)}</b></div>
+  </section>
+  <footer class="foot"><span>러스벌트(Rusbult)의 투자 모델(만족도 · 투자 크기 · 대안의 질)을 중력 계산에 옮긴 놀이용 기록이에요. 실제 심리 진단이 아니에요.</span><span>두 행성</span></footer>`;
+}
+
+let raf = 0, speed = 1, cur = null;
+function render(S, { animate }) {
+  cancelAnimationFrame(raf);
+  const sim = simulate(S); cur = { S, sim };
+  const el = $('#poster'); el.innerHTML = posterHTML(S, sim);
+  const cv = $('#cv'); const N = sim.path.length;
+  const lvT = $('#lv-t'), lvR = $('#lv-r'), lvE = $('#lv-e'), vd = $('#verdict');
+  const evRows = [...el.querySelectorAll('[data-ev]')];
+  /* 지금 무슨 일인지 글로: 사건이 일어나면 그 사건, 아니면 가까워지는지 멀어지는지 */
+  const say = n => { const box = $('#say'); if (!box) return; const evs = S.events.map((e, i) => ({ ...e, i })).filter(e => e.title).sort((p, q) => p.at - q.at);
+    let hit = null; sim.hits.forEach((h, j) => { if (h.s <= n && n - h.s < 650) hit = { e: evs[j], j }; });
+    if (n >= N) { box.innerHTML = '<b>관측 끝</b>' + esc(OUT[sim.out].n) + ' · ' + esc(OUT[sim.out].d); box.className = 'say end'; return; }
+    if (hit && hit.e) { box.innerHTML = '<b>' + (hit.j + 1) + ' · ' + esc(hit.e.title) + '</b>' + esc(hit.e.text || '') + '<small>' + (hit.e.kind === 'pull' ? '끌어당김: 둘 사이가 가까워져요' : '밀어냄: 둘 사이가 멀어져요') + '</small>'; box.className = 'say ' + (hit.e.kind === 'pull' ? 'pull' : 'push'); return; }
+    const i1 = Math.max(0, Math.min(N - 1, (n | 0) - 30)), i2 = Math.max(0, Math.min(N - 1, n | 0)), a = sim.path[i1], b = sim.path[i2]; if (!a || !b) return; const ra = Math.hypot(a[0], a[1]), rb = Math.hypot(b[0], b[1]);
+    box.innerHTML = rb < ra - .05 ? '<b>가까워지는 중</b>두 행성이 서로를 끌어당기고 있어요' : rb > ra + .05 ? '<b>멀어지는 중</b>두 행성 사이가 벌어지고 있어요' : '<b>나란히 도는 중</b>거리가 거의 그대로예요'; box.className = 'say'; };
+  const update = n => {
+    const { r } = drawPlot(cv, S, sim, n);
+    lvT.textContent = Math.round(n / N * 100) + '%'; lvR.textContent = Math.round(r);
+    sim.hits.forEach((h, j) => evRows[j]?.classList.toggle('hit', h.s <= n));
+    say(n);
+    if (n >= N) { lvE.textContent = sim.ecc >= 1 ? '≥ 1' : sim.ecc.toFixed(2); vd.classList.remove('pending'); }
+  };
+  const playFrom = start => {
+    cancelAnimationFrame(raf); vd.classList.add('pending'); lvE.textContent = '-';
+    let n = start, last = performance.now();
+    const tick = now => { const dt = Math.min(64, now - last); last = now; n = Math.min(N, n + dt * 0.12 * speed); update(Math.floor(n)); if (n < N) raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick);
+    /* 탭이 가려져도 결과는 그려지게 */
+    setTimeout(() => { if (cur && cur.sim === sim && n < N) { n = N; update(N); } }, (N / 0.12 / speed) + 800);
+  };
+  $('#o-play').onclick = () => playFrom(0);
+  el.querySelectorAll('#o-speed [data-s]').forEach(b => { b.setAttribute('aria-pressed', String(Number(b.dataset.s) === speed)); b.onclick = () => { speed = Number(b.dataset.s); el.querySelectorAll('#o-speed [data-s]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); }; });
+  requestAnimationFrame(() => playFrom(0));
+}
+window.addEventListener('resize', Core.debounce(() => { if (cur && document.body.dataset.mode === 'view') drawPlot($('#cv'), cur.S, cur.sim, cur.sim.path.length); }, 150));
+
+Core.app({
+  key: '2inbun:orbit', what: '관측 기록', sample, blank, normalize, schema, prompts, apply, progress, render,
+  fileName: S => `두행성_${S.a.name}_${S.b.name}`,
+});
+})();
+</script>
+</body>
+</html>

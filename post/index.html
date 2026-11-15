@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마음 우체국</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%20shape-rendering%3D%27crispEdges%27%3E%3Crect%20width%3D%2716%27%20height%3D%2716%27%20rx%3D%273%27%20fill%3D%27%233a6ea5%27%2F%3E%3Cpath%20d%3D%27M2%204h12v8H2z%27%20fill%3D%27%23fff%27%2F%3E%3Cpath%20d%3D%27M3%205h1v1h1v1h1v1h4V7h1V6h1V5h1v1h-1v1h-1v1h-1v1H6V8H5V7H4V6H3z%27%20fill%3D%27%233a6ea5%27%2F%3E%3C%2Fsvg%3E">
+<meta name="description" content="사랑의 언어 다섯 가지로 두 사람의 마음이 어떻게 배달되는지 보여 주는 우체국 메이커">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Pen+Script&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="stylesheet" href="../assets/y2k.css">
+<style>
+/* 마음 우체국: 2000년대 메일 프로그램 한 창. 두 사람이 서로에게 보낸 마음이 받은편지함에 쌓이고,
+   배달 완료 · 오배송 · 반송 · 배송 중으로 나뉜다. 우표 = 사랑의 언어. 못 부친 엽서는 임시보관함, 소견은 알림 창. */
+:root {
+  --bg: #d2d2d2; --ink: #111; --muted: #555; --chrome: #e4e4e4; --pane: #fff; --dark: #8c8c8c; --sel: #111;
+  --pen: "Nanum Pen Script", cursive; --px: "Galmuri11", "Pretendard Variable", sans-serif; --px9: "Galmuri9", "Galmuri11", sans-serif;
+}
+body[data-mode="view"] { background-image: radial-gradient(#bdbdbd 1px, transparent 1.2px); background-size: 8px 8px; }
+.poster { width: min(1080px, 100%); color: var(--ink); }
+.mx { background: var(--chrome); border: 1px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); }
+.poster.capturing .mx { box-shadow: none; }
+.bar3 { display: flex; align-items: center; height: 26px; padding: 0 6px; border-bottom: 1px solid var(--ink); background: repeating-linear-gradient(180deg, #ececec 0 2px, #a3a3a3 2px 3px); }
+.bar3 > span { margin: 0 auto; padding: 0 10px; background: #ececec; font: 400 13px var(--px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%; }
+.bar3 .wb { margin: 0; display: flex; gap: 3px; padding: 0 0 0 4px; }
+.bar3 .wb i { width: 15px; height: 15px; border: 1px solid var(--ink); background: #f7f7f7; font: 400 10px/13px var(--px9); text-align: center; font-style: normal; }
+.tool { display: flex; gap: 4px; align-items: center; padding: 5px 8px; border-bottom: 1px solid var(--dark); box-shadow: 0 1px 0 #fff; }
+.tool svg { width: 14px; height: 14px; flex: none; }
+.tool span { white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px; border: 1px solid var(--ink); background: var(--chrome); box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 #fff; font: 400 12.5px var(--px); }
+.tool .who { margin-left: auto; border: 0; background: none; box-shadow: none; font: 400 12px var(--px9); color: var(--muted); }
+.tool .who b { font-weight: 400; color: var(--c); }
+.head { padding: 18px 20px 16px; background: var(--pane); border-bottom: 1px solid var(--ink); }
+.head small { font: 400 12px var(--px9); color: var(--muted); }
+.head h1 { margin: 6px 0 0; font: 400 clamp(22px, 3vw, 32px)/1.3 var(--px); letter-spacing: -.01em; text-wrap: balance; }
+.head p { margin: 8px 0 0; max-width: 62ch; font-size: 14px; line-height: 1.7; color: #333; }
+
+.body { display: grid; grid-template-columns: 190px minmax(0, 1fr); background: var(--pane); }
+.folders { border-right: 1px solid var(--dark); background: var(--chrome); padding: 8px 6px; }
+.folders h3 { margin: 4px 6px 6px; font: 400 11.5px var(--px9); color: var(--muted); }
+.fd { display: flex; align-items: center; gap: 7px; padding: 6px 8px; font: 400 13px var(--px); }
+.fd svg { width: 16px; height: 16px; flex: none; }
+.fd b { margin-left: auto; font: 400 12px var(--px9); }
+.fd.on { background: var(--sel); color: #fff; }
+.fd.dim { color: var(--muted); }
+.main { min-width: 0; display: grid; grid-template-rows: auto auto; }
+.list .lh, .list .mr { display: grid; grid-template-columns: 150px 92px minmax(0, 1fr) 96px; gap: 10px; align-items: center; padding: 0 12px; }
+.list .lh { height: 26px; background: var(--chrome); border-bottom: 1px solid var(--dark); font: 400 12px var(--px9); }
+.mr { min-height: 50px; padding-block: 7px; border-bottom: 1px dotted #c8c8c8; font-size: 13.5px; cursor: pointer; }
+.mr .fr { display: flex; align-items: center; gap: 6px; font: 400 12.5px var(--px); white-space: nowrap; overflow: hidden; }
+.mr .fr i { width: 9px; height: 9px; flex: none; background: var(--c); border: 1px solid var(--ink); }
+.mr .tx { line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.mr.unread .tx { font-weight: 700; }
+.mr.on { background: var(--sel); color: #fff; }
+.mr.on .st { background: #fff; color: var(--ink); }
+.mr.on .stp .s { color: #fff; }
+.stp { display: flex; align-items: center; gap: 6px; }
+.stp .s { font: 400 11.5px var(--px9); color: var(--muted); }
+/* 우표: 톱니 테두리 작은 사각형 */
+.stamp { --lc: #c4473e; width: 30px; height: 34px; flex: none; display: grid; place-items: center; background: #fffdf6; color: var(--lc); padding: 3px;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, radial-gradient(circle 2.2px, transparent 95%, #000) -3px -3px / 6px 6px round; mask: linear-gradient(#000 0 0) content-box, radial-gradient(circle 2.2px, transparent 95%, #000) -3px -3px / 6px 6px round; }
+.stamp span { width: 100%; height: 100%; display: grid; place-items: center; border: 1.5px solid var(--lc); background: #fff; }
+.stamp svg { width: 17px; height: 17px; }
+.st { justify-self: start; display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; font: 400 11.5px var(--px9); border: 1px solid var(--ink); white-space: nowrap; }
+.st.s-ok { background: var(--ink); color: #fff; }
+.st.s-miss { border-style: dashed; }
+.st.s-back { background: repeating-linear-gradient(135deg, #fff 0 3px, #d6d6d6 3px 6px); }
+.st.s-going { color: var(--muted); border-color: var(--dark); }
+/* 미리 보기 창 */
+.read { border-top: 1px solid var(--ink); background: #fafafa; padding: 14px 16px 16px; min-height: 172px; }
+.read .rh { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 12px; align-items: center; font: 400 12.5px var(--px9); color: var(--muted); padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+.read .rh b { font: 400 13px var(--px); color: var(--ink); }
+.read .rh .stamp { grid-row: span 2; width: 42px; height: 48px; } .read .rh .stamp svg { width: 24px; height: 24px; }
+.read .msg { margin: 12px 0 0; font-size: 16px; line-height: 1.7; font-weight: 600; text-wrap: pretty; }
+.read .re { margin-top: 10px; padding: 8px 12px; background: #fff; border: 1px solid #cfcfcf; border-left: 3px solid var(--c, var(--ink)); font-size: 13.5px; line-height: 1.6; }
+.read .re small { display: block; font: 400 11.5px var(--px9); color: var(--muted); }
+.read.swap { animation: rdIn .35s ease; }
+@keyframes rdIn { from { opacity: .2; transform: translateY(4px); } }
+
+/* 도착률: 누가 보낸 마음이 상대가 원하는 칸에 얼마나 닿았나 */
+.rates { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; border-top: 1px solid var(--ink); }
+.rt { background: var(--pane); border: 1px solid var(--ink); }
+.rt .rtb { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; padding: 12px 14px 8px; }
+.rt .pct { font: 400 40px/1 var(--px); }
+.rt .pct small { font-size: 18px; }
+.rt .cap { font-size: 13px; line-height: 1.5; color: #333; }
+.rt .cap b { color: var(--c); }
+.rt .rows { padding: 4px 14px 12px; display: grid; gap: 7px; }
+.lr { display: grid; grid-template-columns: 74px minmax(0, 1fr) 34px; gap: 8px; align-items: center; font: 400 12px var(--px9); }
+.lr .bars { display: grid; gap: 2px; }
+.lr .bars i { display: block; height: 7px; width: var(--w); transition: width 1s ease; }
+.lr .bars .g { background: var(--c); }
+.lr .bars .n { background: repeating-linear-gradient(90deg, #888 0 2px, transparent 2px 4px); height: 5px; }
+.lr .d { text-align: right; font-family: var(--mono, monospace); font-size: 11px; color: var(--muted); }
+.legend { display: flex; gap: 14px; padding: 0 14px 10px; font: 400 11px var(--px9); color: var(--muted); }
+.legend i { display: inline-block; width: 14px; height: 6px; margin-right: 4px; vertical-align: middle; }
+
+/* 임시보관함: 부치지 못한 엽서 */
+.drafts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 12px 12px; }
+.dr { background: var(--pane); border: 1px solid var(--ink); }
+.dr .meta { padding: 8px 12px; border-bottom: 1px solid #ddd; font: 400 12px var(--px9); color: var(--muted); display: grid; gap: 2px; }
+.dr .meta b { font: 400 12.5px var(--px); color: var(--ink); }
+.dr .pen { margin: 0; padding: 12px 14px 4px; font: 400 23px/1.45 var(--pen); color: #23314f; min-height: 96px; background: repeating-linear-gradient(transparent 0 32px, #e3e8f2 32px 33px); background-position: 0 10px; }
+.dr .ft { display: flex; justify-content: flex-end; gap: 6px; padding: 6px 10px 10px; }
+.dr .ft span { height: 26px; padding: 0 10px; display: inline-flex; align-items: center; border: 1px solid var(--dark); color: var(--dark); font: 400 12px var(--px); background: var(--chrome); }
+
+/* 우체국장 알림 창 */
+.alert { margin: 0 12px 14px; background: var(--chrome); border: 1px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.alert .ab { display: grid; grid-template-columns: 40px 1fr; gap: 14px; padding: 16px 18px 6px; background: var(--chrome); }
+.alert svg { width: 36px; height: 36px; }
+.alert h2 { margin: 0 0 6px; font: 400 18px/1.4 var(--px); text-wrap: balance; }
+.alert p { margin: 0; font-size: 14px; line-height: 1.75; }
+.alert .ok { display: flex; justify-content: center; padding: 10px 0 14px; }
+.alert .ok span { min-width: 90px; height: 30px; display: inline-grid; place-items: center; border: 1px solid var(--ink); outline: 1px dotted var(--ink); outline-offset: -5px; background: var(--chrome); box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 #fff; font: 400 13px var(--px); }
+.p-foot { display: flex; justify-content: space-between; gap: 12px; padding: 6px 10px; border-top: 1px solid var(--dark); font: 400 11.5px var(--px9); color: var(--muted); }
+.p-foot span:first-child { border: 1px solid var(--dark); border-right-color: #fff; border-bottom-color: #fff; padding: 2px 8px; background: var(--chrome); flex: 1; }
+.p-foot span:last-child { border: 1px solid var(--dark); border-right-color: #fff; border-bottom-color: #fff; padding: 2px 8px; }
+.fadeUp { animation: fadeUp .4s ease both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } }
+
+@media (max-width: 760px) {
+  .tool span:not(.who) { display: none; } .tool .who { margin-left: 0; }
+  .head { padding: 14px; }
+  .body { grid-template-columns: 1fr; }
+  .folders { border-right: 0; border-bottom: 1px solid var(--dark); display: flex; gap: 2px; overflow-x: auto; padding: 6px; }
+  .folders h3 { display: none; } .fd { white-space: nowrap; flex: none; padding: 5px 8px; }
+  .list .lh { display: none; }
+  .list .mr { grid-template-columns: 34px minmax(0, 1fr) auto; grid-template-areas: "sp fr st" "sp tx tx"; gap: 4px 10px; padding: 10px 12px; }
+  .mr .fr { grid-area: fr; } .mr .stp { grid-area: sp; } .mr .stp .s { display: none; } .mr .tx { grid-area: tx; } .mr .st { grid-area: st; justify-self: end; }
+  .read .msg { font-size: 15px; }
+  .rates, .drafts { grid-template-columns: 1fr; }
+  .rt .pct { font-size: 34px; }
+  .p-foot { flex-direction: column; }
+}
+
+/* 색: 창 제목 막대는 2000년대 활성 창처럼 남색→하늘색, 편지함 바탕은 은빛 무지개 */
+.mx > .bar3, .alert .bar3 { background: linear-gradient(90deg, #0a246a 0%, #3a6ea5 60%, #a6caf0 100%); }
+.mx > .bar3 > span, .alert .bar3 > span { background: none; color: #fff; }
+.mx > .bar3 .wb, .alert .bar3 .wb { background: none; }
+.rt .bar3, .dr .bar3 { background: linear-gradient(90deg, #7b7f8c, #c9ccd6); }
+.rt .bar3 > span, .dr .bar3 > span { background: none; color: #fff; }
+.head { background: linear-gradient(120deg, #ffffff 0 55%, #f0eaff 75%, #e4f2ff 100%); }
+.mr.on, .fd.on { background: linear-gradient(90deg, #0a246a, #3a6ea5); }
+.drafts, .rates { background: linear-gradient(135deg, #ece2ff 0%, #d9eaff 40%, #dcf8ee 70%, #ffe3f1 100%); }
+.drafts { padding-top: 12px; margin-top: -1px; }
+
+/* 바깥: 2000년대 윈도 바탕화면 — 파란 바탕 · 회색 작업 표시줄 같은 메뉴 줄 · 노란 풍선 도움말 */
+body[data-mode="view"] { background: radial-gradient(ellipse 60% 50% at 70% 40%, rgba(255,255,255,.12), transparent 70%), #3a6ea5 fixed; }
+body[data-mode] header.bar { background: #d4d0c8; border-bottom: 1px solid #404040; box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 #808080; color: #111; }
+body[data-mode] .brand { padding: 2px 10px; margin: 4px 8px 4px 0; background: #d4d0c8; border: 1px solid #111; box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #fff; }
+body[data-mode] .tabs button { border: 1px solid #111; background: #d4d0c8; box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #fff; color: #111; margin: 4px 0; height: 26px; }
+body[data-mode] .tabs button[aria-selected="true"] { background: #e8e6e0 repeating-conic-gradient(#d4d0c8 0 25%, #fff 0 50%) 0 0 / 2px 2px; color: #111; box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #fff; }
+body[data-mode] .actions { background: #d4d0c8; border: 1px solid #111; box-shadow: inset 1px 1px 0 #fff, 3px 3px 0 rgba(0,0,0,.4); }
+body[data-mode] .actions .btn { background: #d4d0c8; }
+body[data-mode] .actions .btn.primary { background: linear-gradient(90deg, #0a246a, #3a6ea5); color: #fff; }
+body[data-mode] .shared-note { background: #ffffe1; color: #111; border: 1px solid #111; box-shadow: 2px 2px 0 rgba(0,0,0,.35); border-radius: 0; }
+.mx > .bar3 .wb i, .alert .bar3 .wb i { color: #111; } .dr .ft span { color: #555; border-color: #777; }
+
+/* 바탕은 단색·그라데이션만 */
+body[data-mode="view"] { background: #3a6ea5; }
+
+/* 만들기 화면 툴 색 */
+body { --e-main:#0a246a;--e-dark:#000c3a;--e-ink:#0b1a3a;--e-win:#f4f7fc;--e-s1:#dfe8f6;--e-s2:#7f9cc8;--e-bg1:#4a7db3;--e-bg2:#2f5c8f; }
+
+/* 긴 이름도 잘리지 않게 줄바꿈 */
+.mr .fr { white-space: normal; overflow: visible; align-items: flex-start; word-break: keep-all; line-height: 1.4; }
+.mr .fr i { margin-top: 4px; }
+.rt .bar3 span { white-space: normal; overflow: visible; text-overflow: clip; word-break: keep-all; }
+.rt .bar3 { height: auto; min-height: 26px; padding: 3px 6px; }
+</style>
+</head>
+<body data-mode="view" data-noframe>
+<header class="bar">
+  <a class="brand" href="../">귀환의 블로그</a>
+  <span class="bar-title">마음 우체국</span>
+  <span class="bar-spacer"></span>
+  <div class="tabs" role="tablist">
+    <button data-mode="view" role="tab">보기</button>
+    <button data-mode="edit" role="tab">만들기</button>
+  </div>
+</header>
+
+<main class="stage only-view">
+  <p class="shared-note" id="shared-note" hidden>공유받은 우편물이에요. 만들기에서 고치면 내 브라우저에만 저장돼요.</p>
+  <article class="poster" id="poster"></article>
+  <nav class="actions">
+    <button class="btn primary" id="btn-png">이미지 저장</button>
+    <button class="btn" id="btn-link">링크 복사</button>
+    <button class="btn" id="btn-replay">처음부터</button>
+  </nav>
+</main>
+
+<main class="editor only-edit">
+  <div id="form"></div>
+  <aside>
+    <section class="card">
+      <h3>AI 채팅으로 채우기</h3>
+      <div class="how"><div><b>01 복사</b>1번부터 차례로</div><div><b>02 보내기</b>캐릭터 채팅방에</div><div><b>03 붙여넣기</b>답을 통째로</div></div>
+    </section>
+    <section class="card">
+      <h3>OOC 프롬프트</h3>
+      <div class="psteps" id="prompts"></div>
+    </section>
+    <section class="card">
+      <h3>AI 답변 붙여넣기</h3>
+      <textarea class="paste" id="paste" placeholder="AI 답변을 그대로 붙여넣어 주세요. 앞뒤에 말이 섞여 있어도 괜찮아요."></textarea>
+      <button class="btn primary" id="apply" style="width:100%;margin-top:8px">적용하기</button>
+      <div class="progress" id="progress"></div>
+    </section>
+    <section class="card" style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="btn-sample">예시 불러오기</button>
+      <button class="btn ghost" id="btn-clear">전부 비우기</button>
+    </section>
+  </aside>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/modern-screenshot@4.6.8/dist/index.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(() => {
+const { esc, br, clamp, num, $ } = Core;
+
+/* 채프먼(Chapman)의 사랑의 언어 다섯 가지 */
+const L = [
+  { k: 'words',   n: '인정하는 말',   s: '말',     c: '#c4473e', i: '<path d="M6 7h20a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H14l-6 5v-5H6a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3z"/><path d="M10 13h12M10 17h8"/>' },
+  { k: 'time',    n: '함께하는 시간', s: '시간',   c: '#2b4f86', i: '<circle cx="16" cy="16" r="11"/><path d="M16 9v7l5 3"/>' },
+  { k: 'gifts',   n: '선물',          s: '선물',   c: '#c98d1e', i: '<rect x="5" y="12" width="22" height="15" rx="1.5"/><path d="M3 12h26M16 12v15M16 12c-3-6-9-6-8-2 1 3 8 2 8 2zM16 12c3-6 9-6 8-2-1 3-8 2-8 2z"/>' },
+  { k: 'service', n: '봉사',          s: '봉사',   c: '#3a7a5a', i: '<path d="M6 13h16v6a7 7 0 0 1-7 7h-2a7 7 0 0 1-7-7z"/><path d="M22 15h2a3 3 0 0 1 0 6h-2M11 4c0 2 2 2 2 5M16 4c0 2 2 2 2 5"/>' },
+  { k: 'touch',   n: '스킨십',        s: '스킨십', c: '#b0496f', i: '<path d="M16 27s-10-6-10-13a5.5 5.5 0 0 1 10-3 5.5 5.5 0 0 1 10 3c0 7-10 13-10 13z"/>' },
+];
+const LK = Object.fromEntries(L.map(l => [l.k, l]));
+const STATUS = {
+  ok:    { t: '배달 완료', c: 's-ok',    d: '상대가 알아듣고 받았어요' },
+  miss:  { t: '오배송',    c: 's-miss',  d: '다른 뜻으로 받아들였어요' },
+  back:  { t: '반송',      c: 's-back',  d: '받지 못하고 돌아왔어요' },
+  going: { t: '배송 중',   c: 's-going', d: '아직 닿지 않았어요' },
+};
+const icon = (l, sw = 2) => `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${l.i}</svg>`;
+const zero = () => Object.fromEntries(L.map(l => [l.k, 0]));
+const MAIL_N = 6;
+const pad = n => String(n).padStart(2, '0');
+const initial = s => [...String(s || '?').trim()][0] || '?';
+
+const blankMail = () => Array.from({ length: MAIL_N }, () => ({ from: 'a', lang: 'words', text: '', status: 'ok', note: '' }));
+const blank = () => ({
+  v: 1, title: '', sub: '',
+  a: { name: 'NPC', color: '#c4473e' }, b: { name: 'PC', color: '#2b4f86' },
+  ag: zero(), an: zero(), bg: zero(), bn: zero(), aNote: '', bNote: '',
+  mail: blankMail(), card: { a: '', b: '' }, verdict: { title: '', body: '' },
+});
+const sample = () => ({
+  v: 1,
+  title: '등기로 보낸 마음, 일반우편으로 받는 사람',
+  sub: '한 사람은 손으로 보내고 한 사람은 말로 기다린다. 우표가 달라서 늦을 뿐, 주소는 정확하다.',
+  a: { name: 'NPC', color: '#c4473e' }, b: { name: 'PC', color: '#2b4f86' },
+  ag: { words: 22, time: 70, gifts: 38, service: 90, touch: 14 },
+  an: { words: 82, time: 64, gifts: 18, service: 34, touch: 46 },
+  bg: { words: 88, time: 60, gifts: 55, service: 28, touch: 78 },
+  bn: { words: 30, time: 72, gifts: 15, service: 58, touch: 84 },
+  aNote: '말 대신 손이 먼저 움직이는 사람. 마음은 늘 반납 기한 전에 조용히 처리된다.',
+  bNote: '좋으면 좋다고 말해야 직성이 풀린다. 말과 손이 동시에 나가는 게 문제.',
+  mail: [
+    { from: 'a', lang: 'service', text: 'PC의 밀린 연체료를 몰래 대신 내 두었다.', status: 'miss', note: 'PC는 도서관 시스템 오류인 줄 알았다.' },
+    { from: 'b', lang: 'words', text: '공연이 끝나고 “와 줘서 고마워요” 문자를 세 통 보냈다.', status: 'ok', note: 'NPC는 세 통을 전부 캡처해 두었다.' },
+    { from: 'a', lang: 'time', text: '리허설이 있는 날마다 일부러 퇴근을 늦췄다.', status: 'going', note: 'PC는 아직 우연이라고 생각한다.' },
+    { from: 'b', lang: 'touch', text: '횡단보도에서 손을 잡으려다 머리를 쓰다듬었다.', status: 'back', note: 'NPC가 반사적으로 한 발 물러났다.' },
+    { from: 'b', lang: 'gifts', text: '투어 기념 피크에 구멍을 뚫어 열쇠고리로 만들어 줬다.', status: 'ok', note: '도서관 열쇠 꾸러미에 같이 달려 있다.' },
+    { from: 'a', lang: 'words', text: '“잘했어요” 한마디를 쪽지에 써서 악보집 사이에 끼웠다.', status: 'going', note: '다음 반납 때 발견될 예정.' },
+  ],
+  card: {
+    a: '말로는 못 하니까 여기 쓸게요. 다음 공연도 맨 앞줄은 비워 둬요. 반납은 천천히 해도 돼요.',
+    b: 'NPC 씨가 해 준 거 다 알아요. 모르는 척하는 게 더 어려웠어요. 이번엔 손 잡아도 돼요?',
+  },
+  verdict: {
+    title: '우표만 바꿔 붙이면 바로 도착할 우편물',
+    body: 'NPC의 마음은 늘 봉사 우표를 달고 출발하지만, PC의 우편함은 말과 스킨십 칸만 열려 있다. PC가 보내는 말은 대부분 제대로 닿는다. NPC가 한 번만 말로 부치면 반송함이 비워질 것이다.',
+  },
+});
+
+function normalize(s) {
+  const b = blank(); s = s && typeof s === 'object' ? s : {};
+  const o = { ...b, ...s, a: { ...b.a, ...(s.a || {}) }, b: { ...b.b, ...(s.b || {}) }, card: { ...b.card, ...(s.card || {}) }, verdict: { ...b.verdict, ...(s.verdict || {}) } };
+  for (const g of ['ag', 'an', 'bg', 'bn']) o[g] = Object.fromEntries(L.map(l => [l.k, clamp(Math.round(num((s[g] || {})[l.k], 0)), 0, 100)]));
+  o.mail = Array.from({ length: MAIL_N }, (_, i) => {
+    const m = { ...b.mail[i], ...((s.mail || [])[i] || {}) };
+    m.from = String(m.from).toLowerCase() === 'b' ? 'b' : 'a';
+    const lg = String(m.lang || '').trim(); m.lang = LK[lg] ? lg : (L.find(l => l.n === lg || l.s === lg || lg.includes(l.s)) || L[0]).k;
+    const st = String(m.status || '').trim(); m.status = STATUS[st] ? st : (Object.entries(STATUS).find(([, v]) => v.t === st || st.includes(v.t.replace(' ', ''))) || ['ok'])[0];
+    return m;
+  });
+  return o;
+}
+
+function apply(S, o) {
+  const got = [];
+  const scores = (src, key) => { if (src && typeof src === 'object') { L.forEach(l => { if (src[l.k] != null) S[key][l.k] = src[l.k]; }); return true; } return false; };
+  for (const [side, g, n, note] of [['a', 'ag', 'an', 'aNote'], ['b', 'bg', 'bn', 'bNote']]) {
+    const src = o[side]; if (!src || typeof src !== 'object') continue;
+    if (src.name) S[side].name = src.name;
+    const hit = [scores(src.give, g), scores(src.need, n)].some(Boolean);
+    if (hit) got.push(`${S[side].name} 우표`);
+    if (src.note) S[note] = src.note;
+  }
+  if (Array.isArray(o.mail)) {
+    /* 우편물은 한 번에 통째로 오므로, 예시가 섞이지 않게 비우고 채운다 */
+    S.mail = blankMail();
+    o.mail.slice(0, MAIL_N).forEach((m, i) => { if (m && typeof m === 'object') S.mail[i] = { ...S.mail[i], ...m }; });
+    got.push('배송 조회');
+  }
+  if (o.card && typeof o.card === 'object') { Object.assign(S.card, o.card); got.push('엽서'); }
+  if (o.verdict && typeof o.verdict === 'object') { Object.assign(S.verdict, o.verdict); got.push('소견'); }
+  if (o.title) S.title = o.title;
+  if (o.sub) S.sub = o.sub;
+  return got;
+}
+
+/* ── OOC ── */
+function prompts() {
+  const L5 = L.map(l => `${l.k}(${l.n})`).join(' ');
+  const z = `{${L.map(l => `"${l.k}":0`).join(',')}}`;
+  const p1 = `*[OOC: 롤플레잉 잠시 중단. 「마음 우체국」 기록.
+채프먼의 사랑의 언어 다섯 가지로 NPC와 PC가 마음을 어떻게 보내고, 어떻게 받고 싶어 하는지 우체국 기록으로 남긴다. 놀이용 창작이며 진단이 아니다.
+▪ 언어: ${L5}
+▪ give 실제로 마음을 표현할 때 쓰는 방식 / need 받을 때 가장 채워지는 방식. 각 0~100, 같은 사람 안에서도 다를 수 있고 그 어긋남이 핵심
+▪ 근거: 지금까지의 설정·성격·말투·관계와 RP에서 실제 있었던 일만. 없는 사건·가족·과거는 만들지 않는다. 말보다 행동을 본다.
+▪ note: 각자 마음을 보내는 방식 한 문장 45자
+▪ mail: 실제로 마음을 보낸 순간 6개(둘이 섞어서). from a|b, lang 언어 키, text 한 행동 40자, status ok(제대로 전해짐) miss(다른 뜻으로 받아들여짐) back(거절·눈치 못 챔) going(아직 안 닿음) 중 하나(한쪽으로 몰리지 않게), note 받는 사람의 실제 반응 30자
+▪ card: 각자 상대에게 아직 못 부친 엽서 한 장 70자(그 사람 말투 그대로)
+▪ title 25자, sub 60자, verdict.title 20자, verdict.body 어긋난 배달을 바로잡을 방법까지 2~3문장
+▪ mail은 시간순, 같은 일을 서로 다르게 받아들인 장면을 하나 이상.
+▪ RP 밖 기록: PC의 말·행동·속마음은 RP에 실제 나온 것만 쓰고 지어내지 않는다. 여기서 만든 내용은 이후 RP의 사실로 삼지 않는다.
+▪ 품질: 작위적인 전개·뻔한 클리셰 없이, 이 두 사람만의 물건·장소·습관·말버릇 같은 구체적인 디테일로. 답이 길어 끊길 것 같으면 개수를 줄여서라도 JSON을 끝까지 닫는다.
+▪ 출력: 인사·설명 없이 JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만 쓰고 줄바꿈하지 않는다. 키 이름은 그대로, a=NPC, b=PC. 아래 값은 형식 예시일 뿐 그대로 쓰지 않는다.
+{"a":{"name":"","give":${z},"need":${z},"note":""},"b":{"name":"","give":${z},"need":${z},"note":""},"mail":[{"from":"a","lang":"","text":"","status":"","note":""}],"card":{"a":"","b":""},"title":"","sub":"","verdict":{"title":"","body":""}}]*`;
+  return [{ label: '우체국 기록', sub: '우표첩 · 배송 조회 · 엽서', text: p1 }];
+}
+const sum = o => L.reduce((a, l) => a + (o[l.k] || 0), 0);
+function progress(S) {
+  return [
+    { label: `${S.a.name} 우표`, ok: sum(S.ag) + sum(S.an) > 0 },
+    { label: `${S.b.name} 우표`, ok: sum(S.bg) + sum(S.bn) > 0 },
+    { label: `배송 조회 ${S.mail.filter(m => m.text).length}/${MAIL_N}`, ok: S.mail.some(m => m.text) },
+    { label: '엽서', ok: !!(S.card.a || S.card.b) },
+    { label: '소견', ok: !!S.verdict.body },
+  ];
+}
+
+/* ── 편집 폼 ── */
+function schema(S) {
+  const scoreFields = (who, g, n) => {
+    const f = [{ sub: '보내는 방식 · give' }];
+    L.forEach(l => f.push({ k: `${g}.${l.k}`, label: l.n, type: 'range' }));
+    f.push({ sub: '받고 싶은 방식 · need' });
+    L.forEach(l => f.push({ k: `${n}.${l.k}`, label: l.n, type: 'range' }));
+    f.push({ k: who === 'a' ? 'aNote' : 'bNote', label: '마음을 보내는 방식 한 줄', type: 'textarea', full: true });
+    return f;
+  };
+  const langOpts = L.map(l => [l.k, l.n]);
+  const mailFields = [];
+  S.mail.forEach((m, i) => {
+    mailFields.push({ sub: `우편물 ${pad(i + 1)}` });
+    mailFields.push({ k: `mail.${i}.from`, label: '보낸 사람', type: 'select', opts: [['a', `${S.a.name} → ${S.b.name}`], ['b', `${S.b.name} → ${S.a.name}`]] });
+    mailFields.push({ k: `mail.${i}.lang`, label: '붙인 우표', type: 'select', opts: langOpts });
+    mailFields.push({ k: `mail.${i}.text`, label: '무엇을 했나', full: true, ph: '비우면 포스터에서 빠져요' });
+    mailFields.push({ k: `mail.${i}.status`, label: '배송 상태', type: 'select', opts: Object.entries(STATUS).map(([k, v]) => [k, `${v.t} · ${v.d}`]) });
+    mailFields.push({ k: `mail.${i}.note`, label: '받는 사람의 반응' });
+  });
+  return [
+    { title: '우편물 정보', en: 'HEADLINE', desc: '포스터 제목이에요. 입력칸에 //를 넣으면 그 자리에서 줄이 바뀌어요.', fields: [
+      { k: 'title', label: '제목', full: true }, { k: 'sub', label: '부제', type: 'textarea', full: true },
+      { k: 'a.name', label: 'NPC 이름' }, { k: 'b.name', label: 'PC 이름' },
+      { k: 'a.color', label: 'NPC 색', type: 'color' }, { k: 'b.color', label: 'PC 색', type: 'color' },
+    ] },
+    { title: `${S.a.name}의 우표첩`, en: 'NPC · STAMPS', desc: '가장 높은 보내는 방식이 대표 우표가 돼요.', fields: scoreFields('a', 'ag', 'an') },
+    { title: `${S.b.name}의 우표첩`, en: 'PC · STAMPS', fields: scoreFields('b', 'bg', 'bn') },
+    { title: '배송 조회', en: 'TRACKING', desc: '실제로 마음을 보낸 순간들이에요. 내용을 비운 칸은 빠져요.', fields: mailFields },
+    { title: '부치지 못한 엽서', en: 'POSTCARDS', fields: [
+      { k: 'card.a', label: `${S.a.name} → ${S.b.name}`, type: 'textarea', full: true, rows: 3 },
+      { k: 'card.b', label: `${S.b.name} → ${S.a.name}`, type: 'textarea', full: true, rows: 3 },
+    ] },
+    { title: '우체국장 소견', en: 'VERDICT', fields: [
+      { k: 'verdict.title', label: '한 줄', full: true }, { k: 'verdict.body', label: '소견', type: 'textarea', full: true, rows: 3 },
+    ] },
+  ];
+}
+
+/* ── 계산: 보낸 마음 중 상대가 받고 싶은 만큼 닿은 비율 ── */
+function delivery(give, need) {
+  const tot = sum(need); if (!tot) return { pct: 0, best: null, lost: null };
+  const hit = L.reduce((a, l) => a + Math.min(give[l.k], need[l.k]), 0);
+  const best = [...L].sort((x, y) => Math.min(give[y.k], need[y.k]) - Math.min(give[x.k], need[x.k]))[0];
+  const lost = [...L].sort((x, y) => (need[y.k] - give[y.k]) - (need[x.k] - give[x.k]))[0];
+  return { pct: Math.round(hit / tot * 100), best, lost: need[lost.k] - give[lost.k] > 0 ? lost : null };
+}
+const top = o => [...L].sort((x, y) => o[y.k] - o[x.k]);
+
+/* ── 메일 창 ── */
+const FOLD = '<svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path d="M1 3h5l1 1h8v10H1z" fill="currentColor"/><path d="M2 5h12v8H2z" fill="#e8e8e8"/></svg>';
+const MAILI = '<svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path d="M1 3h14v10H1z" fill="currentColor"/><path d="M2 4h12v8H2z" fill="#fff"/><path d="M2 4l6 5 6-5" fill="none" stroke="currentColor"/></svg>';
+const stampS = (l, big) => `<span class="stamp" style="--lc:${l.c}"><span>${icon(l, big ? 2.2 : 2.6)}</span></span>`;
+function readHTML(S, i) {
+  const m = S.mail[i]; if (!m) return '';
+  const l = LK[m.lang], to = m.from === 'a' ? 'b' : 'a', st = STATUS[m.status];
+  return `<div class="rh">${stampS(l, true)}<span>보낸 사람 <b>${esc(S[m.from].name)}</b> · 받는 사람 <b>${esc(S[to].name)}</b></span><span class="st ${st.c}">${st.t}</span><span>우표 <b>${l.n}</b> · ${st.d}</span></div>
+    <p class="msg">${esc(m.text)}</p>${m.note ? `<div class="re" style="--c:${esc(S[to].color)}"><small>${esc(S[to].name)}의 반응</small>${esc(m.note)}</div>` : ''}`;
+}
+const ga = w => { const c = String(w || '').trim().slice(-1).charCodeAt(0) - 0xAC00; return c >= 0 && c < 11172 && c % 28 ? '이' : '가'; };
+function rateHTML(S, from, to) {
+  const g = S[from + 'g'], n = S[to + 'n'], d = delivery(g, n);
+  const rows = L.map(l => `<div class="lr"><span>${l.s}</span><span class="bars"><i class="g" style="--w:${g[l.k]}%"></i><i class="n" style="--w:${n[l.k]}%"></i></span><span class="d">${g[l.k]}/${n[l.k]}</span></div>`).join('');
+  return `<section class="rt" style="--c:${esc(S[from].color)}"><div class="bar3"><span>${esc(S[from].name)} → ${esc(S[to].name)} 도착률</span></div>
+    <div class="rtb"><span class="pct"><span data-count="${d.pct}">${d.pct}</span><small>%</small></span><span class="cap"><b>${esc(S[from].name)}</b>${ga(S[from].name)} 보낸 마음 중 ${esc(S[to].name)}${ga(S[to].name)} 원하는 칸에 닿은 만큼이에요.${d.best ? ` 가장 잘 닿는 우표는 <b>${d.best.n}</b>${d.lost ? `, 모자란 우표는 <b>${d.lost.n}</b>` : ''}.` : ''}</span></div>
+    <div class="legend"><span><i style="background:${esc(S[from].color)}"></i>${esc(S[from].name)}${ga(S[from].name)} 보냄</span><span><i style="background:repeating-linear-gradient(90deg,#888 0 2px,transparent 2px 4px)"></i>${esc(S[to].name)}${ga(S[to].name)} 원함</span></div>
+    <div class="rows">${rows}</div></section>`;
+}
+function posterHTML(S) {
+  const mails = S.mail.map((m, i) => ({ ...m, i })).filter(m => m.text);
+  const cnt = k => mails.filter(m => m.status === k).length;
+  const rows = mails.map((m, j) => { const l = LK[m.lang], to = m.from === 'a' ? 'b' : 'a', st = STATUS[m.status];
+    return `<div class="mr fadeUp${m.status === 'going' ? ' unread' : ''}" data-i="${m.i}" style="animation-delay:${(j * .09).toFixed(2)}s"><span class="fr" style="--c:${esc(S[m.from].color)}"><i></i>${esc(S[m.from].name)} → ${esc(S[to].name)}</span><span class="stp">${stampS(l)}<span class="s">${l.s}</span></span><span class="tx">${esc(m.text)}</span><span class="st ${st.c}">${st.t}</span></div>`; }).join('');
+  const draft = (from, to) => S.card[from] ? `<section class="dr"><div class="bar3"><span>임시보관함 · 보내지 않음</span></div><div class="meta"><span>보낸 사람 <b>${esc(S[from].name)}</b></span><span>받는 사람 <b>${esc(S[to].name)}</b> · 제목 부치지 못한 엽서</span></div><p class="pen">${br(S.card[from])}</p><div class="ft"><span>보내기</span></div></section>` : '';
+  return `<div class="mx">
+    <div class="bar3"><span>받은편지함 · 마음 우체국 메일</span><span class="wb" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span></div>
+    <div class="tool"><span>${MAILI} 새 편지</span><span>답장</span><span>보내기/받기</span><span>주소록</span><span class="who"><b style="--c:${esc(S.a.color)}">${esc(S.a.name)}</b> · <b style="--c:${esc(S.b.color)}">${esc(S.b.name)}</b> 공용 우편함</span></div>
+    <header class="head"><small>채프먼의 사랑의 언어 다섯 가지 · 배송 기록</small><h1>${br(S.title || '이름 없는 우편물')}</h1>${S.sub ? `<p>${br(S.sub)}</p>` : ''}</header>
+    <div class="body">
+      <nav class="folders"><h3>편지함</h3>
+        <div class="fd on">${FOLD}받은편지함<b>${mails.length}</b></div>
+        <div class="fd">${FOLD}배달 완료<b>${cnt('ok')}</b></div><div class="fd">${FOLD}오배송<b>${cnt('miss')}</b></div>
+        <div class="fd">${FOLD}반송함<b>${cnt('back')}</b></div><div class="fd">${FOLD}배송 중<b>${cnt('going')}</b></div>
+        <div class="fd dim">${FOLD}임시보관함<b>${[S.card.a, S.card.b].filter(Boolean).length}</b></div></nav>
+      <div class="main"><div class="list"><div class="lh"><span>보낸 사람</span><span>우표</span><span>무엇을 했나</span><span>배송 상태</span></div>${rows || '<p style="padding:20px">아직 우편물이 없어요.</p>'}</div>
+        <div class="read" id="read" aria-live="polite">${mails.length ? readHTML(S, mails[0].i) : ''}</div></div>
+    </div>
+    <div class="rates">${rateHTML(S, 'a', 'b')}${rateHTML(S, 'b', 'a')}</div>
+    ${S.card.a || S.card.b ? `<div class="drafts">${draft('a', 'b')}${draft('b', 'a')}</div>` : ''}
+    ${S.verdict.title || S.verdict.body ? `<section class="alert"><div class="bar3"><span>우체국장 알림</span><span class="wb" aria-hidden="true"><i>×</i></span></div><div class="ab"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M7 1h2v1h1v2h1v2h1v2h1v2h1v2h1v3H1v-3h1v-2h1V8h1V6h1V4h1V2h1z" fill="#111"/><path d="M8 3h0v0zM7 4h2v2h1v2h1v2h1v2h1v2H3v-2h1v-2h1V8h1V6h1z" fill="#ffd84a"/><path d="M7 6h2v4H7zM7 11h2v2H7z" fill="#111"/></svg><div><h2>${br(S.verdict.title)}</h2><p>${br(S.verdict.body)}</p></div></div><div class="ok"><span>확인</span></div></section>` : ''}
+    <footer class="p-foot"><span>채프먼(Chapman)의 사랑의 언어를 바탕으로 한 놀이용 기록이에요. 실제 심리 진단이 아니에요.</span><span>${mails.length}개 · 마음 우체국</span></footer>
+  </div>`;
+}
+
+/* ── 연출: 편지가 한 통씩 들어오고, 미리 보기 창이 편지를 차례로 펼친다 ── */
+let cycle = 0;
+function render(S, { animate }) {
+  clearInterval(cycle);
+  const el = $('#poster'); el.innerHTML = posterHTML(S);
+  const rows = [...el.querySelectorAll('.mr')], read = $('#read'); let k = 0, hold = 0;
+  const pick = (j, user) => { if (!rows[j]) return; k = j; rows.forEach(r => r.classList.toggle('on', r === rows[j])); rows[j].classList.remove('unread');
+    read.innerHTML = readHTML(S, +rows[j].dataset.i); read.classList.remove('swap'); void read.offsetWidth; read.classList.add('swap'); if (user) hold = Date.now() + 12000; };
+  rows.forEach((r, j) => r.onclick = () => pick(j, true));
+  if (rows.length) pick(0);
+  cycle = setInterval(() => { if (!document.body.contains(read)) return clearInterval(cycle); if (Date.now() < hold || document.body.dataset.mode !== 'view') return; pick((k + 1) % rows.length); }, 4200);
+  /* 도착률 막대와 숫자는 0에서 차오른다 */
+  const bars = [...el.querySelectorAll('.lr .bars i')]; bars.forEach(b => { b.dataset.w = b.style.getPropertyValue('--w'); b.style.setProperty('--w', '0%'); });
+  setTimeout(() => bars.forEach(b => b.style.setProperty('--w', b.dataset.w)), 400);
+  el.querySelectorAll('[data-count]').forEach(n => { const to = +n.dataset.count, t0 = performance.now() + 300;
+    const tick = now => { const t = Math.max(0, Math.min(1, (now - t0) / 1200)); n.textContent = Math.round(to * (1 - Math.pow(1 - t, 3))); if (t < 1) requestAnimationFrame(tick); }; requestAnimationFrame(tick);
+    setTimeout(() => { n.textContent = to; }, 1800); });
+  setTimeout(() => bars.forEach(b => b.style.setProperty('--w', b.dataset.w)), 1600);
+}
+
+Core.app({
+  key: '2inbun:post', sample, blank, normalize, schema, prompts, apply, progress, render,
+  fileName: S => `마음우체국_${S.a.name}_${S.b.name}`,
+});
+})();
+</script>
+</body>
+</html>

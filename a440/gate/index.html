@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>게이트 작전 리플레이 · A440</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%20shape-rendering%3D%27crispEdges%27%3E%3Crect%20width%3D%2716%27%20height%3D%2716%27%20rx%3D%273%27%20fill%3D%27%230b1018%27%2F%3E%3Cpath%20d%3D%27M1%208h2V5h2v6h2V3h2v10h2V5h2v3h2%27%20fill%3D%27none%27%20stroke%3D%27%23ec8a55%27%20stroke-width%3D%271.2%27%2F%3E%3C%2Fsvg%3E">
+<meta name="description" content="A440 세계관: 실제 RP에서 있었던 게이트 임무를 작전 지도 위에 시간순으로 재생하고 작전 보고서로 남기는 OOC 툴">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700;900&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="stylesheet" href="../../assets/base.css">
+<link rel="stylesheet" href="../a440.css">
+<style>
+/* 콘셉트: 현장대응팀 작전 상황판. 게이트 내부 지도에 두 요원 점이 시간순으로 이동, 오른쪽에 단말 로그. 끝나면 작전 보고서. */
+.poster { width: min(1040px, 100%); display: flex; flex-direction: column; gap: 22px; }
+.ops { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 14px; }
+.board { position: relative; overflow: hidden; background: #060a10; border: 1px solid rgba(143,184,255,.35); }
+.board .top { position: absolute; z-index: 3; left: 14px; right: 14px; top: 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
+.board .top b { color: #fff; font-size: 14px; }
+.clock { font-family: var(--mono); font-size: 20px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; }
+#map { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; }
+.agent { transition: transform 1.4s cubic-bezier(.45,.05,.25,1); }
+.agent .ring { transition: r .6s ease, opacity .6s ease; }
+.log { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.huds { display: grid; gap: 8px; }
+.hudp { background: #060a10; border: 1px solid rgba(143,184,255,.25); border-left: 3px solid var(--hc, var(--accent)); padding: 9px 12px; display: grid; gap: 6px; font-family: var(--mono); }
+.hudp .nm { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 800; }
+.hudp .nm span { color: var(--muted); font-weight: 600; font-size: 11.5px; }
+.hudp .st { font-size: 11px; font-weight: 800; }
+.feed { flex: 1; min-height: 220px; max-height: 360px; overflow: auto; background: #060a10; border: 1px solid rgba(143,184,255,.25); padding: 10px 12px; font-family: var(--mono); display: flex; flex-direction: column; gap: 8px; scroll-behavior: smooth; }
+.ev { display: grid; grid-template-columns: 44px 1fr; gap: 8px; font-size: 12.5px; line-height: 1.6; animation: evin .5s ease both; border-bottom: 1px dashed rgba(143,184,255,.12); padding-bottom: 7px; }
+.ev .tx { font-family: var(--ui-font); }
+.ev time { font-family: var(--mono); font-size: 11px; color: var(--muted); padding-top: 2px; }
+.ev .k { display: inline-block; font-size: 10.5px; font-weight: 800; padding: 1px 6px; border-radius: 5px; margin-right: 5px; color: var(--kc); background: color-mix(in srgb, var(--kc) 15%, transparent); }
+.ev.talk .tx { color: #fff; }
+@keyframes evin { from { opacity: 0; transform: translateY(6px); } }
+.ctrl { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.ctrl button { border: 1px solid var(--hair); background: var(--panel); color: var(--ink); border-radius: 999px; padding: 7px 14px; font-weight: 700; font-size: 12.5px; cursor: pointer; min-height: 36px; }
+.ctrl button[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
+.ctrl input[type=range] { flex: 1; min-width: 120px; accent-color: var(--accent); }
+.alert { position: absolute; z-index: 4; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 12px 20px; border-radius: 12px; font-weight: 900; font-size: clamp(16px, 2.6vw, 22px); text-align: center; color: #fff; background: color-mix(in srgb, var(--ac) 30%, #070b12); box-shadow: inset 0 0 0 1px var(--ac); animation: al .5s ease both; pointer-events: none; }
+.alert small { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-top: 4px; }
+@keyframes al { from { opacity: 0; transform: translate(-50%, -40%); } }
+
+/* 작전 보고서 (이미지 저장) */
+.report { background: #060a10; border: 1px solid rgba(143,184,255,.35); border-top: 6px solid var(--accent); padding: 26px 26px 18px; display: flex; flex-direction: column; gap: 18px; }
+.report.capturing { border-radius: 0; }
+.rp-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.rp-top .doc { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: right; line-height: 1.6; }
+.stamp { display: inline-block; padding: 6px 14px; border: 2px solid var(--sc); color: var(--sc); border-radius: 8px; font-weight: 900; font-size: 18px; transform: rotate(-4deg); }
+.rp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tl { list-style: none; margin: 0; padding: 0 0 0 16px; border-left: 2px solid var(--hair); display: grid; gap: 9px; }
+.tl li { position: relative; font-size: 13px; line-height: 1.55; }
+.tl li::before { content: ""; position: absolute; left: -22px; top: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--kc); box-shadow: 0 0 0 3px var(--bg); }
+.tl time { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-right: 6px; }
+.note { font-size: 14px; line-height: 1.75; }
+.note b { display: block; font-size: 12px; color: var(--accent); margin-bottom: 4px; }
+@media (max-width: 760px) { .ops, .rp-grid { grid-template-columns: 1fr; } .feed { max-height: 260px; } .report { padding: 18px 16px; } }
+
+/* 작전 상황판: 단말 창(유리 제목 막대) · 네온 테두리 · 도트 글씨 */
+.board { border: 1px solid #000; box-shadow: 0 0 0 1px rgba(143,184,255,.4), 4px 4px 0 #000, 0 0 30px rgba(80,140,255,.15) inset; background: radial-gradient(ellipse 70% 60% at 50% 40%, #0b1626, #04070d); }
+.board .top { font-family: var(--px9); } .board .top b { font: 400 14px var(--px); }
+.hudp { border: 1px solid #000; border-left: 4px solid var(--hc, var(--accent)); background: linear-gradient(180deg, rgba(26,37,57,.95), rgba(8,13,22,.95)); box-shadow: 0 0 0 1px rgba(143,184,255,.25), 3px 3px 0 #000; }
+.hudp .nm { font: 400 13.5px var(--px); } .hudp .nm span { font: 400 11.5px var(--px9); } .hudp .st { font: 400 11.5px var(--px9); }
+.feed { position: relative; padding-top: 36px; border: 1px solid #000; background: rgba(4,8,14,.95); box-shadow: 0 0 0 1px rgba(143,184,255,.25), 3px 3px 0 #000; }
+.feed::before { content: '교신 기록'; position: absolute; left: 0; right: 0; top: 0; height: 26px; display: flex; align-items: center; padding: 0 10px; background: var(--glass); border-bottom: 1px solid #000; font: 400 12.5px var(--px); color: #e4ecfa; }
+.ctrl button { border-radius: 0; border: 1px solid #000; background: var(--glass); color: #e4ecfa; box-shadow: 2px 2px 0 #000; font: 400 12.5px var(--px); }
+.ctrl button[aria-pressed="true"] { background: linear-gradient(180deg, #b9d3ff, #6f9ae6); color: #07101c; }
+.report { border: 1px solid #000; border-top: 0; box-shadow: 0 0 0 1px rgba(143,184,255,.35), 5px 5px 0 #000; position: relative; padding-top: 52px; background: linear-gradient(180deg, #0b1322, #060a12); }
+.report::before { content: 'A440 작전 보고서'; position: absolute; left: 0; right: 0; top: 0; height: 30px; display: flex; align-items: center; justify-content: center; background: linear-gradient(90deg, #ec8a55, #e8b866 50%, #8fb8ff); color: #07101c; font: 400 13.5px var(--px); border-bottom: 1px solid #000; }
+.rp-top .doc { font-family: var(--px9); }
+.report h1, .report h2 { font-family: var(--serif); }
+
+/* 바탕은 단색·그라데이션만 */
+body[data-mode="view"] { background: linear-gradient(180deg, #15284a 0%, #07101c 100%) fixed; } body[data-mode="view"]::after { display: none; }
+
+/* 만들기 화면 강조색 */
+body[data-mode="edit"] { --t: #ec8a55; }
+</style>
+</head>
+<body data-mode="view">
+<header class="bar"><a class="brand" href="../" data-keep>A440</a><span class="bar-title">게이트 작전 리플레이</span><span class="bar-spacer"></span>
+<div class="tabs" role="tablist"><button data-mode="view" role="tab">보기</button><button data-mode="edit" role="tab">만들기</button></div></header>
+<main class="stage only-view"><p class="shared-note" id="shared-note" hidden>공유받은 작전 기록이에요. 만들기에서 고치면 내 브라우저에만 저장돼요.</p><div class="poster" id="poster"></div>
+<nav class="actions"><button class="btn primary" id="btn-png">보고서 저장</button><button class="btn" id="btn-link">링크 복사</button><button class="btn" id="btn-replay">다시 재생</button></nav></main>
+<main class="editor only-edit" id="editor"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/modern-screenshot@4.6.8/dist/index.js"></script>
+<script src="../../assets/core.js"></script>
+<script>
+(() => {
+const { esc, br, clamp, num, $, rng } = Core;
+const GR = ['S', 'A', 'B', 'C', 'D', 'E', '?'];
+const KIND = { move: ['이동', '#8fb8ff'], fight: ['교전', '#ec8a55'], hurt: ['부상', '#ff6b76'], ability: ['능력', '#c79bff'], guide: ['가이딩', '#6fd6b8'], talk: ['교신', '#e4e9f0'], break: ['브레이크', '#e5484d'], core: ['핵 파괴', '#e8b866'] };
+const gColor = v => v > 50 ? 'var(--ok)' : v > 30 ? 'var(--warn)' : v > 10 ? 'var(--call)' : 'var(--iso)';
+const gState = v => v > 50 ? '안정' : v > 30 ? '감각 과민' : v > 10 ? '가이드 호출' : v > 0 ? '격리 대상' : '폭주';
+const EV = (t, who, kind, text, x, y, ga, gb) => ({ t, who, kind, text, x, y, ga, gb });
+const person = (code, name, role, grade, team) => ({ code, name, role, grade, team });
+const blank = () => ({ v: 1, docNo: '', gate: { name: '', grade: 'B', place: '', date: '', core: '' }, a: person('NPC', '', '센티넬', 'S', ''), b: person('PC', '', '가이드', 'A', ''), others: '', events: [], result: { cleared: true, broke: false, damage: '', aNote: '', bNote: '', lead: '' } });
+const sample = () => ({ v: 1, docNo: 'FR1-2611-0347',
+  gate: { name: '마포 폐역사 게이트', grade: 'A', place: '서울 마포구 폐역사 지하 3층', date: '15.11.03 (화)', core: '지하 플랫폼 끝 선로 위' },
+  a: person('스케르초', 'NPC', '센티넬', 'S', '특별관리 1팀'), b: person('PC', 'PC', '가이드', 'A', '가이드 1팀'),
+  others: '현장대응 1팀 센티넬 3명',
+  events: [
+    EV('21:04', 'a', 'move', '입구 진입. 담배 끄고 장갑 고쳐 낌', 50, 92, 72, 100), EV('21:06', 'b', 'talk', '“팀장님 수치 72예요. 들어가기 전에 가이딩…” “나중에.”', 46, 94),
+    EV('21:11', 'a', 'fight', '개찰구 쪽 괴수 무리 정리. 혼자 앞서 나감', 34, 70, 61), EV('21:15', 'a', 'ability', '깔린 1팀 막내 손 잡고 【역전】. 고통을 웃음으로', 28, 58, 44),
+    EV('21:16', 'b', 'talk', '“44예요. 지금 멈춰요.” “괜찮아, 괜찮아.”', 36, 66), EV('21:22', 'a', 'hurt', '왼팔 열상. 웃으면서 계속 내려감', 58, 40, 31),
+    EV('21:23', 'b', 'guide', '방사 가이딩. 곁에 붙어서 같이 걸음', 55, 42, 38, 82), EV('21:31', 'a', 'fight', '플랫폼 대형 개체와 교전', 64, 20, 26),
+    EV('21:33', 'b', 'guide', '장갑 벗은 오른손을 잡음. 접촉 가이딩', 62, 22, 47, 64), EV('21:35', 'a', 'core', '선로 위 핵 파괴. 게이트 수축 시작', 70, 10, 45),
+    EV('21:41', 'a', 'talk', '“애새끼님 손 차갑네. 나가서 국밥이나 먹자.”', 50, 88),
+  ],
+  result: { cleared: true, broke: false, damage: '민간 피해 없음 · 요원 경상 2', lead: 'a', aNote: '손은 왜 잡냐. 이거 넘어가면 안 되는데. …근데 따뜻하긴 하네.', bNote: '수치가 26까지 떨어질 때까지 한 번도 멈추지 않았다. 다음엔 들어가기 전에 잡는다.' } });
+function normalize(s) {
+  const b = blank(); s = s && typeof s === 'object' ? s : {};
+  const o = { ...b, ...s, gate: { ...b.gate, ...(s.gate || {}) }, a: { ...b.a, ...(s.a || {}) }, b: { ...b.b, ...(s.b || {}) }, result: { ...b.result, ...(s.result || {}) } };
+  if (!GR.includes(String(o.gate.grade).toUpperCase())) o.gate.grade = '?'; else o.gate.grade = String(o.gate.grade).toUpperCase();
+  o.events = (Array.isArray(s.events) ? s.events : []).slice(0, 24).map(e => ({ t: String(e.t || ''), who: e.who === 'b' ? 'b' : 'a', kind: KIND[e.kind] ? e.kind : 'move', text: String(e.text || ''), x: clamp(num(e.x, 50), 2, 98), y: clamp(num(e.y, 50), 2, 98), ga: e.ga === '' || e.ga == null ? null : clamp(num(e.ga, 0), 0, 100), gb: e.gb === '' || e.gb == null ? null : clamp(num(e.gb, 0), 0, 100) }));
+  o.result.cleared = o.result.cleared === true || o.result.cleared === 'true'; o.result.broke = o.result.broke === true || o.result.broke === 'true';
+  return o;
+}
+function apply(S, o) {
+  const got = [];
+  ['gate', 'a', 'b', 'result'].forEach(k => { if (o[k] && typeof o[k] === 'object') { Object.assign(S[k], o[k]); got.push(k === 'gate' ? '게이트' : k === 'result' ? '결과' : '요원'); } });
+  if (Array.isArray(o.events)) { S.events = o.events; got.push(`기록 ${o.events.length}개`); }
+  ['docNo', 'others'].forEach(k => { if (o[k]) S[k] = o[k]; });
+  return got;
+}
+function prompts() {
+  return [{ label: '작전 기록', sub: '게이트 · 두 요원 · 시간순 기록 · 결과', text: `*[OOC: 롤플레잉 잠시 중단. A440 세계관 「게이트 작전 리플레이」 기록.
+RP에서 실제로 있었던 게이트 임무 하나를 작전 지도 위에 시간순으로 재생한다. 사이트가 지도·가이딩 수치 변화·작전 보고서를 그린다.
+▪ 근거: 세계관(게이트 S~E·측정불가, 핵, 브레이크, 가이딩 수치 50↓감각 과민 30↓가이드 호출 10↓격리 0 폭주)과 RP에서 실제 있었던 일만. 임무가 없었다면 가장 있을 법한 임무 하나를 만들고 docNo를 "가상-"으로 시작한다.
+▪ 나오는 사람은 NPC와 PC 둘뿐. 다른 요원·지휘관의 이름·대사·행동은 쓰지 않고, 함께 투입된 인원은 others에 수만 적는다(예: 지원조 2명).
+▪ a=NPC, b=PC. 각자 code(코드네임) name role(센티넬|가이드) grade team
+▪ gate: name grade place date(YY.MM.DD (요일)) core(핵 위치)
+▪ events 10~16개 시간순: t(HH:MM) who(a|b) kind(move 이동, fight 교전, hurt 부상, ability 능력, guide 가이딩, talk 교신, break 브레이크, core 핵 파괴) text(실제 한 말·행동 40자, 대사는 “ ”로) x·y(지도 위치 0~100, 입구가 아래 y≈90 핵이 위 y≈10) ga·gb(그 순간 가이딩 수치, 바뀔 때만)
+▪ result: cleared(true|false) broke(true|false) damage(피해 한 줄) lead(a|b 중 이 작전을 이끈 쪽) aNote(NPC 속마음 한두 문장, 평소 말투) bNote(PC가 RP에서 실제로 한 말 중 이 작전을 정리하는 한마디, 없으면 "")
+▪ ga·gb는 교전·부상 뒤 내리고 가이딩 뒤 올린다.
+▪ PC의 말·행동·속마음은 RP에 실제 나온 것만 쓰고 지어내지 않는다. 여기서 만든 내용은 RP의 사실로 삼지 않는다.
+▪ 품질: 작위적인 영웅담 없이 이 두 사람의 습관·말버릇 그대로. 답이 끊길 것 같으면 events를 줄여서라도 JSON을 끝까지 닫는다.
+▪ 출력: JSON 코드 블록 하나만(따옴표 “ ”, 줄바꿈 없이, 값은 예시일 뿐).
+{"docNo":"","gate":{"name":"","grade":"B","place":"","date":"","core":""},"a":{"code":"","name":"","role":"","grade":"","team":""},"b":{"code":"","name":"","role":"","grade":"","team":""},"others":"","events":[{"t":"","who":"a","kind":"move","text":"","x":50,"y":90,"ga":100,"gb":100}],"result":{"cleared":true,"broke":false,"damage":"","lead":"","aNote":"","bNote":""}}]*` }];
+}
+function progress(S) { return [{ label: '게이트', ok: !!S.gate.name }, { label: `기록 ${S.events.length}개`, ok: S.events.length > 0 }, { label: '결과', ok: !!S.result.aNote }]; }
+function schema(S) {
+  const per = k => [{ k: `${k}.code`, label: '코드네임' }, { k: `${k}.name`, label: '본명' }, { k: `${k}.role`, label: '센티넬/가이드', type: 'select', opts: [['센티넬', '센티넬'], ['가이드', '가이드']] }, { k: `${k}.grade`, label: '등급', type: 'select', opts: GR.slice(0, 6).map(g => [g, g]) }, { k: `${k}.team`, label: '소속', full: true }];
+  const ev = []; S.events.forEach((e, i) => { ev.push({ sub: `${i + 1}. ${e.t}` }); ev.push({ k: `events.${i}.t`, label: '시각' }); ev.push({ k: `events.${i}.who`, label: '누가', type: 'select', opts: [['a', S.a.code], ['b', S.b.code]] }); ev.push({ k: `events.${i}.kind`, label: '종류', type: 'select', opts: Object.entries(KIND).map(([k, v]) => [k, v[0]]) }); ev.push({ k: `events.${i}.text`, label: '내용', full: true }); ev.push({ k: `events.${i}.x`, label: '가로 위치', type: 'range' }); ev.push({ k: `events.${i}.y`, label: '세로 위치(위가 핵)', type: 'range' }); });
+  return [
+    { title: '게이트', en: 'GATE', fields: [{ k: 'gate.name', label: '게이트 이름', full: true }, { k: 'gate.grade', label: '등급', type: 'select', opts: GR.map(g => [g, g === '?' ? '측정불가' : g]) }, { k: 'gate.date', label: '날짜' }, { k: 'gate.place', label: '위치', full: true }, { k: 'gate.core', label: '핵 위치', full: true }, { k: 'docNo', label: '문서 번호' }, { k: 'others', label: '함께 투입', full: true }] },
+    { title: `NPC · ${S.a.code}`, en: 'AGENT A', fields: per('a') }, { title: `PC · ${S.b.code}`, en: 'AGENT B', fields: per('b') },
+    { title: '결과', en: 'RESULT', fields: [{ k: 'result.cleared', label: '공략', type: 'select', opts: [['true', '클리어'], ['false', '실패']] }, { k: 'result.broke', label: '브레이크', type: 'select', opts: [['false', '없음'], ['true', '발생']] }, { k: 'result.damage', label: '피해', full: true }, { k: 'result.lead', label: '작전 책임자', full: true }, { k: 'result.aNote', label: 'NPC 속마음', type: 'textarea', full: true }, { k: 'result.bNote', label: 'PC 소견', type: 'textarea', full: true }] },
+    { title: '작전 기록', en: 'LOG', desc: '목록 추가·삭제는 OOC 답을 붙여넣어서 해요.', fields: ev },
+  ];
+}
+
+/* 지도: 게이트 이름으로 시드를 잡아 매번 같은 내부 구조 */
+function mapSVG(S) {
+  let h = 0; for (const c of S.gate.name + S.gate.grade) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  const R = rng(h || 7); const rooms = [];
+  /* 평면도: 가운데 복도(E·F열)를 두고 양옆을 좌표 칸에 맞춰 방으로 나눈다 */
+  for (const [c0, c1] of [[0, 4], [6, 10]]) {
+    let r = 0;
+    while (r < 7) {
+      const rh = Math.min(7 - r, 1 + Math.floor(R() * 3)); const split = R() < .5 ? c0 + 1 + Math.floor(R() * (c1 - c0 - 1)) : c1;
+      rooms.push({ c: c0, r, cw: split - c0, rh }); if (split < c1) rooms.push({ c: split, r, cw: c1 - split, rh }); r += rh;
+    }
+  }
+  const gc = `var(--${S.gate.grade === '?' ? 'S' : S.gate.grade})`;
+  const path = S.events.map(e => `${e.x * 4},${e.y * 3}`).join(' ');
+  return `<svg id="map" viewBox="0 0 400 300" role="img" aria-label="게이트 내부 작전 지도">
+    <defs><pattern id="g" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="rgba(143,184,255,.07)"/></pattern>
+    <radialGradient id="core" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="${gc}" stop-opacity=".55"/><stop offset="1" stop-color="${gc}" stop-opacity="0"/></radialGradient></defs>
+    <rect width="400" height="300" fill="url(#g)"/>${"ABCDEFGHIJ".split("").map((c, i) => `<text x="${i * 40 + 20}" y="296" text-anchor="middle" font-size="10" font-family="IBM Plex Mono, monospace" fill="rgba(143,184,255,.4)">${c}</text>`).join("")}${[1,2,3,4,5,6,7].map(n => `<text x="4" y="${n * 40 + 3}" font-size="10" font-family="IBM Plex Mono, monospace" fill="rgba(143,184,255,.4)">${n}</text>`).join("")}
+    ${[100, 70, 40].map((r, i) => `<ellipse cx="${(S.events.find(e => e.kind === 'core')?.x ?? 50) * 4}" cy="${(S.events.find(e => e.kind === 'core')?.y ?? 10) * 3}" rx="${r * 2}" ry="${r * 1.2}" fill="none" stroke="rgba(143,184,255,${.05 + i * .03})" stroke-dasharray="3 6"/>`).join('')}
+    ${rooms.map(r => `<rect x="${r.c * 40 + 5}" y="${r.r * 40 + 14}" width="${r.cw * 40 - 10}" height="${r.rh * 40 - 10}" rx="2" fill="rgba(143,184,255,.035)" stroke="rgba(143,184,255,.22)"/>`).join('')}<path d="M165 0V290M235 0V290" stroke="rgba(143,184,255,.16)" stroke-dasharray="2 6"/>
+    <circle cx="${(S.events.find(e => e.kind === 'core')?.x ?? 50) * 4}" cy="${(S.events.find(e => e.kind === 'core')?.y ?? 10) * 3}" r="34" fill="url(#core)"/>
+    <text x="${(S.events.find(e => e.kind === 'core')?.x ?? 50) * 4}" y="${(S.events.find(e => e.kind === 'core')?.y ?? 10) * 3 + 4}" text-anchor="middle" font-size="11" font-weight="800" fill="${gc}">CORE</text>
+    <text x="228" y="297" text-anchor="start" font-size="10" fill="#98a4b4" font-weight="700">◀ 입구</text>
+    <polyline id="trail" points="${path}" fill="none" stroke="rgba(143,184,255,.18)" stroke-width="1.5" stroke-dasharray="2 4"/>
+    <g id="marks"></g>
+    ${['a', 'b'].map(k => `<g class="agent" id="ag-${k}" transform="translate(200 280)"><circle class="ring" r="9" fill="none" stroke="${k === 'a' ? '#ff9d6b' : '#8fb8ff'}" stroke-width="1.5" opacity=".5"/><circle r="5" fill="${k === 'a' ? '#ff9d6b' : '#8fb8ff'}"/><text x="${k === 'a' ? 9 : -9}" y="${k === 'a' ? -9 : 16}" text-anchor="${k === 'a' ? 'start' : 'end'}" font-size="10" font-weight="800" fill="#fff" paint-order="stroke" stroke="#060a10" stroke-width="3">${esc(S[k].code)}</text></g>`).join('')}
+  </svg>`;
+}
+const P = { S: null, i: -1, timer: 0, playing: false, speed: 1, ga: 100, gb: 100, pos: { a: [50, 93], b: [46, 95] } };
+function hud(k) { const v = k === 'a' ? P.ga : P.gb; const p = P.S[k]; return `<div class="hudp" style="--hc:${gColor(v)}"><div class="nm">${esc(p.code)} <span>${esc(p.role)} · ${esc(p.grade)}급</span></div><div class="gauge" style="--gc:${gColor(v)}"><span>가이딩</span><i><b style="--v:${v}%"></b></i><strong>${v}</strong></div><span class="st" style="color:${gColor(v)}">${gState(v)}</span></div>`; }
+function setAgent(k, x, y) { const g = $(`#ag-${k}`); if (g) g.setAttribute('transform', `translate(${x * 4} ${y * 3})`); }
+function step(i) {
+  const e = P.S.events[i]; if (!e) return;
+  if (e.ga != null) P.ga = e.ga; if (e.gb != null) P.gb = e.gb;
+  if (e.who === 'a' || e.kind !== 'talk') P.pos[e.who] = [e.x, e.y];
+  if (e.kind === 'guide') { const o = e.who === 'a' ? 'b' : 'a'; P.pos[o] = [e.x + (o === 'a' ? -3 : 3), e.y + 2]; }
+  setAgent('a', ...P.pos.a); setAgent('b', ...P.pos.b);
+  $('#huds').innerHTML = hud('a') + hud('b');
+  $('#clock').textContent = e.t || '--:--';
+  const [kn, kc] = KIND[e.kind]; const p = P.S[e.who];
+  $('#feed').insertAdjacentHTML('beforeend', `<div class="ev ${e.kind}" style="--kc:${kc}"><time>${esc(e.t)}</time><div><span class="k">${kn}</span><b>${esc(p.code)}</b> <span class="tx">${esc(e.text)}</span></div></div>`);
+  $('#feed').scrollTop = 1e6;
+  $('#marks').insertAdjacentHTML('beforeend', `<circle cx="${e.x * 4}" cy="${e.y * 3}" r="2.5" fill="${kc}" opacity=".7"/>`);
+  const v = e.who === 'a' ? P.ga : P.gb; const prev = $('#board .alert'); prev?.remove();
+  if (e.kind === 'break') alertBox('BREAK', '핵을 제때 부수지 못해 괴수가 바깥으로 쏟아진다', 'var(--S)');
+  else if (e.kind === 'core') alertBox('핵 파괴', '게이트 수축 시작', 'var(--B)');
+  else if ((e.ga != null || e.gb != null) && v <= 30) alertBox(v <= 10 ? '격리 대상' : '전담 가이드 호출', `${p.code} 가이딩 수치 ${v}`, gColor(v));
+  $('#scrub').value = i;
+}
+function alertBox(t, s, c) { const d = document.createElement('div'); d.className = 'alert'; d.style.setProperty('--ac', c); d.innerHTML = `${esc(t)}<small>${esc(s)}</small>`; $('#board').append(d); setTimeout(() => d.remove(), 2600); }
+function reset() { P.i = -1; P.ga = 100; P.gb = 100; P.pos = { a: [50, 93], b: [46, 95] }; $('#feed').innerHTML = ''; $('#marks').innerHTML = ''; setAgent('a', ...P.pos.a); setAgent('b', ...P.pos.b); $('#huds').innerHTML = hud('a') + hud('b'); $('#clock').textContent = '--:--'; }
+function seek(n) { reset(); for (let i = 0; i <= n; i++) step(i); P.i = n; }
+function tick() { if (!P.playing) return; if (P.i >= P.S.events.length - 1) { play(false); return; } P.i++; step(P.i); P.timer = setTimeout(tick, 2600 / P.speed); }
+function play(on) { P.playing = on; clearTimeout(P.timer); const b = $('#play'); if (b) b.textContent = on ? '일시정지' : (P.i >= P.S.events.length - 1 ? '처음부터' : '재생'); if (on) { if (P.i >= P.S.events.length - 1) reset(); P.timer = setTimeout(tick, 400); } }
+function reportHTML(S) {
+  const r = S.result; const res = r.broke ? ['브레이크 발생', 'var(--S)'] : r.cleared ? ['공략 완료', 'var(--ok)'] : ['공략 실패', 'var(--call)'];
+  const minA = Math.min(100, ...S.events.filter(e => e.ga != null).map(e => e.ga)), minB = Math.min(100, ...S.events.filter(e => e.gb != null).map(e => e.gb));
+  return `<article class="report" id="report">
+    <div class="rp-top"><div style="flex:1;min-width:220px"><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">A440 현장대응 · 작전 보고서 · 대외비</div><h2 style="margin:6px 0 0;font-family:var(--serif);font-weight:900;font-size:clamp(22px,3.4vw,30px);color:#fff">${esc(S.gate.name || '이름 없는 게이트')}</h2></div>
+      <div class="doc">문서 ${esc(S.docNo || '-')}<br>${esc(S.gate.date)}<br><span class="stamp" style="--sc:${res[1]}">${res[0]}</span></div></div>
+    <div class="gradebar">${GR.map(g => `<span style="--g:var(--${g === '?' ? 'E' : g})" class="${g === S.gate.grade ? 'on' : ''}">${g}</span>`).join('')}</div>
+    <div class="rp-grid">
+      <div class="a-card"><h3>투입 <em>${esc(S.gate.place)}</em></h3><div style="display:grid;gap:8px;font-size:13.5px">
+        ${['a', 'b'].map(k => `<div><span class="grade" style="--g:var(--${S[k].grade || 'E'})">${esc(S[k].grade)}</span> <b>${esc(S[k].code)}</b> ${esc(S[k].name)} · ${esc(S[k].role)} · ${esc(S[k].team)}</div>`).join('')}
+        ${S.others ? `<div style="color:var(--muted)">함께 · ${esc(S.others)}</div>` : ''}
+        <div class="gauge" style="--gc:${gColor(minA)}"><span>${esc(S.a.code)} 최저</span><i><b style="--v:${minA}%"></b></i><strong>${minA}</strong></div>
+        <div class="gauge" style="--gc:${gColor(minB)}"><span>${esc(S.b.code)} 최저</span><i><b style="--v:${minB}%"></b></i><strong>${minB}</strong></div>
+        <div style="color:var(--muted);font-size:12.5px">핵 위치 · ${esc(S.gate.core)}<br>피해 · ${esc(r.damage || '-')}<br>책임자 · ${esc(r.lead === 'a' ? S.a.code : r.lead === 'b' ? S.b.code : (r.lead || '-'))}</div></div></div>
+      <div class="a-card"><h3>주요 경과</h3><ul class="tl">${S.events.filter(e => e.kind !== 'move').slice(0, 9).map(e => `<li style="--kc:${KIND[e.kind][1]}"><time>${esc(e.t)}</time><b>${esc(S[e.who].code)}</b> ${esc(e.text)}</li>`).join('')}</ul></div>
+    </div>
+    <div class="rp-grid">${r.aNote ? `<div class="a-card note"><b>${esc(S.a.code)} · 기록되지 않은 속마음</b>${br(r.aNote)}</div>` : ''}${r.bNote ? `<div class="a-card note"><b>${esc(S.b.code)} · 남긴 말</b>${br(r.bNote)}</div>` : ''}</div>
+    <p class="foot-a">A440 · 국제 센티넬·가이드 관리 기구</p>
+  </article>`;
+}
+function render(S) {
+  P.S = S; play(false);
+  $('#poster').innerHTML = `
+  <section class="ops">
+    <div class="board bracket" id="board" style="padding:0"><div class="top"><span><span class="grade" style="--g:var(--${S.gate.grade === '?' ? 'S' : S.gate.grade})">${esc(S.gate.grade === '?' ? '측정불가' : S.gate.grade)}</span> <b>${esc(S.gate.name)}</b></span><span class="clock" id="clock">--:--</span></div>${mapSVG(S)}</div>
+    <div class="log"><div class="huds" id="huds"></div><div class="feed" id="feed" aria-live="polite"></div>
+      <div class="ctrl"><button id="play">재생</button><button data-sp="1" aria-pressed="true">1배</button><button data-sp="2">2배</button><input type="range" id="scrub" min="0" max="${Math.max(0, S.events.length - 1)}" value="0" aria-label="기록 위치"></div></div>
+  </section>
+  ${reportHTML(S)}`;
+  reset(); setTimeout(() => { if (!P.playing && P.i < 0) play(true); }, 700);
+  $('#play').onclick = () => play(!P.playing);
+  document.querySelectorAll('[data-sp]').forEach(b => b.onclick = () => { P.speed = +b.dataset.sp; document.querySelectorAll('[data-sp]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); });
+  $('#scrub').oninput = e => { play(false); seek(+e.target.value); };
+}
+Core.app({ key: 'a440:gate', what: '작전 기록', sample, blank, normalize, schema, prompts, apply, progress, render, posterSel: '#report', fileName: S => `A440_작전보고서_${S.gate.name}` });
+})();
+</script>
+</body>
+</html>
