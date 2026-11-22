@@ -24,10 +24,14 @@ body.y-hub * { box-sizing: border-box; }
 .y-clock { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
 
 .y-win { background: var(--y-win); border: 1px solid var(--y-ink); box-shadow: 3px 3px 0 var(--y-ink); min-width: 0; }
-.y-title { color: var(--y-ink); display: flex; align-items: center; gap: 8px; height: 24px; padding: 0 5px; border-bottom: 1px solid var(--y-ink); background: repeating-linear-gradient(180deg, #ececec 0 2px, #a3a3a3 2px 3px); }
-.y-title-t { margin: 0 auto; padding: 0 10px; background: #ececec; font: 400 12px var(--px); line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%; }
-.y-title-b { display: flex; gap: 3px; background: #ececec; padding-left: 4px; }
-.y-title-b i { width: 15px; height: 15px; border: 1px solid var(--y-ink); background: var(--y-win); font: 400 10px/13px var(--px9); text-align: center; font-style: normal; }
+.y-title { position: relative; color: var(--y-ink); display: flex; align-items: center; gap: 8px; height: 24px; padding: 0 5px; border-bottom: 1px solid var(--y-ink); background: repeating-linear-gradient(180deg, #ececec 0 2px, #a3a3a3 2px 3px); }
+.y-title-t { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 140px) !important; margin: 0; padding: 0 10px; background: #ececec; font: 400 12px var(--px); line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%; }
+.y-title-b { display: flex; gap: 3px; background: #ececec; padding-left: 4px; margin-left: auto; }
+.y-title-b i { width: 15px; height: 15px; border: 1px solid var(--y-ink); background: var(--y-win) center / 13px 13px no-repeat; font-size: 0; color: transparent; font-style: normal; }
+/* 창 버튼: 글꼴 글자 대신 도트 그림으로 칸 정가운데에 (마지막=닫기, 그 앞=최소화·최대화) */
+.y-title-b i:last-child { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2013%2013%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20d%3D%22M3%203h2v1h1v1h1V4h1V3h2v2H9v1H8v1h1v1h1v2H8V9H7V8H6v1H5v1H3V8h1V7h1V6H4V5H3z%22%20fill%3D%22%23111%22%2F%3E%3C%2Fsvg%3E"); }
+.y-title-b i:first-child:not(:last-child) { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2013%2013%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20d%3D%22M3%209h7v2H3z%22%20fill%3D%22%23111%22%2F%3E%3C%2Fsvg%3E"); }
+.y-title-b i:nth-child(2):not(:last-child) { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2013%2013%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20d%3D%22M2%202h9v9H2zM3%205v5h7V5z%22%20fill%3D%22%23111%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E"); }
 
 .y-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; padding: 0 12px; background: var(--y-face); color: var(--y-ink); border: 1px solid var(--y-ink); border-radius: 0; box-shadow: inset -1px -1px 0 var(--y-dark), inset 1px 1px 0 #fff; font: 400 13px var(--px); text-decoration: none; cursor: pointer; white-space: nowrap; }
 .y-btn:hover { background: #efefef; }

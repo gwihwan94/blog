@@ -18,7 +18,7 @@
 
 /* 맨 위 배너 창: 큰 도트 로고 + 오늘 */
 .banner { grid-column: 1 / -1; }
-.bn { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: end; padding: 22px 22px 18px; background: linear-gradient(180deg, #ffffff 0%, #ececec 100%); }
+.bn { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 22px 22px 18px; background: linear-gradient(180deg, #ffffff 0%, #ececec 100%); }
 .logo { margin: 0; font: 700 clamp(40px, 7.2vw, 84px)/1 "Galmuri11", var(--px); letter-spacing: -.02em; color: #111; display: flex; flex-wrap: wrap; gap: 0 .32em; text-shadow: 3px 3px 0 #c9c9c9, 6px 6px 0 #111; }
 .bn-r { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
 .today { display: flex; align-items: stretch; border: 1px solid var(--y-ink); background: #fff; box-shadow: 3px 3px 0 var(--y-ink); }
@@ -64,7 +64,7 @@
 .frow .nm svg { width: 32px; height: 32px; flex: none; }
 .frow .nm b { font: 400 15px var(--px); line-height: 1.3; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .frow .nm b small { display: block; font: 400 11px var(--px9); color: var(--y-sub); margin-top: 2px; }
-.frow .ds { font-size: 13px; line-height: 1.55; color: #333; }
+.frow .ds { font-size: 13px; line-height: 1.55; color: #333; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .frow .oc { font-family: var(--mono); font-size: 12px; }
 .frow .kd { font: 400 12px var(--px9); }
 .frow:hover, .frow:focus-visible { background: var(--y-sel); color: #fff; outline: 0; }
@@ -121,14 +121,22 @@
 @keyframes eq { 0%, 100% { height: 30%; } 50% { height: 100%; } }
 .player .pbtns { display: flex; gap: 6px; padding: 0 12px 12px; }
 .player .pbtns .y-btn { flex: 1; }
-.phone-w .body { display: grid; grid-template-columns: 66px minmax(0, 1fr); gap: 14px; padding: 12px; align-items: center; }
-.mini { width: 66px; height: 112px; padding: 4px; background: #111; border-radius: 13px; box-shadow: 3px 3px 0 #c9c9c9; }
-.mini-s { height: 100%; border-radius: 10px; background: linear-gradient(170deg, #6f8296, #2f3b4a 60%, #141a22); display: flex; flex-direction: column; align-items: center; padding: 5px 5px 8px; color: #fff; }
-.mini-s i { width: 20px; height: 6px; border-radius: 3px; background: #000; }
-.mini-s small { font: 400 8px var(--px9); margin-top: 7px; opacity: .85; }
-.mini-s b { font: 600 19px/1 "Pretendard Variable", sans-serif; letter-spacing: -.02em; margin-top: 2px; }
-.mini-s em { display: block; width: 100%; height: 11px; margin-top: 4px; border-radius: 3px; background: rgba(255,255,255,.72); }
-.mini-s em:first-of-type { margin-top: auto; }
+.phone-w .body { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 16px; padding: 12px 14px; align-items: center; }
+/* 작은 잠금화면: 실제 폰 툴처럼 다이내믹 아일랜드 · 날짜 · 시계 · 알림 두 장 · 홈 바 */
+.mini { position: relative; width: 74px; height: 136px; padding: 3px; background: #1c1c1e; border-radius: 16px; box-shadow: inset 0 0 0 1px #48484a, 3px 3px 0 #c9c9c9; }
+.mini::before, .mini::after { content: ""; position: absolute; width: 2px; background: #1c1c1e; border-radius: 1px; }
+.mini::before { left: -2px; top: 30px; height: 14px; }
+.mini::after { right: -2px; top: 38px; height: 20px; }
+.mini-s { height: 100%; border-radius: 13px; overflow: hidden; background: linear-gradient(170deg, #9bb0c6 0%, #5b6f88 42%, #26303f 100%); display: flex; flex-direction: column; align-items: center; padding: 4px 5px 4px; color: #fff; font-family: "Pretendard Variable", Pretendard, sans-serif; }
+.mini-s .isl { width: 22px; height: 6px; border-radius: 4px; background: #000; flex: none; }
+.mini-s small { margin-top: 9px; font-size: 7px; font-weight: 600; letter-spacing: -.01em; opacity: .92; white-space: nowrap; }
+.mini-s b { margin-top: 1px; font-size: 25px; font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+.mini-s .nt { display: flex; align-items: center; gap: 4px; width: 100%; height: 17px; margin-top: 3px; padding: 0 4px; border-radius: 5px; background: rgba(245,245,247,.78); flex: none; }
+.mini-s .nt:first-of-type { margin-top: auto; }
+.mini-s .nt i { width: 8px; height: 8px; border-radius: 2px; flex: none; }
+.mini-s .nt .k { background: #fee500; } .mini-s .nt .m { background: #34c759; }
+.mini-s .nt u { flex: 1; height: 7px; background: linear-gradient(#3a3a3c, #3a3a3c) 0 0 / 70% 2px no-repeat, linear-gradient(#8e8e93, #8e8e93) 0 5px / 95% 2px no-repeat; }
+.mini-s .hb { width: 24px; height: 2px; margin-top: 5px; border-radius: 1px; background: #fff; flex: none; }
 .ph-r { display: grid; gap: 6px; }
 .ph-r .y-btn { justify-content: center; }
 .phone-w p { margin: 0 0 10px; font-size: 12.5px; line-height: 1.6; }
@@ -146,7 +154,12 @@ footer { max-width: 1180px; margin: 0 auto; padding: 0 16px 40px; font: 400 12px
   .desk { grid-template-columns: 1fr; }
   .side { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 }
+@media (min-width: 721px) and (max-width: 1200px) {
+  .fhead, .frow { grid-template-columns: minmax(170px, 1.2fr) minmax(0, 1.5fr) 54px; }
+  .fhead span:nth-child(4), .frow .kd { display: none; }
+}
 @media (max-width: 720px) {
+  .frow .ds { white-space: normal; }
   .intro { grid-template-columns: 1fr; } .chips { justify-content: flex-start; }
   .bn { grid-template-columns: 1fr; padding: 16px 14px 14px; } .bn-r { align-items: flex-start; flex-direction: row; flex-wrap: wrap; align-items: center; }
   .logo { text-shadow: 2px 2px 0 #c9c9c9, 4px 4px 0 #111; }
@@ -184,7 +197,7 @@ footer { max-width: 1180px; margin: 0 auto; padding: 0 16px 40px; font: 400 12px
   .explorer .split { flex: 1; min-height: 0; }
   .tree, .files { overflow: auto; }
   .files { display: flex; flex-direction: column; }
-  #list { flex: 1; min-height: 0; display: grid; grid-auto-rows: minmax(42px, 64px); align-content: start; }
+  #list { flex: 1; min-height: 0; display: grid; grid-auto-rows: minmax(42px, auto); align-content: start; }
   .files.icons #list { display: grid; grid-auto-rows: auto; }
   .frow { min-height: 0; padding-block: 4px; }
   .frow .nm svg { width: 28px; height: 28px; }
@@ -254,7 +267,7 @@ footer { max-width: 1180px; margin: 0 auto; padding: 0 16px 40px; font: 400 12px
     <section class="y-win phone-w" id="w-phone" aria-label="NPC의 폰">
       <div class="y-title"><span class="y-title-t">NPC의 폰</span><span class="y-title-b" aria-hidden="true"><i>×</i></span></div>
       <div class="body">
-        <div class="mini" aria-hidden="true"><div class="mini-s"><i></i><small id="ph-w">-</small><b id="ph-t">--:--</b><em></em><em></em></div></div>
+        <div class="mini" aria-hidden="true"><div class="mini-s"><i class="isl"></i><small id="ph-w">-</small><b id="ph-t">--:--</b><span class="nt"><i class="k"></i><u></u></span><span class="nt"><i class="m"></i><u></u></span><i class="hb"></i></div></div>
         <div class="ph-r"><a class="y-btn" href="phone/">▶ 하루 재생</a><a class="y-btn" href="phone/#/phone">둘러보기</a><a class="y-btn" href="phone/#/ooc">OOC로 채우기</a></div>
       </div>
     </section>
