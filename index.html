@@ -160,6 +160,24 @@ footer { max-width: 1180px; margin: 0 auto; padding: 0 16px 40px; font: 400 12px
   .status span:nth-child(2) { display: none; }
 }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* PC: 스크롤 없이 한 화면에. 툴 목록 · 옆 창만 안에서 굴러간다 */
+.status .credit { display: none; color: var(--y-sub); }
+@media (min-width: 961px) and (min-height: 560px) {
+  body.y-hub { height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+  .desk { flex: 1; min-height: 0; width: 100%; grid-template-rows: auto minmax(0, 1fr); padding-top: 14px; padding-bottom: 14px; gap: 14px 18px; }
+  .bn { padding: 12px 18px 12px; }
+  .logo { font-size: clamp(36px, 4.6vw, 70px); }
+  .desk { align-items: stretch; }
+  .banner { align-self: start; }
+  .explorer { display: flex; flex-direction: column; min-height: 0; height: 100%; overflow: hidden; }
+  .files { min-height: 0; }
+  .explorer .split { flex: 1; min-height: 0; }
+  .tree, .files { overflow: auto; }
+  .side { min-height: 0; height: 100%; overflow: auto; align-content: start; gap: 14px; padding-right: 2px; }
+  .status .credit { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  footer { display: none; }
+}
 </style>
 </head>
 <body class="y-hub">
@@ -209,7 +227,7 @@ footer { max-width: 1180px; margin: 0 auto; padding: 0 16px 40px; font: 400 12px
         <p class="empty" id="empty" hidden>찾는 툴이 없어요.</p>
       </div>
     </div>
-    <div class="status"><span id="count">0개 항목</span></div>
+    <div class="status"><span id="count">0개 항목</span><span class="credit">폰트 Galmuri · Pretendard · 악기 소리 FluidR3 · MusyngKite · Salamander</span></div>
   </section>
 
   <aside class="side">

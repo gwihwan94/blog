@@ -188,6 +188,15 @@ body[data-mode="view"] { background: linear-gradient(180deg, #fde6f0 0%, #f2c9dc
 
 /* 만들기 화면 툴 색 */
 body { --e-main:#e0508f;--e-dark:#a52a62;--e-ink:#3b2233;--e-win:#fff6fa;--e-s1:#ffe2ef;--e-s2:#eaa3c3;--e-bg1:#fde6f0;--e-bg2:#f2c9dc; }
+
+/* PC 넓은 화면: 게임 옆에 엔딩 도감 · 게임 크기는 화면 높이에 맞춰 스크롤 없이 한눈에 */
+@media (min-width: 1200px) {
+  .poster { width: min(1400px, 100%, max(900px, calc((100vh - 390px) * 16 / 9 + 352px))); display: grid; grid-template-columns: minmax(0, 1fr) 300px; grid-template-areas: "game dex" "ctl dex"; align-items: start; column-gap: 18px; row-gap: 12px; }
+  .poster > .game { grid-area: game; }
+  .poster > .ctl-row { grid-area: ctl; }
+  .poster > .dex { grid-area: dex; align-self: stretch; overflow: auto; height: 0; min-height: 100%; }
+  .poster > .dex .dex-list { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body data-mode="view" data-noframe>
