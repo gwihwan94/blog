@@ -55,14 +55,14 @@
 .tree ol li::marker { font-family: var(--mono); font-size: 11px; }
 
 .files { min-width: 0; }
-.fhead, .frow { display: grid; grid-template-columns: minmax(150px, 1.05fr) minmax(0, 2fr) 70px 86px; align-items: center; gap: 12px; padding: 0 14px; }
+.fhead, .frow { display: grid; grid-template-columns: minmax(190px, 1.3fr) minmax(0, 1.7fr) 64px 64px; align-items: center; gap: 12px; padding: 0 14px; }
 .fhead { position: sticky; top: 0; height: 28px; background: var(--y-face); border-bottom: 1px solid var(--y-dark); font: 400 12px var(--px9); color: var(--y-ink); }
 .fhead span { border-right: 1px solid var(--y-dark); box-shadow: 1px 0 0 #fff; height: 100%; display: flex; align-items: center; }
 .fhead span:last-child { border-right: 0; box-shadow: none; }
 .frow { min-height: 64px; padding-block: 9px; text-decoration: none; color: var(--y-ink); border-bottom: 1px dotted #c8c8c8; }
 .frow .nm { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .frow .nm svg { width: 32px; height: 32px; flex: none; }
-.frow .nm b { font: 400 15px var(--px); line-height: 1.3; }
+.frow .nm b { font: 400 15px var(--px); line-height: 1.3; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .frow .nm b small { display: block; font: 400 11px var(--px9); color: var(--y-sub); margin-top: 2px; }
 .frow .ds { font-size: 13px; line-height: 1.55; color: #333; }
 .frow .oc { font-family: var(--mono); font-size: 12px; }
@@ -121,8 +121,16 @@
 @keyframes eq { 0%, 100% { height: 30%; } 50% { height: 100%; } }
 .player .pbtns { display: flex; gap: 6px; padding: 0 12px 12px; }
 .player .pbtns .y-btn { flex: 1; }
-.phone-w .body { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 12px; padding: 12px; align-items: center; }
-.phone-w svg { width: 92px; height: auto; }
+.phone-w .body { display: grid; grid-template-columns: 66px minmax(0, 1fr); gap: 14px; padding: 12px; align-items: center; }
+.mini { width: 66px; height: 112px; padding: 4px; background: #111; border-radius: 13px; box-shadow: 3px 3px 0 #c9c9c9; }
+.mini-s { height: 100%; border-radius: 10px; background: linear-gradient(170deg, #6f8296, #2f3b4a 60%, #141a22); display: flex; flex-direction: column; align-items: center; padding: 5px 5px 8px; color: #fff; }
+.mini-s i { width: 20px; height: 6px; border-radius: 3px; background: #000; }
+.mini-s small { font: 400 8px var(--px9); margin-top: 7px; opacity: .85; }
+.mini-s b { font: 600 19px/1 "Pretendard Variable", sans-serif; letter-spacing: -.02em; margin-top: 2px; }
+.mini-s em { display: block; width: 100%; height: 11px; margin-top: 4px; border-radius: 3px; background: rgba(255,255,255,.72); }
+.mini-s em:first-of-type { margin-top: auto; }
+.ph-r { display: grid; gap: 6px; }
+.ph-r .y-btn { justify-content: center; }
 .phone-w p { margin: 0 0 10px; font-size: 12.5px; line-height: 1.6; }
 .memo .body { padding: 10px 12px 12px; font-family: var(--mono); font-size: 12px; line-height: 1.75; background: #fff; }
 .memo .body p { margin: 0; }
@@ -152,7 +160,7 @@ footer { max-width: 1180px; margin: 0 auto; padding: 0 16px 40px; font: 400 12px
   .fhead { display: none; }
   .frow { grid-template-columns: 40px minmax(0, 1fr); grid-template-areas: "ic nm" "ic ds" "ic mt"; gap: 2px 12px; padding: 12px; align-items: start; }
   .frow .nm { display: contents; } .frow .nm svg { grid-area: ic; width: 36px; height: 36px; }
-  .frow .nm b { grid-area: nm; }
+  .frow .nm b { grid-area: nm; } .frow .nm b small { display: none; }
   .frow .ds { grid-area: ds; }
   .frow .oc, .frow .kd { grid-area: mt; display: inline; font-size: 11.5px; color: var(--y-sub); }
   .frow .kd { justify-self: end; }
@@ -163,6 +171,7 @@ footer { max-width: 1180px; margin: 0 auto; padding: 0 16px 40px; font: 400 12px
 
 /* PC: 스크롤 없이 한 화면에. 툴 목록 · 옆 창만 안에서 굴러간다 */
 .status .credit { display: none; color: var(--y-sub); }
+.y-hub .y-menubar .y-clock { display: none; }
 @media (min-width: 961px) and (min-height: 560px) {
   body.y-hub { height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
   .desk { flex: 1; min-height: 0; width: 100%; grid-template-rows: auto minmax(0, 1fr); padding-top: 14px; padding-bottom: 14px; gap: 14px 18px; }
@@ -174,6 +183,13 @@ footer { max-width: 1180px; margin: 0 auto; padding: 0 16px 40px; font: 400 12px
   .files { min-height: 0; }
   .explorer .split { flex: 1; min-height: 0; }
   .tree, .files { overflow: auto; }
+  .files { display: flex; flex-direction: column; }
+  #list { flex: 1; min-height: 0; display: grid; grid-auto-rows: minmax(42px, 64px); align-content: start; }
+  .files.icons #list { display: grid; grid-auto-rows: auto; }
+  .frow { min-height: 0; padding-block: 4px; }
+  .frow .nm svg { width: 28px; height: 28px; }
+  .cal-g span { line-height: 26px; }
+  .cal-b { padding: 8px 12px 10px; }
   .side { min-height: 0; height: 100%; overflow: auto; align-content: start; gap: 14px; padding-right: 2px; }
   .status .credit { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   footer { display: none; }
@@ -203,8 +219,6 @@ footer { max-width: 1180px; margin: 0 auto; padding: 0 16px 40px; font: 400 12px
   <section class="y-win explorer" id="w-exp" aria-label="툴 목록">
     <div class="y-title"><span class="y-title-t">귀환의 블로그 탐색기</span><span class="y-title-b" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span></div>
     <div class="toolbar">
-      <a class="y-btn" href="phone/">폰 열기</a><a class="y-btn" href="line/">노선도</a><a class="y-btn" href="fight/">대전</a>
-      <span class="sep" aria-hidden="true"></span>
       <span class="views" role="group" aria-label="보기"><button type="button" class="y-btn vw" data-v="list" aria-label="자세히" aria-pressed="true"><svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path d="M1 2h3v3H1zM6 3h9v1H6zM1 7h3v3H1zM6 8h9v1H6zM1 12h3v3H1zM6 13h9v1H6z" fill="currentColor"/></svg></button><button type="button" class="y-btn vw" data-v="icons" aria-label="큰 아이콘" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path d="M1 1h6v6H1zM9 1h6v6H9zM1 9h6v6H1zM9 9h6v6H9z" fill="currentColor"/></svg></button></span>
       <label class="find">찾기 <input id="q" type="search" placeholder="예: 편지, 싸움, 노래" autocomplete="off"></label>
     </div>
@@ -240,8 +254,8 @@ footer { max-width: 1180px; margin: 0 auto; padding: 0 16px 40px; font: 400 12px
     <section class="y-win phone-w" id="w-phone" aria-label="NPC의 폰">
       <div class="y-title"><span class="y-title-t">NPC의 폰</span><span class="y-title-b" aria-hidden="true"><i>×</i></span></div>
       <div class="body">
-        <svg viewBox="0 0 46 80" aria-hidden="true" shape-rendering="crispEdges"><rect x="8" y="1" width="30" height="34" fill="#111"/><rect x="11" y="4" width="24" height="20" fill="#e8e8e8"/><rect x="13" y="7" width="12" height="2" fill="#111"/><rect x="13" y="11" width="18" height="2" fill="#111"/><rect x="13" y="15" width="9" height="2" fill="#111"/><rect x="8" y="36" width="30" height="42" fill="#111"/><rect x="11" y="39" width="24" height="7" fill="#e8e8e8"/><g fill="#e8e8e8"><rect x="12" y="49" width="6" height="5"/><rect x="20" y="49" width="6" height="5"/><rect x="28" y="49" width="6" height="5"/><rect x="12" y="56" width="6" height="5"/><rect x="20" y="56" width="6" height="5"/><rect x="28" y="56" width="6" height="5"/><rect x="12" y="63" width="6" height="5"/><rect x="20" y="63" width="6" height="5"/><rect x="28" y="63" width="6" height="5"/></g><rect x="36" y="0" width="2" height="6" fill="#111"/></svg>
-        <div><a class="y-btn" href="phone/">열기</a></div>
+        <div class="mini" aria-hidden="true"><div class="mini-s"><i></i><small id="ph-w">-</small><b id="ph-t">--:--</b><em></em><em></em></div></div>
+        <div class="ph-r"><a class="y-btn" href="phone/">▶ 하루 재생</a><a class="y-btn" href="phone/#/phone">둘러보기</a><a class="y-btn" href="phone/#/ooc">OOC로 채우기</a></div>
       </div>
     </section>
 
@@ -250,19 +264,15 @@ footer { max-width: 1180px; margin: 0 auto; padding: 0 16px 40px; font: 400 12px
       <div class="cal-b"><div class="cal-h" aria-hidden="true"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div><div class="cal-g" id="cal-g"></div></div>
     </section>
 
-    <section class="y-win" id="w-a440" aria-label="A440">
-      <div class="y-title"><span class="y-title-t">A440 바로 가기</span><span class="y-title-b" aria-hidden="true"><i>×</i></span></div>
-      <a class="a440-link" href="a440/"><svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><rect x="1" y="3" width="14" height="11" fill="#111"/><rect x="2" y="5" width="12" height="8" fill="#e8e8e8"/><rect x="4" y="7" width="1" height="4" fill="#111"/><rect x="7" y="7" width="1" height="4" fill="#111"/><rect x="10" y="7" width="1" height="4" fill="#111"/><rect x="3" y="9" width="10" height="1" fill="#111"/></svg><span><b>A440</b><small>세계관 전용</small></span></a>
-    </section>
   </aside>
 </main>
+<footer><span>귀환의 블로그</span><span>폰트 Galmuri · Pretendard · 악기 소리 FluidR3 · MusyngKite · Salamander</span></footer>
 <nav class="taskbar" aria-label="창">
   <a class="tb-start" href="./"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" fill="#111"/><rect x="4" y="4" width="8" height="5" fill="#fff"/><rect x="5" y="11" width="6" height="1" fill="#fff"/></svg>귀환의 블로그</a>
   <span class="tb-sep" aria-hidden="true"></span>
-  <a class="tb-btn" href="#w-exp">귀환의 블로그 탐색기</a><a class="tb-btn" href="#w-play">플레이어.exe</a><a class="tb-btn" href="#w-phone">NPC의 폰</a><a class="tb-btn" href="#w-a440">A440</a>
+  <a class="tb-btn" href="#w-exp">귀환의 블로그 탐색기</a><a class="tb-btn" href="#w-play">플레이어.exe</a><a class="tb-btn" href="#w-phone">NPC의 폰</a><a class="tb-btn" href="a440/">A440</a>
   <span class="tb-tray"><time id="tb-clock">--:--</time></span>
 </nav>
-<footer><span>귀환의 블로그</span><span>폰트 Galmuri · Pretendard · 악기 소리 FluidR3 · MusyngKite · Salamander</span></footer>
 
 <script>
 /* 16×16 도트 아이콘: 1 = 먹, 2 = 회색 면 */
@@ -280,15 +290,15 @@ const PX = {
 const icon = k => { let r = ''; PX[k].forEach((row, y) => [...row].forEach((c, x) => { if (c === '1') r += `<rect class="k" x="${x}" y="${y}" width="1" height="1" fill="#111"/>`; else if (c === '2') r += `<rect class="g" x="${x}" y="${y}" width="1" height="1" fill="#d6d6d6"/>`; })); return `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`; };
 const TOOLS = [
   { k: 'phone', c: 'phone', href: 'phone/', nm: 'NPC의 폰', sub: '폰.app', ds: '하루 재생 · 폰 둘러보기', oc: 4, kd: '폰', tags: '폰 핸드폰 메시지 카톡 일상' },
-  { k: 'line', c: 'pair', href: 'line/', nm: '둘의 노선도', sub: '관계 단계', ds: '관계 단계 노선도', oc: 1, kd: '관계', tags: '노선도 지하철 관계 단계 냅' },
-  { k: 'post', c: 'pair', href: 'post/', nm: '마음 우체국', sub: '사랑의 언어', ds: '보낸 마음 · 받은 마음', oc: 1, kd: '관계', tags: '편지 우체국 우편 사랑의 언어' },
-  { k: 'orbit', c: 'pair', href: 'orbit/', nm: '두 행성', sub: '투자 모델', ds: '궤도 계산', oc: 1, kd: '관계', tags: '행성 궤도 우주 중력' },
-  { k: 'fight', c: 'pair', href: 'fight/', nm: '대전 화면', sub: '갈등 대처', ds: '싸움 한 판', oc: 1, kd: '관계', tags: '싸움 대전 격투 게임 갈등' },
-  { k: 'date', c: 'pair', href: 'date/', nm: '데이트 동선', sub: '지도 · 영수증', ds: '데이트 코스 지도 · 영수증', oc: 1, kd: '관계', tags: '데이트 지도 영수증 동선' },
-  { k: 'novel', c: 'pair', href: 'novel/', nm: '미연시', sub: '선택지 · 엔딩', ds: '선택지 · 호감도 · 엔딩', oc: 2, kd: '관계', tags: '미연시 게임 선택지 엔딩 호감도' },
-  { k: 'score', c: 'a440', href: 'a440/score/', nm: '두 사람의 노래', sub: '모든 세계관', ds: '이중주 · 악보 · MP3', oc: 1, kd: '음악', tags: '노래 음악 작곡 악보 mp3' },
-  { k: 'gate', c: 'a440', href: 'a440/gate/', nm: '게이트 작전 리플레이', sub: 'A440 전용', ds: '작전 지도 · 보고서', oc: 1, kd: 'A440', tags: '게이트 작전 센티넬 가이드' },
-  { k: 'imprint', c: 'a440', href: 'a440/imprint/', nm: '각인 신고서', sub: 'A440 전용', ds: '각인 신고 · 결재', oc: 1, kd: 'A440', tags: '각인 신고 결재 센티넬 가이드' } ];
+  { k: 'line', c: 'pair', href: 'line/', nm: '둘의 노선도', sub: '노선도.exe', ds: '관계 단계를 지하철 노선으로', oc: 1, kd: '관계', tags: '노선도 지하철 관계 단계 냅' },
+  { k: 'post', c: 'pair', href: 'post/', nm: '마음 우체국', sub: '우체국.exe', ds: '보낸 마음 · 받은 마음', oc: 1, kd: '관계', tags: '편지 우체국 우편 사랑의 언어' },
+  { k: 'orbit', c: 'pair', href: 'orbit/', nm: '두 행성', sub: '행성.exe', ds: '두 사람의 궤도', oc: 1, kd: '관계', tags: '행성 궤도 우주 중력' },
+  { k: 'fight', c: 'pair', href: 'fight/', nm: '대전 화면', sub: '대전.exe', ds: '싸움 한 판', oc: 1, kd: '관계', tags: '싸움 대전 격투 게임 갈등' },
+  { k: 'date', c: 'pair', href: 'date/', nm: '데이트 동선', sub: '동선.exe', ds: '데이트 코스 지도 · 영수증', oc: 1, kd: '관계', tags: '데이트 지도 영수증 동선' },
+  { k: 'novel', c: 'pair', href: 'novel/', nm: '미연시', sub: '미연시.exe', ds: '선택지 · 호감도 · 엔딩', oc: 2, kd: '관계', tags: '미연시 게임 선택지 엔딩 호감도' },
+  { k: 'score', c: 'a440', href: 'a440/score/', nm: '두 사람의 노래', sub: '악보.exe', ds: '이중주 악보 · 연주 · MP3', oc: 1, kd: 'A440', tags: '노래 음악 작곡 악보 mp3' },
+  { k: 'gate', c: 'a440', href: 'a440/gate/', nm: '게이트 작전 리플레이', sub: '리플레이.exe', ds: '작전 지도 · 보고서', oc: 1, kd: 'A440', tags: '게이트 작전 센티넬 가이드' },
+  { k: 'imprint', c: 'a440', href: 'a440/imprint/', nm: '각인 신고서', sub: '신고서.exe', ds: '각인 신고 · 결재', oc: 1, kd: 'A440', tags: '각인 신고 결재 센티넬 가이드' } ];
 const NAME = { all: '전체', pair: '관계 OOC', phone: 'NPC의 폰', a440: 'A440 세계관' };
 const list = document.getElementById('list');
 list.innerHTML = TOOLS.map(t => `<a class="frow" href="${t.href}" data-c="${t.c}" data-s="${(t.nm + ' ' + t.ds + ' ' + t.tags).toLowerCase()}"><span class="nm">${icon(t.k)}<b>${t.nm}<small>${t.sub}</small></b></span><span class="ds">${t.ds}</span><span class="oc">OOC ${t.oc}</span><span class="kd">${t.kd}</span></a>`).join('');
@@ -309,7 +319,7 @@ const today = () => { const d = new Date(); document.getElementById('t-d').textC
   for (let i = 0; i < first; i++) g += '<span class="pad">0</span>';
   for (let n = 1; n <= last; n++) g += `<span class="${(first + n - 1) % 7 === 0 ? 'sun' : ''}${n === d.getDate() ? ' on' : ''}">${n}</span>`;
   document.getElementById('cal-g').innerHTML = g;
-  const c = document.getElementById('clock').textContent; document.getElementById('tb-clock').textContent = c; };
+  const c = document.getElementById('clock').textContent; document.getElementById('tb-clock').textContent = c; const n = new Date(); document.getElementById('ph-w').textContent = `${n.getMonth() + 1}월 ${n.getDate()}일 ${D[n.getDay()]}요일`; document.getElementById('ph-t').textContent = `${(n.getHours() % 12) || 12}:${String(n.getMinutes()).padStart(2, '0')}`; };
 today(); setInterval(today, 15000);
 /* 보기 바꾸기: 자세히 · 큰 아이콘 (이 브라우저에 기억) */
 const files = document.querySelector('.files');
