@@ -338,15 +338,15 @@ const player = (name, color, style) => ({ name, color, style, pic: '', assert: 5
 const blank = () => ({ v: 2, title: '', trigger: '', stage: '', real: '', a: player('NPC', '#e8364f', 'brawler'), b: player('PC', '#3f8cff', 'brawler'), rounds: Array.from({ length: NR }, (_, i) => emptyRound(i)), endings: { a: '', b: '', draw: '' } });
 const M = (who, kind, text, power = 15) => ({ who, kind, text, power });
 const sample = () => ({
-  v: 2, title: '앙코르곡을 왜 바꿨어요', trigger: '공연 끝나고 국밥집. 고맙다고 하려던 NPC가, 앙코르곡이 자기 얘기 같았다는 말을 꺼내다 말았다.', stage: '단골 국밥집 · 밤 11시', real: 'NPC가 먼저 “좋았어요, 그 곡”이라고 했고, PC는 김치 접시를 NPC 쪽으로 밀었다.',
-  a: { ...player('NPC', '#e8364f', 'brawler'), assert: 34, coop: 70, special: '괜찮아요 연타', specialLine: '괜찮아요 진짜 괜찮아요 괜찮다니까요', win: '…다음엔 미리 말해 줘요', lose: '아니 내가 왜 우는데' },
-  b: { ...player('PC', '#3f8cff', 'brawler'), assert: 72, coop: 56, special: '정면 돌파', specialLine: 'NPC 씨 들으라고 바꾼 거 맞아요', win: '그러니까 다음 공연도 와요', lose: '…국밥 식는다' },
+  v: 2, title: '왜 말 안 했어요', trigger: '공녀가 외국 사절단 접대를 맡게 됐다는 얘기를 황태자가 다른 사람에게서 먼저 들었다.', stage: '황궁 서고 · 밤 11시', real: '황태자가 먼저 “축하합니다”라고 했고, 공녀는 식은 차를 두 잔 따랐다.',
+  a: { ...player('NPC', '#c99a2e', 'brawler'), assert: 34, coop: 70, special: '괜찮습니다 연타', specialLine: '괜찮습니다. 정말 괜찮습니다. 괜찮다니까요', win: '…다음엔 먼저 말해 주십시오', lose: '내가 왜 이러는지 모르겠군' },
+  b: { ...player('PC', '#3f8cff', 'brawler'), assert: 72, coop: 56, special: '정면 돌파', specialLine: '전하께 제일 먼저 말하고 싶었어요', win: '그러니까 서고는 계속 같이 와요', lose: '…차 다 식었어요' },
   rounds: [
-    { title: '고맙다는 말', moves: [M('b', 'attack', '근데 오늘 왜 계속 딴 데 봐요?', 12), M('a', 'dodge', '국밥이 맛있어서요'), M('b', 'attack', '앙코르곡 마음에 안 들었어요?', 16), M('a', 'guard', '그냥… 깜짝 놀랐다고요'), emptyMove()] },
-    { title: '왜 말 안 했어요', moves: [M('a', 'attack', '그런 건 미리 말해 줘야죠', 18), M('b', 'attack', '말하면 안 왔을 거잖아요', 24), M('a', 'special', '', 16), M('b', 'guard', '숟가락 내려놓고 듣는다'), emptyMove()] },
-    { title: '국밥이 식는다', moves: [M('b', 'special', '', 20), M('a', 'heal', '…좋았어요. 그 곡', 18), M('b', 'heal', '김치 접시를 NPC 쪽으로 민다', 14), emptyMove(), emptyMove()] },
+    { title: '축하한다는 말', moves: [M('b', 'attack', '근데 오늘 왜 계속 딴 데 보세요?', 12), M('a', 'dodge', '피곤해서 그렇습니다'), M('b', 'attack', '사절단 일 들으셨어요?', 16), M('a', 'guard', '…축하할 일이지요'), emptyMove()] },
+    { title: '왜 말 안 했어요', moves: [M('a', 'attack', '그런 건 먼저 말해 줘야지요', 18), M('b', 'attack', '말하면 서운해하실 거잖아요', 24), M('a', 'special', '', 16), M('b', 'guard', '찻잔을 내려놓고 듣는다'), emptyMove()] },
+    { title: '차가 식는다', moves: [M('b', 'special', '', 20), M('a', 'heal', '…축하합니다. 진심으로', 18), M('b', 'heal', '찻잔 하나를 황태자 쪽으로 민다', 14), emptyMove(), emptyMove()] },
   ],
-  endings: { a: 'NPC 승. PC는 다음 공연부터 셋리스트를 미리 보내기로 했다.', b: 'PC 승. NPC는 그날 밤 앙코르곡을 서른 번 들었다.', draw: '무승부. 국밥은 식었지만 둘 다 끝까지 먹었다.' },
+  endings: { a: 'NPC 승. PC는 앞으로 무슨 일이든 황태자에게 먼저 말하기로 했다.', b: 'PC 승. NPC는 그날 밤 사절단 명단을 몇 번이나 다시 읽었다.', draw: '무승부. 차는 식었지만 둘 다 끝까지 마셨다.' },
 });
 function normalize(s) {
   const b = blank(); s = s && typeof s === 'object' ? s : {};

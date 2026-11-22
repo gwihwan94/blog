@@ -44,7 +44,7 @@
 .main { display: grid; grid-template-columns: 1fr; }
 .mapbox { position: relative; background: var(--land); }
 .map { display: block; width: 100%; height: auto; }
-.map .lbl { font-family: var(--ui-font); font-size: 21px; font-weight: 800; fill: var(--ink); paint-order: stroke; stroke: #fff; stroke-width: 6px; stroke-linejoin: round; letter-spacing: -.02em; }
+.map .lbl { font-family: var(--ui-font); font-size: 16px; font-weight: 800; fill: var(--ink); paint-order: stroke; stroke: #fff; stroke-width: 6px; stroke-linejoin: round; letter-spacing: -.02em; }
 .map .road-name { font-family: var(--ui-font); font-size: 15px; fill: #9aa098; letter-spacing: .05em; }
 /* 지도 위 장소 카드: 두 사람이 도착하면 그 자리에 무엇을 했는지가 뜬다 */
 .bubble { position: absolute; z-index: 3; width: 270px; background: #fff; color: var(--ink); border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); padding: 10px 12px 11px; font-size: 13.5px; line-height: 1.5; transition: opacity .45s ease, transform .45s ease; }
@@ -163,7 +163,7 @@ body[data-mode] .actions .btn { border-radius: 999px; border: 2px solid #2e2f6e;
 body[data-mode] .actions .btn.primary { background: linear-gradient(180deg, #ff8cc3, #ff5fa8); color: #fff; }
 body[data-mode] .shared-note { background: #fff; color: #2e2f6e; border: 2.5px solid #2e2f6e; border-radius: 16px; box-shadow: 3px 3px 0 #2e2f6e; }
 .top h1, .top small, .sum b, .sum div small, .list h3, .stop .hd b, .bubble .bh b, .ending h2, .ending small, .receipt h4, .map .lbl, .who span { font-family: "Galmuri11", var(--ui-font) !important; font-weight: 400 !important; letter-spacing: 0 !important; }
-.map .lbl { stroke-width: 6px; }
+.map .lbl { stroke-width: 5px; }
 .stop .walk b { color: #c4206e; } .receipt .row small { font-size: 11px; }
 
 /* 바탕은 단색·그라데이션만 */
@@ -223,19 +223,19 @@ const ICON = {
 const emptySpot = () => ({ t: '', name: '', kind: 'cafe', stay: 30, a: '', b: '', line: '', who: 'b', cost: 0, item: '', payer: 'split', hold: false });
 const blank = () => ({ v: 1, title: '', sub: '', date: '', a: { name: 'NPC', color: '#e2533a' }, b: { name: 'PC', color: '#3a6fd8' }, spots: Array.from({ length: NS }, emptySpot), end: { title: '', body: '' } });
 const sample = () => ({
-  v: 1, title: '비 그친 토요일 오후', sub: '악보집 반납이 핑계였던 하루. 반납은 결국 하지 않았다.', date: '2026.11.15 SAT',
-  a: { name: 'NPC', color: '#e2533a' }, b: { name: 'PC', color: '#3a6fd8' },
+  v: 1, title: '황궁 밖 하루', sub: '처음으로 신분을 숨기고 수도에 나간 날', date: '2026.11.15 SAT',
+  a: { name: 'NPC', color: '#b8892b' }, b: { name: 'PC', color: '#3a6fd8' },
   spots: [
-    { t: '13:00', name: '구립도서관 앞', kind: 'station', stay: 10, a: '반납함 앞에서 기다린다', b: '악보집을 가방에서 꺼냈다가 다시 넣는다', line: '반납은 이따가 해도 되죠?', who: 'b', cost: 0, item: '', payer: 'split', hold: false },
-    { t: '13:20', name: '골목 카페 "선반"', kind: 'cafe', stay: 70, a: '창가 자리를 고른다', b: 'NPC 커피 취향을 기억해서 먼저 주문한다', line: '따뜻한 거 시럽 빼고 맞죠', who: 'b', cost: 11000, item: '라테 2', payer: 'b', hold: false },
-    { t: '14:40', name: '중고 레코드 가게', kind: 'shop', stay: 40, a: 'PC가 고른 LP 뒷면을 오래 읽는다', b: '라운드어바웃 데모 테이프를 찾아낸다', line: '이거 저희 첫 데모예요 아무도 안 삼', who: 'b', cost: 15000, item: '데모 테이프', payer: 'a', hold: false },
-    { t: '15:30', name: '천변 산책로', kind: 'river', stay: 50, a: '징검다리 앞에서 멈칫한다', b: '손을 내민다', line: '잡아요 미끄러워요', who: 'b', cost: 0, item: '', payer: 'split', hold: true },
-    { t: '16:40', name: '붕어빵 노점', kind: 'street', stay: 15, a: '팥과 슈크림 중에 고민한다', b: '둘 다 산다', line: '반반 나눠요 그럼', who: 'a', cost: 3000, item: '붕어빵 6개', payer: 'split', hold: true },
-    { t: '17:30', name: '독립영화관 "작은 창"', kind: 'movie', stay: 110, a: '영화보다 옆 사람 숨소리를 더 듣는다', b: '팔걸이를 양보한다', line: '', who: 'b', cost: 18000, item: '관람권 2', payer: 'a', hold: false },
-    { t: '19:40', name: '단골 국밥집', kind: 'food', stay: 60, a: '늘 먹던 걸로 2인분을 시킨다', b: '김치를 NPC 쪽으로 민다', line: '여기 사장님이 우리 세트로 알아요', who: 'b', cost: 18000, item: '국밥 2', payer: 'b', hold: false },
-    { t: '21:00', name: 'NPC네 골목', kind: 'home', stay: 10, a: '대문 앞에서 열쇠를 찾는 척한다', b: '악보집을 건넨다', line: '이거 반납 대신 맡겨 둘게요', who: 'b', cost: 0, item: '', payer: 'split', hold: true },
+    { t: '13:00', name: '황궁 뒷문', kind: 'station', stay: 10, a: '평민 옷을 입고 일찍 나와 기다린다', b: '뛰어오다 황태자를 보고 걸음을 늦춘다', line: '그 옷 정말 안 어울리세요.', who: 'b', cost: 0, item: '', payer: 'split', hold: false },
+    { t: '13:20', name: '광장 찻집', kind: 'cafe', stay: 70, a: '창가 자리를 고른다', b: '황태자가 늘 마시는 차를 기억해서 먼저 주문한다', line: '홍차, 설탕 없이 맞죠?', who: 'b', cost: 11000, item: '홍차 2', payer: 'b', hold: false },
+    { t: '14:40', name: '수도 서점', kind: 'shop', stay: 40, a: '공녀가 고른 책을 오래 들여다본다', b: '황태자가 어릴 때 읽었다던 책을 찾아낸다', line: '이거 찾던 책 아니에요?', who: 'b', cost: 9000, item: '책 1권', payer: 'a', hold: false },
+    { t: '15:30', name: '강변 산책로', kind: 'river', stay: 50, a: '징검다리 앞에서 손을 내민다', b: '잠깐 망설이다 손을 잡는다', line: '잡으세요. 미끄럽습니다.', who: 'a', cost: 0, item: '', payer: 'split', hold: true },
+    { t: '16:40', name: '군밤 노점', kind: 'street', stay: 15, a: '처음 사 보는 거라 값을 묻는다', b: '한 봉지를 사서 반으로 나눈다', line: '반씩 나눠 먹어요.', who: 'b', cost: 3000, item: '군밤 1봉', payer: 'split', hold: true },
+    { t: '17:30', name: '극장', kind: 'movie', stay: 110, a: '연극보다 옆자리가 더 신경 쓰인다', b: '팔걸이를 양보한다', line: '', who: 'b', cost: 26000, item: '관람권 2', payer: 'a', hold: false },
+    { t: '19:40', name: '여관 식당', kind: 'food', stay: 60, a: '처음 먹어 보는 국밥을 조심스럽게 떠먹는다', b: '먹는 법을 알려 준다', line: '전하, 김치랑 같이 드세요.', who: 'b', cost: 18000, item: '국밥 2', payer: 'b', hold: false },
+    { t: '21:00', name: '공작가 정문', kind: 'home', stay: 10, a: '정문 앞에서 한참 서 있다', b: '다음 외출 날짜를 먼저 꺼낸다', line: '다음에도 몰래 나가요.', who: 'b', cost: 0, item: '', payer: 'split', hold: true },
   ],
-  end: { title: '반납되지 않은 악보집', body: '하루 종일 반납하러 간다고 해 놓고 결국 악보집은 NPC의 가방에 남았다. 다음 약속을 만드는 데 이보다 좋은 핑계는 없다.' },
+  end: { title: '다음 외출 약속', body: '하루 종일 같이 걷고 먹고 웃었다. 헤어지기 전에 다음 외출 날짜까지 정했다.' },
 });
 function normalize(s) {
   const b = blank(); s = s && typeof s === 'object' ? s : {};
@@ -342,8 +342,8 @@ function buildMap(S, L) {
 }
 function mapSVG(S, L, M) {
   const roads = [
-    ...M.xs.map(x => `<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#fff" stroke-width="${x === M.main.x ? 16 : 9}"/>`),
-    ...M.ys.map(y => `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#fff" stroke-width="${y === M.main.y ? 16 : 9}"/>`),
+    ...M.xs.map(x => `<line x1="${x}" y1="0" x2="${x}" y2="${H}" style="stroke:var(--road)" stroke-width="${x === M.main.x ? 16 : 9}"/>`),
+    ...M.ys.map(y => `<line x1="0" y1="${y}" x2="${W}" y2="${y}" style="stroke:var(--road)" stroke-width="${y === M.main.y ? 16 : 9}"/>`),
   ].join('');
   const blocks = M.blocks.map(([x, y, w, h]) => `<rect x="${x}" y="${y}" width="${Math.max(4, w)}" height="${Math.max(4, h)}" rx="3" fill="var(--block)"/>`).join('');
   const parks = M.parks.map(p => `<ellipse cx="${p.x + 30}" cy="${p.y - 30}" rx="80" ry="55" fill="var(--park)"/>`).join('');

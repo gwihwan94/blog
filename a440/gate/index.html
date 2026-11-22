@@ -101,17 +101,17 @@ const person = (code, name, role, grade, team) => ({ code, name, role, grade, te
 const blank = () => ({ v: 1, docNo: '', gate: { name: '', grade: 'B', place: '', date: '', core: '' }, a: person('NPC', '', '센티넬', 'S', ''), b: person('PC', '', '가이드', 'A', ''), others: '', events: [], result: { cleared: true, broke: false, damage: '', aNote: '', bNote: '', lead: '' } });
 const sample = () => ({ v: 1, docNo: 'FR1-2611-0347',
   gate: { name: '마포 폐역사 게이트', grade: 'A', place: '서울 마포구 폐역사 지하 3층', date: '15.11.03 (화)', core: '지하 플랫폼 끝 선로 위' },
-  a: person('스케르초', 'NPC', '센티넬', 'S', '특별관리 1팀'), b: person('PC', 'PC', '가이드', 'A', '가이드 1팀'),
+  a: person('NPC', 'NPC', '센티넬', 'S', '현장대응 1팀'), b: person('PC', 'PC', '가이드', 'A', '가이드 1팀'),
   others: '현장대응 1팀 센티넬 3명',
   events: [
-    EV('21:04', 'a', 'move', '입구 진입. 담배 끄고 장갑 고쳐 낌', 50, 92, 72, 100), EV('21:06', 'b', 'talk', '“팀장님 수치 72예요. 들어가기 전에 가이딩…” “나중에.”', 46, 94),
-    EV('21:11', 'a', 'fight', '개찰구 쪽 괴수 무리 정리. 혼자 앞서 나감', 34, 70, 61), EV('21:15', 'a', 'ability', '깔린 1팀 막내 손 잡고 【역전】. 고통을 웃음으로', 28, 58, 44),
-    EV('21:16', 'b', 'talk', '“44예요. 지금 멈춰요.” “괜찮아, 괜찮아.”', 36, 66), EV('21:22', 'a', 'hurt', '왼팔 열상. 웃으면서 계속 내려감', 58, 40, 31),
+    EV('21:04', 'a', 'move', '입구 진입. 장갑 고쳐 끼고 앞장섬', 50, 92, 72, 100), EV('21:06', 'b', 'talk', '“팀장님 수치 72예요. 들어가기 전에 가이딩…” “나중에.”', 46, 94),
+    EV('21:11', 'a', 'fight', '개찰구 쪽 괴수 무리 정리. 혼자 앞서 나감', 34, 70, 61), EV('21:15', 'a', 'ability', '무너진 기둥 밑 요원 구조. 능력 연달아 사용', 28, 58, 44),
+    EV('21:16', 'b', 'talk', '“44예요. 지금 멈춰요.” “괜찮아, 괜찮아.”', 36, 66), EV('21:22', 'a', 'hurt', '왼팔 열상. 지혈만 하고 계속 내려감', 58, 40, 31),
     EV('21:23', 'b', 'guide', '방사 가이딩. 곁에 붙어서 같이 걸음', 55, 42, 38, 82), EV('21:31', 'a', 'fight', '플랫폼 대형 개체와 교전', 64, 20, 26),
-    EV('21:33', 'b', 'guide', '장갑 벗은 오른손을 잡음. 접촉 가이딩', 62, 22, 47, 64), EV('21:35', 'a', 'core', '선로 위 핵 파괴. 게이트 수축 시작', 70, 10, 45),
-    EV('21:41', 'a', 'talk', '“애새끼님 손 차갑네. 나가서 국밥이나 먹자.”', 50, 88),
+    EV('21:33', 'b', 'guide', '장갑 벗은 손을 잡음. 접촉 가이딩', 62, 22, 47, 64), EV('21:35', 'a', 'core', '선로 위 핵 파괴. 게이트 수축 시작', 70, 10, 45),
+    EV('21:41', 'a', 'talk', '“손 차갑네요. 나가서 밥이나 먹죠.”', 50, 88),
   ],
-  result: { cleared: true, broke: false, damage: '민간 피해 없음 · 요원 경상 2', lead: 'a', aNote: '손은 왜 잡냐. 이거 넘어가면 안 되는데. …근데 따뜻하긴 하네.', bNote: '수치가 26까지 떨어질 때까지 한 번도 멈추지 않았다. 다음엔 들어가기 전에 잡는다.' } });
+  result: { cleared: true, broke: false, damage: '민간 피해 없음 · 요원 경상 2', lead: 'a', aNote: '손을 잡을 줄은 몰랐다. 수치가 이렇게 빨리 오를 줄도.', bNote: '수치가 26까지 떨어질 때까지 한 번도 멈추지 않았다. 다음엔 들어가기 전에 잡는다.' } });
 function normalize(s) {
   const b = blank(); s = s && typeof s === 'object' ? s : {};
   const o = { ...b, ...s, gate: { ...b.gate, ...(s.gate || {}) }, a: { ...b.a, ...(s.a || {}) }, b: { ...b.b, ...(s.b || {}) }, result: { ...b.result, ...(s.result || {}) } };
@@ -242,7 +242,7 @@ function render(S) {
   document.querySelectorAll('[data-sp]').forEach(b => b.onclick = () => { P.speed = +b.dataset.sp; document.querySelectorAll('[data-sp]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); });
   $('#scrub').oninput = e => { play(false); seek(+e.target.value); };
 }
-Core.app({ key: 'a440:gate', what: '작전 기록', sample, blank, normalize, schema, prompts, apply, progress, render, posterSel: '#report', fileName: S => `A440_작전보고서_${S.gate.name}` });
+Core.app({ key: 'a440:gate', skin: false, what: '작전 기록', sample, blank, normalize, schema, prompts, apply, progress, render, posterSel: '#report', fileName: S => `A440_작전보고서_${S.gate.name}` });
 })();
 </script>
 </body>

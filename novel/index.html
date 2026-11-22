@@ -230,23 +230,23 @@ const emptyScene = (i) => ({ id: 's' + (i + 1), bg: '카페', script: '', choice
 const emptyEnd = () => ({ title: '', min: 0, text: '' });
 const blank = () => ({ v: 1, title: '', sub: '', a: { name: 'NPC', color: '#c2405a' }, b: { name: 'PC' }, scenes: Array.from({ length: NSC }, (_, i) => emptyScene(i)), endings: Array.from({ length: NEND }, emptyEnd) });
 const sample = () => ({
-  v: 1, title: '연체 사흘째', sub: '반납하러 갔는데, 사서가 오늘따라 말을 건다.',
-  a: { name: 'NPC', color: '#c2405a' }, b: { name: 'PC' },
+  v: 1, title: '황궁 정원', sub: '약혼 발표 전날 밤',
+  a: { name: 'NPC', color: '#b8892b' }, b: { name: 'PC' },
   scenes: [
-    { id: 's1', bg: '도서관', script: 'n: 금요일 오후. 연체 사흘째 된 악보집을 들고 반납대 앞에 섰다.\na(기본): 사흘 늦으셨어요\na(기본): 연체료 300원이에요\nb: 오늘은 진짜 반납하러 온 거예요\na(수줍음): 오늘은요?', choices: '> 사실 NPC 씨 보러 온 거예요 | s2 | +12\n> 공연 연습하느라 바빴어요 | s3 | +3\n> 연체료 대신 공연 티켓 드리면 안 돼요? | s4 | +8', next: '' },
-    { id: 's2', bg: '도서관', script: 'a(당황): ……\na(당황): 여기 도서관이에요\nb: 알아요\na(수줍음): 연체료 그냥 안 받을게요\nn: NPC가 반납 도장을 두 번 찍었다.', choices: '', next: 's5' },
-    { id: 's3', bg: '도서관', script: 'a(기본): 그렇겠죠\na(기본): 다음엔 기한 지켜 주세요\nn: NPC는 영수증을 건네며 눈을 피했다.', choices: '> 다음 주 공연 오실래요? | s4 | +10\n> 네 다음엔 꼭 지킬게요 | s5 | -5', next: '' },
-    { id: 's4', bg: '공연장', script: 'n: 공연 날. 맨 앞줄 자리가 하나 비어 있었다.\na(수줍음): 티켓에 자리가 적혀 있길래요\nb: 맨 앞줄은 제가 일부러 비워 둔 거예요\na(웃음): 그럼 앙코르곡도 일부러예요?', choices: '> 네. NPC 씨 들으라고요 | s6 | +15\n> 그건 비밀이에요 | s5 | +5', next: '' },
-    { id: 's5', bg: '비', script: 'n: 도서관 앞, 비가 쏟아지기 시작했다.\na(기본): 우산 없으세요?\nb: 원래 이렇게 비 맞으면서 다녀요\na(화남): 감기 걸려요', choices: '> 우산 같이 써도 돼요? | s6 | +10\n> 뛰어가면 돼요 | s7 | -8', next: '' },
-    { id: 's6', bg: '밤거리', script: 'n: 한 우산 아래, 어깨가 자꾸 닿는다.\na(수줍음): 연체료 그거\na(수줍음): 사실 한 번도 안 받으려고 했어요\nb: 알고 있었어요', choices: '', next: '' },
-    { id: 's7', bg: '비', script: 'n: 빗속을 뛰어가다 뒤를 돌아봤다. NPC는 아직 문 앞에 서 있었다.\na(슬픔): ……\nn: 다음 주에도 반납하러 와야겠다.', choices: '', next: '' },
+    { id: 's1', bg: '공원', script: 'n: 연회장 불빛이 멀어진 황궁 정원. 공녀가 혼자 분수 앞에 서 있었다.\na(기본): 여기 계셨습니까.\nb: 안이 좀 답답해서요.\na(수줍음): 내일이면 발표입니다.', choices: '> 전하는 괜찮으세요? | s2 | +12\n> 정해진 일인걸요. | s3 | +3\n> 같이 좀 걸으실래요? | s4 | +8', next: '' },
+    { id: 's2', bg: '공원', script: 'a(당황): ……\na(당황): 그걸 제게 묻는 사람은 처음입니다.\nb: 그럼 제가 처음이네요.\na(수줍음): 괜찮습니다. 상대가 공녀라서.\nn: 황태자가 한 걸음 가까이 다가왔다.', choices: '', next: 's5' },
+    { id: 's3', bg: '공원', script: 'a(기본): 그렇지요.\na(기본): 그럼 내일 뵙겠습니다.\nn: 황태자가 먼저 돌아섰다.', choices: '> 잠깐만요, 전하. | s4 | +10\n> 네, 들어가세요. | s5 | -5', next: '' },
+    { id: 's4', bg: '밤거리', script: 'n: 둘은 정원 끝 회랑까지 걸었다.\na(웃음): 회랑에서 산책하는 공녀는 처음 봅니다.\nb: 이제 한 명 보셨네요.\na(수줍음): 발표가 끝나도 가끔 같이 걷지요.', choices: '> 매일 걸어도 좋아요. | s6 | +15\n> 바쁘지 않으실 때요. | s5 | +5', next: '' },
+    { id: 's5', bg: '비', script: 'n: 갑자기 비가 내리기 시작했다.\na(기본): 시종을 부르겠습니다.\nb: 괜찮아요.\na(화남): 감기라도 걸리면 내일 어쩌려고요.', choices: '> 전하 망토 빌려주세요. | s6 | +10\n> 먼저 들어갈게요. | s7 | -8', next: '' },
+    { id: 's6', bg: '방', script: 'n: 황태자의 망토를 함께 쓰고 회랑 안으로 뛰어 들어왔다. 어깨가 자꾸 닿았다.\na(수줍음): 사실 아까\na(수줍음): 공녀를 찾으러 나온 겁니다.\nb: 알아요.', choices: '', next: '' },
+    { id: 's7', bg: '비', script: 'n: 비를 맞으며 회랑으로 가다 뒤를 돌아봤다. 황태자는 아직 분수 앞에 서 있었다.\na(슬픔): ……\nn: 내일 발표 자리에서는 먼저 웃어야겠다.', choices: '', next: '' },
     emptyScene(7),
   ],
   endings: [
-    { title: '연체 기록 영구 보존', min: 80, text: 'NPC는 그날 이후 PC의 대출 기록만은 지우지 않았다. 반납일은 언제나 다음 약속이 되었다.' },
-    { title: '한 우산 아래', min: 60, text: '우산이 하나뿐이라는 핑계는 다음 비 오는 날에도 쓸 수 있다.' },
-    { title: '다음 주 반납일', min: 40, text: '아직은 반납대 앞에서만 만나는 사이. 그래도 연체료는 조금씩 깎이고 있다.' },
-    { title: '기한 엄수', min: 0, text: '악보집은 제때 반납되었고, NPC는 더 이상 공연 날짜를 묻지 않았다.' },
+    { title: '정략 이상의 약혼', min: 80, text: '발표 날 황태자는 준비된 문장 대신 자기 말로 약혼을 알렸다. 그날 이후 정원 산책은 매일 둘이 했다.' },
+    { title: '망토 하나', min: 60, text: '망토가 하나뿐이라는 핑계는 다음 비 오는 날에도 쓸 수 있다.' },
+    { title: '예의 바른 약혼자', min: 40, text: '아직은 예법대로 손을 잡는 사이. 그래도 정원에서 마주치는 일은 점점 잦아지고 있다.' },
+    { title: '정략결혼', min: 0, text: '발표는 예정대로 끝났다. 둘은 정해진 자리에서 정해진 말만 주고받았다.' },
   ],
 });
 function normalize(s) {
@@ -454,6 +454,7 @@ document.addEventListener('keydown', e => { if (document.body.dataset.mode === '
 
 Core.app({
   key: '2inbun:novel', what: '미연시 대본', sample, blank, normalize, schema, prompts, apply, progress, render,
+  skinKeep: '[.](game|bg-|scene-bg|sprite|portrait|hud|box|choices|title-card|end-card|hearts|love|pxbox)',
   fileName: S => `미연시_${S.title || S.a.name}`,
 });
 })();
