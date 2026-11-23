@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>생활기록부</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%20shape-rendering%3D%27crispEdges%27%3E%3Crect%20x%3D%272%27%20y%3D%271%27%20width%3D%2712%27%20height%3D%2714%27%20fill%3D%27%23fff%27%20stroke%3D%27%23111%27%2F%3E%3Cpath%20d%3D%27M4%204h8v1H4zM4%207h8v1H4zM4%2010h5v1H4z%27%20fill%3D%27%23111%27%2F%3E%3Ccircle%20cx%3D%2711%27%20cy%3D%2711.5%27%20r%3D%272%27%20fill%3D%27%23c8102e%27%2F%3E%3C%2Fsvg%3E">
+<meta name="description" content="고등학생 캐릭터의 학교생활기록부를 실제 서식 그대로 만들어 주는 메이커">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<style>
+/* 실제 학교생활기록부 출력물: A4 흰 종이 · 가는 검은 표 · 굴림 계열 본문 · 칸 머리 회색 · 원본대조필 도장 */
+:root { --desk: #d9dadc; --ink: #111; --head: #eeeeee; --line: #222; --sub: #555; --red: #c8102e; }
+body[data-mode="view"] { background: var(--desk); }
+.poster { width: min(820px, 100%); background: #fff; color: var(--ink); padding: 46px 44px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.15), 0 14px 34px -14px rgba(0,0,0,.35); font: 400 12.5px/1.6 "Nanum Gothic", "Malgun Gothic", sans-serif; position: relative; }
+.poster.capturing { box-shadow: none; }
+.doc-h { display: grid; grid-template-columns: 96px minmax(0, 1fr) 96px; align-items: start; gap: 12px; margin-bottom: 14px; }
+.doc-h h1 { margin: 6px 0 0; text-align: center; font: 800 26px/1.2 "Nanum Myeongjo", serif; letter-spacing: .38em; padding-left: .38em; }
+.doc-h .photo { width: 96px; height: 124px; border: 1px solid var(--line); display: grid; place-items: center; font-size: 11px; color: #888; background: #fafafa; }
+.cls { border-collapse: collapse; width: 100%; margin-bottom: 18px; }
+.cls th, .cls td { border: 1px solid var(--line); padding: 3px 6px; text-align: center; font-size: 12px; }
+.cls th { background: var(--head); font-weight: 700; }
+h2 { margin: 20px 0 6px; font-size: 13.5px; font-weight: 800; }
+table.t { border-collapse: collapse; width: 100%; table-layout: fixed; }
+.t th, .t td { border: 1px solid var(--line); padding: 4px 6px; vertical-align: middle; word-break: keep-all; overflow-wrap: anywhere; }
+.t th { background: var(--head); font-weight: 700; text-align: center; font-size: 12px; }
+.t td.c { text-align: center; }
+.att th { white-space: nowrap; padding: 3px 1px; font-size: 10.5px; letter-spacing: -.04em; }
+.t td.txt { text-align: left; line-height: 1.7; padding: 6px 8px; }
+.dot { color: #111; }
+.sec { break-inside: avoid; }
+.sec.in { animation: fadeUp .5s ease-out both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.doc-f { display: flex; justify-content: space-between; align-items: end; margin-top: 100px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 11.5px; color: var(--sub); }
+.doc-f b { color: var(--ink); font-size: 13px; }
+.stamp { position: absolute; right: 64px; bottom: 58px; width: 86px; height: 86px; border: 3px solid var(--red); border-radius: 50%; color: var(--red); display: grid; place-items: center; text-align: center; font: 800 14px/1.25 "Nanum Myeongjo", serif; transform: rotate(-14deg); opacity: .82; mix-blend-mode: multiply; }
+.stamp::before { content: ""; position: absolute; inset: 4px; border: 1px solid var(--red); border-radius: 50%; }
+.stamp.drop { animation: thud .35s cubic-bezier(.3, 1.6, .5, 1) both; animation-delay: 1.1s; }
+@keyframes thud { from { opacity: 0; transform: rotate(-14deg) scale(1.8); } to { opacity: .82; transform: rotate(-14deg) scale(1); } }
+.note-p { margin: 4px 0 0; font-size: 11px; color: var(--sub); }
+@media (max-width: 640px) {
+  .poster { padding: 26px 14px 22px; font-size: 11.5px; }
+  .doc-h { grid-template-columns: 1fr 70px; } .doc-h > span:first-child { display: none; }
+  .doc-h h1 { font-size: 20px; letter-spacing: .2em; text-align: left; padding-left: 0; }
+  .doc-h .photo { width: 70px; height: 90px; }
+  .t th, .t td { padding: 3px 3px; font-size: 11px; }
+  .stamp { right: 18px; bottom: 30px; width: 70px; height: 70px; font-size: 12px; }
+}
+</style>
+</head>
+<body data-mode="view" data-noframe>
+<header class="bar">
+  <a class="brand" href="../">귀환의 블로그</a>
+  <span class="bar-title">생활기록부</span>
+  <span class="bar-spacer"></span>
+  <div class="tabs" role="tablist"><button data-mode="view" role="tab">보기</button><button data-mode="edit" role="tab">만들기</button></div>
+</header>
+<main class="stage only-view">
+  <p class="shared-note" id="shared-note" hidden>공유받은 생활기록부예요. 만들기에서 고치면 내 브라우저에만 저장돼요.</p>
+  <article class="poster" id="poster"></article>
+  <nav class="actions">
+    <button class="btn primary" id="btn-png">이미지 저장</button>
+    <button class="btn" id="btn-link">링크 복사</button>
+    <button class="btn" id="btn-replay">다시 출력</button>
+  </nav>
+</main>
+<main class="editor only-edit" id="editor"></main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/modern-screenshot@4.6.8/dist/index.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(() => {
+const { esc, clamp, num, $ } = Core;
+const AREA = ['자율·자치활동', '동아리활동', '봉사활동', '진로활동'];
+const emptyAtt = g => ({ gr: g, days: 0, ill: 0, un: 0, late: 0, early: 0, note: '' });
+const emptyAw = () => ({ name: '', rank: '', date: '', org: '', who: '' });
+const emptySub = () => ({ name: '', unit: 4, score: 0, avg: '', ach: '', n: '', rank: '', note: '' });
+const blank = () => ({
+  v: 1, school: '', name: 'NPC', sex: '', grade: 2, cls: 1, no: 1, entered: '',
+  att: [emptyAtt(1), emptyAtt(2), emptyAtt(3)],
+  awards: Array.from({ length: 4 }, emptyAw),
+  cca: AREA.map(a => ({ area: a, hours: 0, text: '' })),
+  subjects: Array.from({ length: 6 }, emptySub),
+  behavior: '',
+});
+const sample = () => ({
+  v: 1, school: '한빛고등학교', name: 'NPC', sex: '남', grade: 2, cls: 3, no: 14, entered: '2025. 03. 02.',
+  att: [
+    { gr: 1, days: 190, ill: 1, un: 0, late: 0, early: 0, note: '' },
+    { gr: 2, days: 154, ill: 0, un: 0, late: 3, early: 0, note: '지각 3회는 모두 등굣길에 같은 반 학생을 기다리다 발생함.' },
+    { gr: 3, days: 0, ill: 0, un: 0, late: 0, early: 0, note: '' },
+  ],
+  awards: [
+    { name: '교내 수학경시대회', rank: '우수상(2위)', date: '2026.05.20.', org: '한빛고등학교장', who: '2학년(212명)' },
+    { name: '학급 모범상', rank: '', date: '2026.07.18.', org: '한빛고등학교장', who: '2학년 3반(29명)' },
+    emptyAw(), emptyAw(),
+  ],
+  cca: [
+    { area: '자율·자치활동', hours: 28, text: '학급 부반장(2026.03.02.-2026.08.31.)으로서 학급 환경 미화를 맡음. 짝과 함께 교실 뒤 게시판을 꾸미며 역할을 나누고 일정을 조율하는 모습을 보임. 다만 의견이 갈릴 때 자신의 생각을 끝까지 말하지 않고 상대에게 맞추는 경향이 있음.' },
+    { area: '동아리활동', hours: 34, text: '(방송부) 점심시간 교내 방송에서 선곡과 사연 소개를 담당함. 익명 사연 가운데 같은 반 학생의 사연을 소개하며 끝까지 차분하게 읽어 냄. 방송 장비 사용법을 정리한 안내서를 만들어 후배들에게 공유함.' },
+    { area: '봉사활동', hours: 12, text: '' },
+    { area: '진로활동', hours: 20, text: '희망 분야: 건축. 학교 건물의 동선을 관찰한 탐구 보고서에서 2층 복도와 매점 사이 동선이 가장 자주 겹친다는 점을 분석하여 발표함.' },
+  ],
+  subjects: [
+    { name: '국어', unit: 4, score: 91, avg: '72.4(15.2)', ach: 'A(212)', n: '', rank: '2', note: '시 감상 활동에서 화자가 끝내 말하지 못한 마음에 주목하여 “말하지 않은 것도 말한 것만큼 크다”는 감상문을 씀. 자신의 경험과 연결하는 부분에서 표현이 다소 조심스러웠음.' },
+    { name: '수학Ⅰ', unit: 4, score: 98, avg: '61.8(21.3)', ach: 'A(212)', n: '', rank: '1', note: '수업 후 질문하러 온 같은 반 학생에게 지수함수 그래프를 직접 그려 가며 설명하는 모습이 자주 관찰됨. 설명이 길어져 쉬는 시간이 끝나는 줄 모르는 경우가 있었음.' },
+    { name: '영어Ⅰ', unit: 4, score: 84, avg: '70.1(17.6)', ach: 'B(212)', n: '', rank: '3', note: '' },
+    { name: '한국사', unit: 3, score: 88, avg: '74.5(13.9)', ach: 'A(212)', n: '', rank: '', note: '' },
+    { name: '물리학Ⅰ', unit: 3, score: 93, avg: '58.2(19.8)', ach: 'A(98)', n: '', rank: '1', note: '조별 실험에서 짝과 역할을 바꿔 가며 측정함. 결과 정리는 꼼꼼하나 발표는 짝에게 맡기려는 모습을 보여, 다음 실험에서는 직접 발표하도록 지도함.' },
+    emptySub(),
+  ],
+  behavior: '주변 사람의 기분을 세심하게 살피고 필요한 것을 먼저 챙기는 배려심이 돋보임. 친구가 결석한 날에는 수업 내용을 정리해 두었다가 다음 날 건네주는 등 책임감이 강함. 다만 자신의 감정을 표현하는 데 서툴러 오해를 사는 경우가 있음. 2학기 들어 특정 급우와의 관계에서 자신의 생각을 솔직하게 말하려 노력하는 모습이 관찰되어 앞으로의 성장이 기대됨.',
+});
+function normalize(s) {
+  const b = blank(); s = s && typeof s === 'object' ? s : {};
+  const o = { ...b, ...s };
+  ['grade', 'cls', 'no'].forEach(k => o[k] = clamp(Math.round(num(o[k], b[k])), 1, 99));
+  o.att = [1, 2, 3].map((g, i) => { const a = { ...emptyAtt(g), ...((s.att || [])[i] || {}) }; ['days', 'ill', 'un', 'late', 'early'].forEach(k => a[k] = clamp(Math.round(num(a[k], 0)), 0, 400)); a.gr = g; return a; });
+  o.awards = Array.from({ length: 4 }, (_, i) => ({ ...emptyAw(), ...((s.awards || [])[i] || {}) }));
+  o.cca = AREA.map((a, i) => { const c = { area: a, hours: 0, text: '', ...((s.cca || [])[i] || {}) }; c.area = a; c.hours = clamp(Math.round(num(c.hours, 0)), 0, 999); return c; });
+  o.subjects = Array.from({ length: 6 }, (_, i) => ({ ...emptySub(), ...((s.subjects || [])[i] || {}) }));
+  return o;
+}
+function apply(S, o) {
+  const got = [];
+  ['school', 'name', 'sex', 'grade', 'cls', 'no', 'entered'].forEach(k => { if (o[k] != null && o[k] !== '') { S[k] = o[k]; if (!got.includes('인적사항')) got.push('인적사항'); } });
+  if (Array.isArray(o.att)) { o.att.slice(0, 3).forEach((a, i) => { if (a && typeof a === 'object') S.att[i] = { ...S.att[i], ...a }; }); got.push('출결'); }
+  if (Array.isArray(o.awards)) { S.awards = Array.from({ length: 4 }, emptyAw); o.awards.slice(0, 4).forEach((a, i) => { if (a) S.awards[i] = { ...emptyAw(), ...a }; }); got.push('수상'); }
+  if (Array.isArray(o.cca)) { o.cca.forEach(c => { if (!c) return; const i = AREA.findIndex(a => a[0] === String(c.area || '')[0]); if (i >= 0) S.cca[i] = { ...S.cca[i], ...c, area: AREA[i] }; }); got.push('창체'); }
+  if (Array.isArray(o.subjects)) { S.subjects = Array.from({ length: 6 }, emptySub); o.subjects.slice(0, 6).forEach((x, i) => { if (x) S.subjects[i] = { ...emptySub(), ...x }; }); got.push('교과'); }
+  if (o.behavior) { S.behavior = o.behavior; got.push('행동특성'); }
+  return got;
+}
+const RULE = `▪ 문체: 실제 학교생활기록부 그대로. 교사가 관찰해 쓴 개조식 서술(“~함.”, “~을 보임.”, “~하는 모습이 돋보임.”), 주어 생략, 감탄·이모티콘·비유 없이 건조하게. 웃음 포인트는 RP 속 일을 이 공문서 말투로 진지하게 적는 데서 나온다.
+▪ 다른 학생 이름은 쓰지 않는다. PC는 “같은 반 학생”, “짝”, “특정 급우”처럼만 적는다. 교사·친구 같은 다른 인물의 이름이나 대사도 쓰지 않는다.
+▪ 근거: 설정과 RP에서 실제 있었던 일만. PC의 말·행동은 RP에 나온 것만 쓰고 지어내지 않는다. 여기서 만든 내용은 이후 RP의 사실로 삼지 않는다.
+▪ 출력: 인사·설명 없이 JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만. 값은 형식 예시일 뿐.`;
+function prompts() {
+  const p1 = `*[OOC: 롤플레잉 잠시 중단. NPC의 「학교생활기록부」 1/2: 인적사항·출결·수상·창의적 체험활동.
+▪ school 학교 이름, name NPC 이름, sex 남|여, grade 학년, cls 반, no 번호, entered 입학일(예: “2025. 03. 02.”)
+▪ att: 학년별 3개. days 수업일수(지난 학년 190 안팎, 올해는 지금까지), ill 질병 결석, un 미인정 결석, late 지각, early 조퇴, note 특기사항 40자(없으면 “”). 아직 안 다닌 학년은 전부 0.
+▪ awards 0~4개: name 상 이름, rank 등급(위), date 수상연월일 “2026.05.20.”, org 수여기관, who 참가대상(인원)
+▪ cca 4개: area 자율·자치활동|동아리활동|봉사활동|진로활동, hours 시간, text 특기사항 120자(봉사활동은 “”). 동아리는 “(동아리명)”으로 시작.
+${RULE}
+{"school":"","name":"","sex":"","grade":2,"cls":1,"no":1,"entered":"","att":[{"days":190,"ill":0,"un":0,"late":0,"early":0,"note":""}],"awards":[{"name":"","rank":"","date":"","org":"","who":""}],"cca":[{"area":"자율·자치활동","hours":0,"text":""}]}]*`;
+  const p2 = `*[OOC: 롤플레잉 잠시 중단. NPC의 「학교생활기록부」 2/2: 교과학습발달상황·행동특성 및 종합의견.
+▪ subjects 4~6과목(지금 학년 기준): name 과목명(국어, 수학Ⅰ, 영어Ⅰ, 한국사, 물리학Ⅰ처럼), unit 단위수, score 원점수, avg 과목평균(표준편차) “72.4(15.2)”, ach 성취도(수강자수) “A(212)”, rank 석차등급 1~9(“” 가능), note 세부능력 및 특기사항 100자(2~3과목만, 나머지 “”)
+▪ 성적은 NPC 설정(성적·성격)에 맞게. 세특에는 수업 시간에 실제 있었을 법한 PC 관련 장면을 교사 관찰 말투로.
+▪ behavior 행동특성 및 종합의견 200자: 장점, 단점 하나, 최근 변화와 성장 가능성 순서로.
+${RULE}
+{"subjects":[{"name":"","unit":4,"score":0,"avg":"","ach":"","rank":"","note":""}],"behavior":""}]*`;
+  return [{ label: '인적사항 · 출결 · 수상 · 창체', sub: '1/2', text: p1 }, { label: '교과 세특 · 행동특성', sub: '2/2', text: p2 }];
+}
+function progress(S) {
+  return [
+    { label: '인적사항', ok: !!S.school },
+    { label: '출결', ok: S.att.some(a => a.days) },
+    { label: '창체', ok: S.cca.some(c => c.text) },
+    { label: '교과 세특', ok: S.subjects.some(x => x.note) },
+    { label: '행동특성', ok: !!S.behavior },
+  ];
+}
+function schema(S) {
+  const att = [], aw = [], cc = [], sb = [];
+  S.att.forEach((a, i) => att.push({ sub: `${i + 1}학년` }, { k: `att.${i}.days`, label: '수업일수', num: true }, { k: `att.${i}.ill`, label: '질병 결석', num: true }, { k: `att.${i}.un`, label: '미인정 결석', num: true }, { k: `att.${i}.late`, label: '지각', num: true }, { k: `att.${i}.early`, label: '조퇴', num: true }, { k: `att.${i}.note`, label: '특기사항', full: true }));
+  S.awards.forEach((a, i) => aw.push({ sub: `상 ${i + 1}` }, { k: `awards.${i}.name`, label: '수상명', ph: '비우면 빠져요' }, { k: `awards.${i}.rank`, label: '등급(위)' }, { k: `awards.${i}.date`, label: '수상연월일' }, { k: `awards.${i}.org`, label: '수여기관' }, { k: `awards.${i}.who`, label: '참가대상(인원)', full: true }));
+  S.cca.forEach((c, i) => cc.push({ sub: c.area }, { k: `cca.${i}.hours`, label: '시간', num: true }, { k: `cca.${i}.text`, label: '특기사항', type: 'textarea', full: true, rows: 3 }));
+  S.subjects.forEach((x, i) => sb.push({ sub: `과목 ${i + 1}` }, { k: `subjects.${i}.name`, label: '과목', ph: '비우면 빠져요' }, { k: `subjects.${i}.unit`, label: '단위수', num: true }, { k: `subjects.${i}.score`, label: '원점수', num: true }, { k: `subjects.${i}.avg`, label: '과목평균(표준편차)' }, { k: `subjects.${i}.ach`, label: '성취도(수강자수)' }, { k: `subjects.${i}.rank`, label: '석차등급' }, { k: `subjects.${i}.note`, label: '세부능력 및 특기사항', type: 'textarea', full: true, rows: 3 }));
+  return [
+    { title: '인적·학적사항', en: 'PROFILE', fields: [{ k: 'school', label: '학교' }, { k: 'name', label: '성명' }, { k: 'sex', label: '성별' }, { k: 'entered', label: '입학일' }, { k: 'grade', label: '학년', num: true }, { k: 'cls', label: '반', num: true }, { k: 'no', label: '번호', num: true }] },
+    { title: '출결상황', en: 'ATTENDANCE', fields: att },
+    { title: '수상경력', en: 'AWARDS', fields: aw },
+    { title: '창의적 체험활동상황', en: 'ACTIVITIES', fields: cc },
+    { title: '교과학습발달상황', en: 'SUBJECTS', fields: sb },
+    { title: '행동특성 및 종합의견', en: 'COMMENT', fields: [{ k: 'behavior', label: '종합의견', type: 'textarea', full: true, rows: 5 }] },
+  ];
+}
+const d0 = v => v ? esc(v) : '<span class="dot">.</span>';
+function posterHTML(S, anim) {
+  const sec = (i, h) => `<section class="sec${anim ? ' in' : ''}"${anim ? ` style="animation-delay:${i * 120}ms"` : ''}>${h}</section>`;
+  const now = new Date(), stampDate = `${now.getFullYear()}. ${String(now.getMonth() + 1).padStart(2, '0')}. ${String(now.getDate()).padStart(2, '0')}.`;
+  const aws = S.awards.filter(a => a.name), subs = S.subjects.filter(x => x.name), notes = subs.filter(x => x.note);
+  const unitSum = subs.reduce((a, x) => a + (Number(x.unit) || 0), 0);
+  const p = [];
+  p.push(sec(0, `<h2>1. 인적·학적사항</h2>
+    <table class="t"><colgroup><col style="width:16%"><col><col style="width:14%"><col style="width:18%"></colgroup><tbody>
+      <tr><th>학생정보</th><td>성명: ${esc(S.name)}&nbsp;&nbsp;&nbsp;성별: ${esc(S.sex || '')}&nbsp;&nbsp;&nbsp;주민등록번호: ******-*******</td><th>주소</th><td class="c">-</td></tr>
+      <tr><th>학적사항</th><td colspan="3">${esc(S.entered || '')} ${esc(S.school || '')} 제1학년 입학</td></tr>
+      <tr><th>특기사항</th><td colspan="3"></td></tr>
+    </tbody></table>`));
+  p.push(sec(1, `<h2>2. 출결상황</h2>
+    <table class="t"><colgroup><col style="width:5%"><col style="width:7%"><col span="12" style="width:4.9%"><col></colgroup><thead class="att">
+      <tr><th rowspan="2">학년</th><th rowspan="2">수업<br>일수</th><th colspan="3">결석일수</th><th colspan="3">지각</th><th colspan="3">조퇴</th><th colspan="3">결과</th><th rowspan="2">특기사항</th></tr>
+      <tr>${'<th>질병</th><th>미인정</th><th>기타</th>'.repeat(4)}</tr></thead><tbody>
+      ${S.att.map(a => `<tr><td class="c">${a.gr}</td><td class="c">${a.days || ''}</td><td class="c">${a.days ? d0(a.ill) : ''}</td><td class="c">${a.days ? d0(a.un) : ''}</td><td class="c">${a.days ? d0(0) : ''}</td><td class="c">${a.days ? d0(0) : ''}</td><td class="c">${a.days ? d0(a.late) : ''}</td><td class="c">${a.days ? d0(0) : ''}</td><td class="c">${a.days ? d0(0) : ''}</td><td class="c">${a.days ? d0(a.early) : ''}</td><td class="c">${a.days ? d0(0) : ''}</td>${a.days ? '<td class="c">.</td>'.repeat(3) : '<td></td>'.repeat(3)}<td class="txt">${esc(a.note || '')}</td></tr>`).join('')}
+    </tbody></table>`));
+  p.push(sec(2, `<h2>3. 수상경력</h2>
+    <table class="t"><colgroup><col style="width:7%"><col style="width:7%"><col><col style="width:14%"><col style="width:14%"><col style="width:16%"><col style="width:16%"></colgroup><thead>
+      <tr><th>학년</th><th>학기</th><th>수상명</th><th>등급(위)</th><th>수상연월일</th><th>수여기관</th><th>참가대상<br>(참가인원)</th></tr></thead><tbody>
+      ${aws.length ? aws.map(a => `<tr><td class="c">${S.grade}</td><td class="c">${(m => m >= 3 && m <= 8 ? 1 : 2)(parseInt(String(a.date).split('.')[1], 10) || 3)}</td><td class="txt">${esc(a.name)}</td><td class="c">${esc(a.rank)}</td><td class="c">${esc(a.date)}</td><td class="c">${esc(a.org)}</td><td class="c">${esc(a.who)}</td></tr>`).join('') : '<tr><td class="c" colspan="7">해당 사항 없음</td></tr>'}
+    </tbody></table>`));
+  p.push(sec(3, `<h2>4. 창의적 체험활동상황</h2>
+    <table class="t"><colgroup><col style="width:7%"><col style="width:15%"><col style="width:8%"><col></colgroup><thead>
+      <tr><th rowspan="2">학년</th><th colspan="3">창의적 체험활동상황</th></tr><tr><th>영역</th><th>시간</th><th>특기사항</th></tr></thead><tbody>
+      ${S.cca.map((c, i) => `<tr>${i === 0 ? `<td class="c" rowspan="4">${S.grade}</td>` : ''}<td class="c">${esc(c.area)}</td><td class="c">${c.hours || ''}</td><td class="txt">${esc(c.text || '')}</td></tr>`).join('')}
+    </tbody></table>
+    <p class="note-p">※ 봉사활동 실적은 시간만 기록함.</p>`));
+  p.push(sec(4, `<h2>5. 교과학습발달상황</h2>
+    <p class="note-p" style="margin:0 0 4px">[${S.grade}학년]</p>
+    <table class="t"><colgroup><col style="width:8%"><col style="width:16%"><col style="width:8%"><col style="width:22%"><col style="width:16%"><col style="width:10%"><col></colgroup><thead>
+      <tr><th>학기</th><th>과목</th><th>단위수</th><th>원점수/과목평균<br>(표준편차)</th><th>성취도<br>(수강자수)</th><th>석차등급</th><th>비고</th></tr></thead><tbody>
+      ${subs.map((x, i) => `<tr>${i === 0 ? `<td class="c" rowspan="${subs.length + 1}">${now.getMonth() + 1 >= 3 && now.getMonth() + 1 <= 8 ? 1 : 2}</td>` : ''}<td class="c">${esc(x.name)}</td><td class="c">${esc(x.unit)}</td><td class="c">${esc(x.score)}/${esc(x.avg)}</td><td class="c">${esc(x.ach)}</td><td class="c">${esc(x.rank)}</td><td></td></tr>`).join('')}
+      ${subs.length ? `<tr><td class="c">이수단위 합계</td><td class="c">${unitSum}</td><td colspan="4"></td></tr>` : '<tr><td class="c" colspan="7">-</td></tr>'}
+    </tbody></table>
+    <table class="t" style="margin-top:8px"><colgroup><col style="width:16%"><col></colgroup><thead><tr><th>과목</th><th>세부능력 및 특기사항</th></tr></thead><tbody>
+      ${notes.length ? notes.map(x => `<tr><td class="c">${esc(x.name)}</td><td class="txt">${esc(x.note)}</td></tr>`).join('') : '<tr><td class="c" colspan="2">-</td></tr>'}
+    </tbody></table>`));
+  p.push(sec(5, `<h2>6. 행동특성 및 종합의견</h2>
+    <table class="t"><colgroup><col style="width:7%"><col></colgroup><thead><tr><th>학년</th><th>행동특성 및 종합의견</th></tr></thead><tbody>
+      <tr><td class="c">${S.grade}</td><td class="txt" style="min-height:80px">${esc(S.behavior || '')}</td></tr>
+    </tbody></table>`));
+  return `
+  <div class="doc-h"><span></span><h1>학교생활기록부</h1><div class="photo">사진<br>(3×4)</div></div>
+  <table class="cls"><thead><tr><th>학년</th><th>학과</th><th>반</th><th>번호</th><th>담임성명</th></tr></thead><tbody>
+    <tr><td>${S.grade}</td><td>-</td><td>${S.cls}</td><td>${S.no}</td><td>(인)</td></tr></tbody></table>
+  ${p.join('')}
+  <div class="doc-f"><span>${esc(S.school || '○○고등학교')} · 출력일 ${stampDate}</span><b>1 / 1</b></div>
+  <div class="stamp${anim ? ' drop' : ''}" aria-label="원본대조필">원본<br>대조필</div>`;
+}
+function render(S, { animate }) { $('#poster').innerHTML = posterHTML(S, animate); }
+Core.app({ key: '2inbun:record', what: '생활기록부', sample, blank, normalize, schema, prompts, apply, progress, render, fileName: S => `생활기록부_${S.name}` });
+})();
+</script>
+</body>
+</html>
