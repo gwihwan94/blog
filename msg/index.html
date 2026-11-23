@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>둘의 메시지</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%3E%3Crect%20width%3D%2716%27%20height%3D%2716%27%20rx%3D%274%27%20fill%3D%27%230b84fe%27%2F%3E%3Cpath%20d%3D%27M4%205h8a1%201%200%200%201%201%201v3a1%201%200%200%201-1%201H8l-3%202v-2H4a1%201%200%200%201-1-1V6a1%201%200%200%201%201-1z%27%20fill%3D%27%23fff%27%2F%3E%3C%2Fsvg%3E">
+<meta name="description" content="NPC와 PC의 메시지를 카카오톡·라인·인스타그램 DM·아이메시지·삼성 메시지 화면으로 만들어 주는 메이커">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/base.css">
+<style>
+/* 콘셉트: 실제 메신저 앱 화면을 길게 스크롤 캡처한 모습. 앱마다 색·말풍선·읽음 표시·날짜 구분선·입력창을 실제 앱대로 */
+:root { --desk: #eceef1; }
+body[data-mode="view"] { background: var(--desk); }
+.wrapv { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.apps { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.apps button, .side button { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: #fff; border: 1px solid #d8dbe0; font: 700 13px "Pretendard Variable", Pretendard, sans-serif; color: #222; }
+.apps button i { width: 18px; height: 18px; border-radius: 6px; flex: none; }
+.apps button[aria-pressed="true"], .side button[aria-pressed="true"] { background: #111; color: #fff; border-color: #111; }
+.apps button:focus-visible, .side button:focus-visible { outline: 2px solid #2f6bff; outline-offset: 2px; }
+.side { display: flex; gap: 6px; align-items: center; font: 600 12.5px "Pretendard Variable", sans-serif; color: #555; }
+.side button { padding: 6px 12px; font-size: 12.5px; }
+
+/* 폰 */
+.poster { width: 400px; max-width: 100%; padding: 11px; background: #111; border-radius: 56px; box-shadow: inset 0 0 0 2px #3a3a3c, 0 30px 60px -20px rgba(0,0,0,.45); font-family: -apple-system, "Apple SD Gothic Neo", "Pretendard Variable", Pretendard, sans-serif; }
+.poster.capturing { box-shadow: inset 0 0 0 2px #3a3a3c; }
+.scr { position: relative; border-radius: 46px; overflow: hidden; height: 780px; display: flex; flex-direction: column; background: var(--bg); color: var(--fg); }
+.sb { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 6px 30px 0 34px; font-weight: 600; font-size: 15.5px; color: var(--sbc, #000); background: var(--hbg); position: relative; }
+.sb .isl { position: absolute; left: 50%; top: 11px; width: 120px; height: 34px; margin-left: -60px; background: #000; border-radius: 20px; }
+.sb .ic { display: flex; gap: 6px; align-items: center; }
+.sb .ic svg { height: 12px; width: auto; fill: currentColor; }
+.hd { display: flex; align-items: center; gap: 10px; padding: 6px 14px 10px; background: var(--hbg); color: var(--hfg); border-bottom: 1px solid var(--hline, transparent); }
+.hd .bk { font-size: 26px; line-height: 1; font-weight: 300; width: 22px; }
+.hd .tt { flex: 1; min-width: 0; font-weight: 700; font-size: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hd .tt small { display: block; font-size: 11.5px; font-weight: 500; opacity: .6; }
+.hd .ics { display: flex; gap: 16px; }
+.hd .ics svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.log { flex: 1; min-height: 0; overflow: hidden; padding: 8px 12px 14px; display: flex; flex-direction: column; gap: 3px; }
+.dt { align-self: center; margin: 14px 0 10px; font-size: 12px; }
+.row { display: flex; align-items: flex-end; gap: 6px; max-width: 100%; }
+.row.me { justify-content: flex-end; }
+.row.gap { margin-top: 10px; }
+.av { width: 38px; height: 38px; flex: none; background: #c9d3dd; overflow: hidden; display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 15px; align-self: flex-start; }
+.av img { width: 100%; height: 100%; object-fit: cover; }
+.av.blank { visibility: hidden; }
+.col { display: flex; flex-direction: column; min-width: 0; max-width: 72%; }
+.row.me .col { align-items: flex-end; }
+.nm { font-size: 12px; margin: 0 0 4px 2px; opacity: .8; }
+.bw { display: flex; align-items: flex-end; gap: 5px; }
+.row.me .bw { flex-direction: row-reverse; }
+.bb { padding: 8px 11px; font-size: 14.5px; line-height: 1.42; white-space: pre-wrap; word-break: break-word; background: var(--ob); color: var(--of); border-radius: 16px; }
+.row.me .bb { background: var(--mb); color: var(--mf); }
+.meta { display: flex; flex-direction: column; align-items: flex-end; font-size: 10.5px; line-height: 1.25; color: var(--tm); white-space: nowrap; flex: none; }
+.row:not(.me) .meta { align-items: flex-start; }
+.meta .un { color: var(--un, #e6c300); font-weight: 700; }
+.bb.emo { background: none !important; font-size: 52px; padding: 0 2px; line-height: 1.1; }
+.bb.ph { padding: 0; overflow: hidden; width: 210px; }
+.bb.ph .pi { height: 150px; background: linear-gradient(160deg, #a9b6c2, #66737f); display: grid; place-items: center; color: #fff; font-size: 12px; padding: 10px; text-align: center; }
+.bb.ph .pi img { width: 100%; height: 100%; object-fit: cover; }
+.bb.del { opacity: .65; font-style: italic; }
+.bb.call { display: flex; align-items: center; gap: 10px; }
+.bb.call .ci { width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,.08); display: grid; place-items: center; }
+.bb.call .ci svg { width: 16px; height: 16px; fill: currentColor; }
+.bb.call small { display: block; font-size: 11.5px; opacity: .7; }
+.rd { align-self: flex-end; font-size: 11px; color: var(--tm); margin: 2px 4px 0; }
+.typing { display: inline-flex; gap: 4px; padding: 12px 14px; }
+.typing i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .45; animation: dt 1.2s infinite ease-in-out; }
+.typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes dt { 0%, 60%, 100% { transform: none; opacity: .35; } 30% { transform: translateY(-4px); opacity: .8; } }
+.ip { display: flex; align-items: center; gap: 10px; padding: 8px 12px 10px; background: var(--ibg); border-top: 1px solid var(--iline, transparent); color: var(--ifg); }
+.ip .fld { flex: 1; height: 36px; border-radius: 18px; display: flex; align-items: center; padding: 0 14px; font-size: 14px; color: var(--iph); background: var(--ifield); border: 1px solid var(--ifb, transparent); }
+.ip svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.8; flex: none; }
+.hb { height: 26px; display: grid; place-items: center; background: var(--ibg); }
+.hb i { width: 134px; height: 5px; border-radius: 3px; background: var(--hbc, #111); }
+.in { animation: pop .32s ease-out both; }
+@keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+
+/* ── 카카오톡 ── */
+.a-kakao { --bg: #bacee0; --fg: #111; --hbg: #bacee0; --hfg: #111; --ob: #fff; --of: #111; --mb: #fee500; --mf: #111; --tm: #556677; --un: #f2c200; --ibg: #fff; --ifg: #555; --ifield: #f3f3f3; --iph: #9a9a9a; }
+.a-kakao .av { border-radius: 15px; }
+.a-kakao .bb { border-radius: 4px 15px 15px 15px; }
+.a-kakao .row.me .bb { border-radius: 15px 4px 15px 15px; }
+.a-kakao .row.cont .bb, .a-kakao .row.me.cont .bb { border-radius: 15px; }
+.a-kakao .dt { padding: 5px 13px; border-radius: 999px; background: rgba(0,0,0,.13); color: #fff; }
+.a-kakao .hd .tt { font-weight: 600; }
+/* ── 라인 ── */
+.a-line { --bg: #8eaed9; --fg: #111; --hbg: #8eaed9; --hfg: #fff; --sbc: #fff; --ob: #fff; --of: #111; --mb: #85e249; --mf: #111; --tm: #f2f6fb; --ibg: #fff; --ifg: #222; --ifield: #f1f2f4; --iph: #a3a7ad; }
+.a-line .av { border-radius: 50%; }
+.a-line .nm { color: #fff; opacity: .95; }
+.a-line .bb { border-radius: 18px; }
+.a-line .dt { padding: 4px 12px; border-radius: 999px; background: rgba(0,0,0,.16); color: #fff; }
+/* ── 인스타그램 DM ── */
+.a-insta { --bg: #fff; --fg: #000; --hbg: #fff; --hfg: #000; --hline: #efefef; --ob: #efefef; --of: #000; --mb: #3797f0; --mf: #fff; --tm: #8e8e8e; --ibg: #fff; --ifg: #000; --ifield: #fff; --ifb: #dbdbdb; --iph: #8e8e8e; }
+.a-insta .av { width: 28px; height: 28px; border-radius: 50%; font-size: 11px; align-self: flex-end; }
+.a-insta .bb { border-radius: 22px; padding: 9px 14px; }
+.a-insta .row.me .bb { background: linear-gradient(140deg, #8a3ffc 0%, #3797f0 100%); }
+.a-insta .meta { display: none; }
+.a-insta .dt { color: #8e8e8e; font-size: 11.5px; font-weight: 600; }
+.a-insta .nm { display: none; }
+.a-insta .hd .tt small { opacity: .55; }
+/* ── 아이메시지 ── */
+.a-imsg { --bg: #fff; --fg: #000; --hbg: rgba(246,246,246,.96); --hfg: #000; --hline: #dcdcdc; --ob: #e9e9eb; --of: #000; --mb: #0b84fe; --mf: #fff; --tm: #8a8a8e; --ibg: #fff; --ifg: #8a8a8e; --ifield: #fff; --ifb: #d1d1d6; --iph: #b0b0b5; }
+.a-imsg .hd { flex-direction: column; gap: 3px; padding: 2px 14px 8px; position: relative; }
+.a-imsg .hd .bk { position: absolute; left: 12px; top: 14px; color: #0b84fe; font-size: 30px; }
+.a-imsg .hd .ics { position: absolute; right: 16px; top: 16px; color: #0b84fe; }
+.a-imsg .hd .hav { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(180deg, #a5abb5, #858b95); display: grid; place-items: center; color: #fff; font-size: 21px; font-weight: 600; overflow: hidden; }
+.a-imsg .hd .hav img { width: 100%; height: 100%; object-fit: cover; }
+.a-imsg .hd .tt { text-align: center; font-size: 12px; font-weight: 500; flex: none; }
+.a-imsg .av { display: none; }
+.a-imsg .nm { display: none; }
+.a-imsg .meta { display: none; }
+.a-imsg .bb { border-radius: 19px; padding: 7px 12px; font-size: 16px; line-height: 1.32; }
+.a-imsg .row.last .bb { border-bottom-left-radius: 5px; }
+.a-imsg .row.me.last .bb { border-bottom-left-radius: 19px; border-bottom-right-radius: 5px; }
+.a-imsg .dt { color: #8a8a8e; font-size: 11.5px; }
+.a-imsg .dt b { font-weight: 600; }
+.a-imsg .col { max-width: 76%; }
+/* ── 삼성 메시지 ── */
+.a-galaxy { --bg: #fafafa; --fg: #111; --hbg: #fafafa; --hfg: #111; --ob: #ececec; --of: #111; --mb: #3e86f5; --mf: #fff; --tm: #8a8a8a; --ibg: #fafafa; --ifg: #555; --ifield: #ececec; --iph: #8a8a8a; --hbc: #222; }
+.a-galaxy .poster, .poster.a-galaxy { border-radius: 40px; }
+.poster.a-galaxy .scr { border-radius: 30px; }
+.a-galaxy .sb .isl { width: 12px; height: 12px; margin-left: -6px; top: 14px; border-radius: 50%; }
+.a-galaxy .sb { font-size: 13.5px; font-weight: 500; padding: 4px 24px 0 26px; }
+.a-galaxy .hd { padding: 8px 16px 14px; }
+.a-galaxy .hd .tt { font-size: 21px; font-weight: 600; }
+.a-galaxy .av { width: 36px; height: 36px; border-radius: 50%; }
+.a-galaxy .nm { display: none; }
+.a-galaxy .bb { border-radius: 20px; padding: 9px 13px; }
+.a-galaxy .dt { width: 100%; display: flex; align-items: center; gap: 10px; color: #777; font-size: 11.5px; }
+.a-galaxy .dt::before, .a-galaxy .dt::after { content: ""; flex: 1; height: 1px; background: #dcdcdc; }
+.a-galaxy .hb { height: 30px; }
+
+@media (max-width: 440px) {
+  .poster { padding: 8px; border-radius: 46px; }
+  .scr { border-radius: 38px; height: 720px; }
+  .col { max-width: 78%; }
+}
+.pager { display: flex; align-items: center; gap: 12px; font: 600 13px "Pretendard Variable", sans-serif; color: #444; }
+.pager button { all: unset; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; background: #fff; border: 1px solid #d8dbe0; display: grid; place-items: center; font-size: 20px; color: #222; }
+.pager button:disabled { opacity: .3; cursor: default; }
+.pager button:focus-visible { outline: 2px solid #2f6bff; outline-offset: 2px; }
+.pager .lb { min-width: 150px; text-align: center; }
+.pager .lb small { display: block; color: #888; font-weight: 500; font-size: 11.5px; margin-top: 2px; }
+.dots { display: flex; gap: 5px; justify-content: center; margin-top: 4px; }
+.dots i { width: 6px; height: 6px; border-radius: 50%; background: #c9ccd2; }
+.dots i.on { width: 16px; border-radius: 3px; background: #222; }
+.slide-l { animation: sl .28s ease-out both; } .slide-r { animation: sr .28s ease-out both; }
+@keyframes sl { from { opacity: 0; transform: translateX(26px); } to { opacity: 1; transform: none; } }
+@keyframes sr { from { opacity: 0; transform: translateX(-26px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body data-mode="view" data-noframe>
+<header class="bar">
+  <a class="brand" href="../">귀환의 블로그</a>
+  <span class="bar-title">둘의 메시지</span>
+  <span class="bar-spacer"></span>
+  <div class="tabs" role="tablist"><button data-mode="view" role="tab">보기</button><button data-mode="edit" role="tab">만들기</button></div>
+</header>
+<main class="stage only-view">
+  <p class="shared-note" id="shared-note" hidden>공유받은 메시지예요. 만들기에서 고치면 내 브라우저에만 저장돼요.</p>
+  <div class="wrapv">
+    <div class="apps" id="apps" role="group" aria-label="앱"></div>
+    <div class="side" id="side"></div>
+    <div class="pager" id="pager"></div>
+    <article class="poster" id="poster"></article>
+  </div>
+  <nav class="actions">
+    <button class="btn primary" id="btn-png">캡처 저장</button>
+    <button class="btn" id="btn-link">링크 복사</button>
+    <button class="btn" id="btn-replay">다시 주고받기</button>
+  </nav>
+</main>
+<main class="editor only-edit" id="editor"></main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/modern-screenshot@4.6.8/dist/index.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(() => {
+const { esc, clamp, num, $ } = Core;
+const APPS = { kakao: ['카카오톡', '#fee500'], line: ['라인', '#06c755'], insta: ['인스타그램 DM', 'linear-gradient(135deg,#f58529,#dd2a7b,#8134af)'], imsg: ['아이메시지', '#0b84fe'], galaxy: ['삼성 메시지', '#3e86f5'] };
+const KIND = { text: '글', emoji: '이모티콘', photo: '사진', call: '통화', missed: '부재중 전화', deleted: '삭제됨' };
+const MAXM = 40;
+const eMsg = () => ({ from: 'a', d: '', t: '', kind: 'text', text: '' });
+const blank = () => ({ v: 1, app: 'kakao', view: 'b', a: { name: 'NPC', sub: '' }, b: { name: 'PC', sub: '' }, read: true, typing: false, msgs: Array.from({ length: MAXM }, eMsg) });
+const M = (from, d, t, text, kind = 'text') => ({ from, d, t, kind, text });
+const sample = () => normalize({
+  app: 'kakao', view: 'b', a: { name: 'NPC', sub: 'npc_0314' }, b: { name: 'PC' }, read: false, typing: true,
+  msgs: [
+    M('a', '2026.11.22', '23:41', '자?'),
+    M('a', '2026.11.22', '23:41', '아니 자면 됐고'),
+    M('b', '2026.11.22', '23:52', '안 자요 왜요'),
+    M('a', '2026.11.22', '23:52', '그냥'),
+    M('a', '2026.11.22', '23:53', '오늘 서고에 두고 간 책'),
+    M('a', '2026.11.22', '23:53', '내가 갖고 있음', 'text'),
+    M('a', '2026.11.22', '23:53', '서고 창가 자리, 책 위에 놓인 공녀의 손수건', 'photo'),
+    M('b', '2026.11.22', '23:55', '아 그거 찾고 있었는데 ㅠㅠ'),
+    M('b', '2026.11.22', '23:55', '내일 가지러 갈게요'),
+    M('a', '2026.11.22', '23:56', '내일은 비 온다던데'),
+    M('a', '2026.11.22', '23:56', '내가 가져다줄게'),
+    M('b', '2026.11.22', '23:57', '🥹', 'emoji'),
+    M('a', '2026.11.23', '08:12', '', 'missed'),
+    M('a', '2026.11.23', '08:13', '일어났어?'),
+    M('b', '2026.11.23', '08:40', '방금 일어났어요 전화했었어요??'),
+    M('a', '2026.11.23', '08:41', '잘못 누름'),
+    M('a', '2026.11.23', '08:41', '우산 챙겨', 'text'),
+    M('a', '2026.11.23', '21:05', '12:48', 'call'),
+    M('a', '2026.11.24', '22:30', '오늘 연회에서', 'text'),
+    M('a', '2026.11.24', '22:30', '', 'deleted'),
+    M('a', '2026.11.24', '22:31', '아무것도 아님'),
+    M('b', '2026.11.24', '22:33', '뭔데요 궁금하게'),
+  ],
+});
+function normalize(s) {
+  const b = blank(); s = s && typeof s === 'object' ? s : {};
+  const o = { ...b, ...s, a: { ...b.a, ...(s.a || {}) }, b: { ...b.b, ...(s.b || {}) } };
+  if (!APPS[o.app]) o.app = 'kakao'; if (!['a', 'b'].includes(o.view)) o.view = 'b';
+  o.msgs = Array.from({ length: MAXM }, (_, i) => { const m = { ...eMsg(), ...((s.msgs || [])[i] || {}) }; if (!KIND[m.kind]) m.kind = 'text'; if (m.from !== 'b') m.from = 'a'; return m; });
+  return o;
+}
+function apply(S, o) {
+  const got = [];
+  if (o.app && APPS[o.app]) { S.app = o.app; got.push('앱'); }
+  for (const k of ['a', 'b']) if (o[k] && typeof o[k] === 'object') { Object.entries(o[k]).forEach(([kk, v]) => { if (v) S[k][kk] = v; }); }
+  if (Array.isArray(o.msgs)) { S.msgs = Array.from({ length: MAXM }, eMsg); o.msgs.slice(0, MAXM).forEach((m, i) => { if (m && typeof m === 'object') S.msgs[i] = { ...eMsg(), ...m }; }); got.push('메시지'); }
+  if (o.read != null) S.read = !!o.read; if (o.typing != null) S.typing = !!o.typing;
+  return got;
+}
+function prompts() {
+  const p = `*[OOC: 롤플레잉 잠시 중단. 「둘의 메시지」 기록.
+NPC와 PC가 폰으로 주고받은 메시지를 실제 메신저 화면으로 만든다. 사이트가 고른 앱(카톡·라인·인스타 DM·아이메시지·삼성 메시지) 모양으로 그린다.
+▪ app: 이 두 사람이 실제로 쓸 법한 앱 하나 kakao|line|insta|imsg|galaxy (설정의 나이·국적·성격·관계로 판단. 한국 20대 지인 사이면 보통 kakao, 막 알게 된 사이는 insta, 아이폰끼리면 imsg)
+▪ a(NPC)·b(PC): name 메신저에 뜨는 이름(저장명·닉네임 그대로), sub 아이디나 상태 메시지 20자
+▪ msgs 15~40개, 시간순, 서로 다른 날 2~4일에 걸쳐 여러 상황(늦은 밤, 아침, 바쁜 낮, 싸운 뒤, 기념일 등 RP에 맞게): from a|b, d 날짜 “2026.11.24”, t 시각 “23:41”, kind text|emoji(이모지만)|photo(사진, text에 무슨 사진인지 20자)|call(통화, text에 통화 시간 “12:48”)|missed(부재중 전화)|deleted(보냈다 지운 메시지), text
+▪ 폰 말투: 실제 메신저처럼 짧게 끊어 여러 개로 보내기, 맞춤법·띄어쓰기도 그 사람 습관대로, ㅋㅋ·ㅠㅠ·…·물음표 개수 같은 버릇과 답장 속도(시각 차이)로 성격이 드러나게. NPC는 설정 말투 그대로.
+▪ read 마지막 메시지를 상대가 읽었는지 true|false, typing 상대가 지금 입력 중인지 true|false
+▪ PC의 메시지는 RP에서 실제로 한 말이나 그 흐름에서 자연스러운 짧은 반응만. 새로운 고백·약속·사건을 PC 입으로 만들지 않는다.
+▪ 근거: 설정과 RP에서 실제 있었던 일만. 여기서 만든 내용은 이후 RP의 사실로 삼지 않는다.
+▪ 출력: 인사·설명 없이 JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만. 값은 형식 예시일 뿐.
+{"app":"kakao","a":{"name":"","sub":""},"b":{"name":"","sub":""},"msgs":[{"from":"a","d":"2026.11.24","t":"23:41","kind":"text","text":""}],"read":true,"typing":false}]*`;
+  return [{ label: '둘의 메시지', sub: '앱 · 메시지 15~40개', text: p }];
+}
+function progress(S) { const n = S.msgs.filter(m => m.text || m.kind !== 'text').length; return [{ label: `메시지 ${n}개`, ok: n >= 5 }, { label: '이름', ok: !!S.a.name }]; }
+function schema(S) {
+  const f = [];
+  S.msgs.forEach((m, i) => f.push({ sub: `${i + 1}` }, { k: `msgs.${i}.from`, label: '보낸 사람', type: 'select', opts: [['a', 'NPC'], ['b', 'PC']] }, { k: `msgs.${i}.kind`, label: '종류', type: 'select', opts: Object.entries(KIND) }, { k: `msgs.${i}.d`, label: '날짜', ph: '2026.11.24' }, { k: `msgs.${i}.t`, label: '시각', ph: '23:41' }, { k: `msgs.${i}.text`, label: '내용', full: true, ph: '비우면 빠져요 (통화·부재중·삭제는 비워도 돼요)' }));
+  return [
+    { title: '앱 · 사람', en: 'APP', desc: '프로필 사진은 보기 화면에서 프로필을 눌러 넣어요.', fields: [{ k: 'app', label: '앱', type: 'select', opts: Object.entries(APPS).map(([k, v]) => [k, v[0]]) }, { k: 'view', label: '누구 폰 화면', type: 'select', opts: [['b', 'PC 폰 (NPC가 상대)'], ['a', 'NPC 폰 (PC가 상대)']] }, { k: 'a.name', label: 'NPC 표시 이름' }, { k: 'a.sub', label: 'NPC 아이디·상태' }, { k: 'b.name', label: 'PC 표시 이름' }, { k: 'b.sub', label: 'PC 아이디·상태' }] },
+    { title: '메시지', en: 'MESSAGES', fields: f },
+  ];
+}
+
+/* ── 그리기 ── */
+const W = ['일', '월', '화', '수', '목', '금', '토'];
+const pd = d => { const m = String(d).match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/); if (!m) return null; const dt = new Date(+m[1], +m[2] - 1, +m[3]); return { y: +m[1], m: +m[2], d: +m[3], w: W[dt.getDay()] }; };
+const pt = t => { const m = String(t).match(/(\d{1,2})\D(\d{2})/); if (!m) return null; return { h: +m[1], mi: +m[2] }; };
+const ko = t => { const p = pt(t); if (!p) return esc(t || ''); return `${p.h < 12 ? '오전' : '오후'} ${(p.h % 12) || 12}:${String(p.mi).padStart(2, '0')}`; };
+function dateLine(app, d, t) {
+  const p = pd(d); if (!p) return esc(d);
+  if (app === 'kakao') return `${p.y}년 ${p.m}월 ${p.d}일 ${p.w}요일`;
+  if (app === 'line') return `${p.m}.${p.d}(${p.w})`;
+  if (app === 'insta') return `${p.y}년 ${p.m}월 ${p.d}일 ${ko(t)}`;
+  if (app === 'imsg') return `<b>${p.m}월 ${p.d}일 (${p.w})</b> ${ko(t)}`;
+  return `${p.y}년 ${p.m}월 ${p.d}일 ${p.w}요일`;
+}
+const IC = {
+  back: '<span class="bk">‹</span>',
+  search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>',
+  menu: '<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+  call: '<svg viewBox="0 0 24 24"><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>',
+  video: '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="M16 10l5-3v10l-5-3"/></svg>',
+  more: '<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="19" r="1.3"/></svg>',
+  plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  smile: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c2 2 5 2 7 0"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>',
+  cam: '<svg viewBox="0 0 24 24"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  mic: '<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  img: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-6-5-8 9"/></svg>',
+  phoneF: '<svg viewBox="0 0 24 24"><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>',
+};
+const SB = (app) => `<div class="sb"><span>${app === 'galaxy' ? '11:02' : '11:02'}</span><span class="isl"></span><span class="ic"><svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="currentColor"/><rect x="2" y="2" width="15" height="8" rx="2"/><rect x="23.5" y="4" width="2" height="4" rx="1"/></svg></span></div>`;
+function header(app, o, pic) {
+  const av = pic ? `<img src="${pic}" alt="">` : esc([...String(o.name || '?')][0]);
+  if (app === 'imsg') return `<div class="hd">${IC.back}<span class="hav" data-photo="other">${av}</span><span class="tt">${esc(o.name)} ›</span><span class="ics">${IC.video}</span></div>`;
+  if (app === 'insta') return `<div class="hd">${IC.back}<span class="av" data-photo="other" style="width:32px;height:32px;border-radius:50%;align-self:center">${av}</span><span class="tt">${esc(o.name)}<small>${esc(o.sub || '')}</small></span><span class="ics">${IC.call}${IC.video}</span></div>`;
+  if (app === 'galaxy') return `<div class="hd">${IC.back}<span class="tt">${esc(o.name)}</span><span class="ics">${IC.call}${IC.more}</span></div>`;
+  if (app === 'line') return `<div class="hd">${IC.back}<span class="tt">${esc(o.name)}</span><span class="ics">${IC.search}${IC.call}${IC.menu}</span></div>`;
+  return `<div class="hd">${IC.back}<span class="tt">${esc(o.name)}</span><span class="ics">${IC.search}${IC.menu}</span></div>`;
+}
+function inputBar(app) {
+  if (app === 'imsg') return `<div class="ip">${IC.plus}<span class="fld">iMessage</span>${IC.mic}</div>`;
+  if (app === 'insta') return `<div class="ip"><span class="fld" style="gap:10px"><span style="width:30px;height:30px;margin-left:-10px;border-radius:50%;background:#3797f0;display:grid;place-items:center;color:#fff">${IC.cam.replace('<svg', '<svg style="width:17px;height:17px"')}</span>메시지 보내기...</span>${IC.mic}${IC.img}</div>`;
+  if (app === 'galaxy') return `<div class="ip">${IC.plus}<span class="fld">메시지 입력</span>${IC.smile}</div>`;
+  if (app === 'line') return `<div class="ip">${IC.plus}${IC.cam}${IC.img}<span class="fld">Aa</span>${IC.smile}${IC.mic}</div>`;
+  return `<div class="ip">${IC.plus}<span class="fld"></span>${IC.smile}<span style="font-weight:700;font-size:19px">#</span></div>`;
+}
+function bubble(app, m) {
+  if (m.kind === 'emoji') return `<div class="bb emo">${esc(m.text || '🙂')}</div>`;
+  if (m.kind === 'deleted') return `<div class="bb del">${app === 'kakao' ? '삭제된 메시지입니다.' : app === 'insta' ? '메시지를 보냈다가 취소했습니다' : app === 'imsg' ? '메시지를 취소함' : '삭제된 메시지입니다.'}</div>`;
+  if (m.kind === 'photo') return `<div class="bb ph"><div class="pi">${esc(m.text || '사진')}</div></div>`;
+  if (m.kind === 'call' || m.kind === 'missed') {
+    const label = m.kind === 'missed' ? (app === 'kakao' ? '보이스톡 부재중' : '부재중 전화') : (app === 'kakao' ? '보이스톡' : app === 'imsg' ? 'FaceTime 오디오' : '음성 통화');
+    return `<div class="bb call"><span class="ci">${IC.phoneF}</span><span><b>${label}</b><small>${m.kind === 'missed' ? '받지 않음' : esc(m.text || '')}</small></span></div>`;
+  }
+  return `<div class="bb">${esc(m.text)}</div>`;
+}
+let anim = true;
+/* 말풍선 높이 어림: 한 화면(폰 높이 고정)에 들어갈 만큼씩 나눈다 */
+function est(m, app, first) {
+  const per = app === 'imsg' ? 16 : 15;
+  let h = m.kind === 'emoji' ? 66 : m.kind === 'photo' ? 160 : (m.kind === 'call' || m.kind === 'missed') ? 58 : m.kind === 'deleted' ? 40 : 20 + Math.max(1, Math.ceil([...String(m.text || '')].length / per)) * 21;
+  return h + (first ? ((app === 'kakao' || app === 'line') ? 30 : 12) : 4);
+}
+function pagesOf(ms, app) {
+  const budget = app === 'imsg' ? 560 : 615, out = []; let cur = null, used = 0;
+  ms.forEach((m, i) => {
+    const first = !ms[i - 1] || ms[i - 1].from !== m.from;
+    const h = est(m, app, first);
+    if (!cur || (m.d && m.d !== ms[cur.s].d) || used + h > budget) { cur = { s: i, e: i }; out.push(cur); used = 46; }
+    cur.e = i; used += h;
+  });
+  return out.length ? out : [{ s: 0, e: -1 }];
+}
+let PG = 0, DIR = 0;
+function posterHTML(S, animate) {
+  const app = S.app, meK = S.view, otK = meK === 'a' ? 'b' : 'a', other = S[otK];
+  const pic = Core.photo('other');
+  const ms = S.msgs.filter(m => m.text || m.kind !== 'text');
+  let h = '', lastD = '', prev = null, k = 0;
+  const lastMeIdx = ms.map(m => m.from).lastIndexOf(meK);
+  const pages = pagesOf(ms, app); PG = clamp(PG, 0, pages.length - 1); const pg = pages[PG]; PAGES = pages; MS = ms;
+  ms.forEach((m, i) => {
+    if (i < pg.s || i > pg.e) return;
+    if (i === pg.s && m.d === lastD) lastD = '';
+    const mine = m.from === meK, nx = ms[i + 1];
+    if (m.d && m.d !== lastD) { h += `<div class="dt${animate ? ' in' : ''}">${dateLine(app, m.d, m.t)}</div>`; lastD = m.d; prev = null; }
+    else if (app === 'insta' && prev && pt(m.t) && pt(prev.t) && (pt(m.t).h * 60 + pt(m.t).mi) - (pt(prev.t).h * 60 + pt(prev.t).mi) > 60) h += `<div class="dt">${ko(m.t)}</div>`;
+    const cont = prev && prev.from === m.from && (app !== 'kakao' || prev.t === m.t);
+    const lastOfGroup = !nx || nx.from !== m.from || (nx.d && nx.d !== m.d) || (app === 'kakao' && nx.t !== m.t);
+    const showTime = app === 'kakao' ? lastOfGroup : app === 'line' ? true : app === 'galaxy' ? lastOfGroup : false;
+    const unread = mine && !S.read && i >= lastMeIdx - 0 && app === 'kakao' ? '<span class="un">1</span>' : '';
+    const lineRead = mine && app === 'line' && (S.read || i < lastMeIdx) ? '<span>읽음</span>' : '';
+    const avOn = !mine && (app === 'insta' ? lastOfGroup : !cont);
+    const av = mine ? '' : `<span class="av${avOn ? '' : ' blank'}" ${avOn ? 'data-photo="other"' : ''}>${avOn ? (pic ? `<img src="${pic}" alt="">` : esc([...String(other.name || '?')][0])) : ''}</span>`;
+    const nm = !mine && !cont && (app === 'kakao' || app === 'line') ? `<div class="nm">${esc(other.name)}</div>` : '';
+    const meta = `<span class="meta">${unread}${lineRead}${showTime ? `<span>${ko(m.t)}</span>` : ''}</span>`;
+    h += `<div class="row${mine ? ' me' : ''}${cont ? ' cont' : ' gap'}${lastOfGroup ? ' last' : ''}${animate ? ' in' : ''}"${animate ? ` style="animation-delay:${Math.min(k++ * 70, 2400)}ms"` : ''}>${av}<div class="col">${nm}<div class="bw">${bubble(app, m)}${meta}</div></div></div>`;
+    if (i === lastMeIdx && (app === 'imsg' || app === 'insta') ) h += `<div class="rd">${S.read ? (app === 'imsg' ? `읽음 ${ko(ms[ms.length - 1].t)}` : '읽음') : (app === 'imsg' ? '전송됨' : '')}</div>`;
+    prev = m;
+  });
+  if (S.typing && PG === pages.length - 1) h += `<div class="row gap${animate ? ' in' : ''}"${animate ? ` style="animation-delay:${Math.min(k * 70, 2400) + 200}ms"` : ''}><span class="av${app === 'imsg' ? '' : ''}" data-photo="other">${pic ? `<img src="${pic}" alt="">` : esc([...String(other.name || '?')][0])}</span><div class="col"><div class="bb typing" aria-label="입력 중"><i></i><i></i><i></i></div></div></div>`;
+  return `<div class="scr">${SB(app)}${header(app, other, pic)}<div class="log${DIR > 0 ? ' slide-l' : DIR < 0 ? ' slide-r' : ''}">${h || '<p style="text-align:center;opacity:.6;margin-top:40px">메시지가 없어요</p>'}</div>${inputBar(app)}<div class="hb"><i></i></div></div>`;
+}
+let CUR = null, PAGES = [], MS = [];
+function render(S, { animate }) {
+  CUR = S;
+  const el = $('#poster'); el.className = 'poster a-' + S.app; el.innerHTML = posterHTML(S, animate);
+  $('#apps').innerHTML = Object.entries(APPS).map(([k, v]) => `<button type="button" data-app="${k}" aria-pressed="${S.app === k}"><i style="background:${v[1]}"></i>${v[0]}</button>`).join('');
+  const P = PAGES[PG], first = MS[P.s];
+  $('#pager').innerHTML = PAGES.length > 1 ? `<button type="button" data-pg="-1" aria-label="이전 화면" ${PG === 0 ? 'disabled' : ''}>‹</button><div class="lb">${first && first.d ? esc(first.d) : ''}${first && first.t ? ' · ' + ko(first.t) : ''}<small>${PG + 1} / ${PAGES.length} 화면 · 넘겨서 보기</small><div class="dots">${PAGES.map((_, i) => `<i class="${i === PG ? 'on' : ''}"></i>`).join('')}</div></div><button type="button" data-pg="1" aria-label="다음 화면" ${PG === PAGES.length - 1 ? 'disabled' : ''}>›</button>` : '';
+  DIR = 0;
+  $('#side').innerHTML = `누구 폰 <button type="button" data-v="b" aria-pressed="${S.view === 'b'}">${esc(S.b.name)}</button><button type="button" data-v="a" aria-pressed="${S.view === 'a'}">${esc(S.a.name)}</button>`;
+}
+/* 앱 · 화면 주인 바꾸기: 상태에 저장돼 링크·캡처에 그대로 */
+document.addEventListener('click', e => {
+  const pgb = e.target.closest('#pager [data-pg]'); if (pgb) { go(+pgb.dataset.pg); return; }
+  const a = e.target.closest('#apps [data-app]'), v = e.target.closest('#side [data-v]');
+  if (!a && !v) return; const S = APP_ST.state;
+  if (a) S.app = a.dataset.app; if (v) S.view = v.dataset.v;
+  try { localStorage.setItem('2inbun:msg', JSON.stringify(S)); } catch (err) {}
+  render(S, { animate: false });
+});
+function go(d) { const n = clamp(PG + d, 0, PAGES.length - 1); if (n === PG) return; DIR = d; PG = n; render(APP_ST.state, { animate: false }); }
+document.addEventListener('keydown', e => { if (document.body.dataset.mode !== 'view' || /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return; if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1); });
+let sx = null; const pe = document.getElementById('poster');
+pe.addEventListener('pointerdown', e => { sx = e.clientX; });
+pe.addEventListener('pointerup', e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1); });
+const APP_ST = Core.app({ key: '2inbun:msg', what: '메시지', sample, blank, normalize, schema, prompts, apply, progress, render, skin: false, fileName: S => `메시지_${S.a.name}_${S.b.name}` });
+})();
+</script>
+</body>
+</html>

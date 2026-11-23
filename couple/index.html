@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>우리 사이</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%3E%3Crect%20width%3D%2716%27%20height%3D%2716%27%20rx%3D%274%27%20fill%3D%27%23ff6f91%27%2F%3E%3Cpath%20d%3D%27M8%2013S3%2010%203%206.5A2.5%202.5%200%200%201%208%205a2.5%202.5%200%200%201%205%201.5C13%2010%208%2013%208%2013z%27%20fill%3D%27%23fff%27%2F%3E%3C%2Fsvg%3E">
+<meta name="description" content="NPC와 PC가 쓰는 커플 앱 화면 메이커: 디데이, 커플 질문, 위치 공유, 기념일, 앨범">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/base.css">
+<style>
+/* 콘셉트: 커플 앱(가상 앱 '우리 사이'). 복숭아빛 분홍 · 둥근 흰 카드 · 두 사람 프로필이 하트로 이어진 디데이 · 아래 탭 */
+:root { --bg: #fff5f7; --pk: #ff6f91; --pk2: #ffb3c5; --pkbg: #ffe4ec; --ink: #3a2a33; --sub: #9a8790; --card: #fff; --line: #f3dde4; --mint: #4cc9a7; }
+body[data-mode="view"] { background: linear-gradient(180deg, #fde8ee, #f4eefb) fixed; }
+.tabs2 { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 12px; }
+.tabs2 button { all: unset; cursor: pointer; padding: 7px 14px; border-radius: 999px; background: #fff; border: 1px solid #f0d6de; font: 700 13px "Pretendard Variable", sans-serif; color: #7a5e69; }
+.tabs2 button[aria-pressed="true"] { background: var(--pk); color: #fff; border-color: var(--pk); }
+.tabs2 button:focus-visible { outline: 2px solid #2f6bff; outline-offset: 2px; }
+.wrapv { display: flex; flex-direction: column; align-items: center; }
+.poster { width: 400px; max-width: 100%; padding: 11px; background: #1b1b1d; border-radius: 56px; box-shadow: inset 0 0 0 2px #3a3a3c, 0 30px 60px -24px rgba(120,40,70,.45); font-family: "Pretendard Variable", Pretendard, sans-serif; color: var(--ink); }
+.scr { position: relative; min-height: 780px; border-radius: 46px; overflow: hidden; background: var(--bg); display: flex; flex-direction: column; }
+.sb { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 6px 30px 0 34px; font-weight: 600; font-size: 15.5px; position: relative; }
+.sb .isl { position: absolute; left: 50%; top: 11px; width: 120px; height: 34px; margin-left: -60px; background: #000; border-radius: 20px; }
+.top { display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 8px; }
+.top b { font-size: 19px; font-weight: 800; color: var(--pk); letter-spacing: -.02em; }
+.top span { font-size: 12px; color: var(--sub); }
+.body { flex: 1; padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+.card { background: var(--card); border-radius: 22px; padding: 16px; box-shadow: 0 6px 18px -10px rgba(200,80,120,.35); }
+.card h3 { margin: 0 0 10px; font-size: 13px; font-weight: 800; color: var(--sub); display: flex; justify-content: space-between; align-items: center; }
+.card h3 em { font-style: normal; color: var(--pk); }
+.in { animation: fadeUp .45s ease-out both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+/* 홈 */
+.hero { text-align: center; padding: 22px 16px 18px; background: linear-gradient(170deg, #ffd3df, #ffeef3 60%, #fff); }
+.pair { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.pf { width: 78px; height: 78px; border-radius: 50%; background: #fff; border: 3px solid #fff; box-shadow: 0 6px 14px -6px rgba(200,80,120,.5); overflow: hidden; display: grid; place-items: center; color: var(--pk); font-weight: 800; font-size: 26px; }
+.pf img { width: 100%; height: 100%; object-fit: cover; }
+.heart { width: 30px; height: 30px; color: var(--pk); animation: beat 1.6s ease-in-out infinite; }
+@keyframes beat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.18); } 30% { transform: scale(1); } }
+.capturing .heart { animation: none; }
+.names { display: flex; justify-content: center; gap: 70px; margin-top: 8px; font-size: 13.5px; font-weight: 700; }
+.dday { margin-top: 12px; font-size: 44px; font-weight: 900; letter-spacing: -.03em; color: var(--pk); line-height: 1; }
+.since { margin-top: 6px; font-size: 12.5px; color: var(--sub); }
+.rel { display: inline-block; margin-top: 10px; padding: 4px 12px; border-radius: 999px; background: #fff; color: var(--pk); font-size: 12px; font-weight: 800; }
+.moods { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mood { display: flex; align-items: center; gap: 10px; background: var(--pkbg); border-radius: 16px; padding: 10px 12px; }
+.mood b { font-size: 26px; line-height: 1; }
+.mood span { font-size: 12px; line-height: 1.35; } .mood small { display: block; color: var(--sub); font-size: 11px; font-weight: 700; }
+.say { font-size: 15px; line-height: 1.55; font-weight: 600; }
+.say small { display: block; margin-top: 8px; font-size: 11.5px; color: var(--sub); font-weight: 500; }
+.story { font-size: 13.5px; line-height: 1.65; color: #5a4650; }
+/* 질문 */
+.q { display: flex; flex-direction: column; gap: 8px; }
+.q .qt { font-size: 15px; font-weight: 800; line-height: 1.4; }
+.q .qt small { display: block; font-size: 11.5px; color: var(--pk); font-weight: 800; margin-bottom: 3px; }
+.ans { display: flex; gap: 8px; align-items: flex-start; }
+.ans .mini { width: 28px; height: 28px; border-radius: 50%; background: var(--pkbg); color: var(--pk); display: grid; place-items: center; font-size: 12px; font-weight: 800; flex: none; overflow: hidden; }
+.ans .mini img { width: 100%; height: 100%; object-fit: cover; }
+.ans p { margin: 0; flex: 1; padding: 9px 12px; background: #fbf5f7; border-radius: 4px 14px 14px 14px; font-size: 13.5px; line-height: 1.5; }
+.ans.lock p { background: repeating-linear-gradient(0deg, #f6eef1, #f6eef1); color: var(--sub); display: flex; align-items: center; gap: 6px; font-size: 12.5px; }
+/* 위치 */
+.map { position: relative; height: 300px; border-radius: 20px; overflow: hidden; background: #eef3ea; }
+.map svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pinp { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; }
+.pinp .pf { width: 46px; height: 46px; font-size: 16px; border-width: 3px; }
+.pinp i { width: 0; height: 0; border: 7px solid transparent; border-top-color: #fff; margin-top: -2px; }
+.pinp small { margin-top: 2px; padding: 2px 8px; border-radius: 999px; background: #fff; font-size: 11px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,.12); white-space: nowrap; }
+.dist { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); padding: 6px 14px; border-radius: 999px; background: var(--pk); color: #fff; font-size: 13px; font-weight: 800; box-shadow: 0 6px 12px -6px rgba(200,80,120,.7); }
+.lrow { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 13.5px; }
+.lrow:first-child { border-top: 0; }
+.lrow .mini { width: 32px; height: 32px; border-radius: 50%; background: var(--pkbg); color: var(--pk); display: grid; place-items: center; font-weight: 800; font-size: 12px; overflow: hidden; flex: none; }
+.lrow .mini img { width: 100%; height: 100%; object-fit: cover; }
+.lrow div { flex: 1; } .lrow small { display: block; color: var(--sub); font-size: 11.5px; }
+.share { display: flex; align-items: center; justify-content: space-between; font-size: 13.5px; font-weight: 700; }
+.tg { width: 46px; height: 28px; border-radius: 999px; background: var(--mint); position: relative; }
+.tg::after { content: ""; position: absolute; right: 3px; top: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; }
+.tg.off { background: #d8d0d4; } .tg.off::after { right: auto; left: 3px; }
+/* 기념일 */
+.an { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.an:first-child { border-top: 0; }
+.an .dd { min-width: 66px; text-align: center; padding: 6px 8px; border-radius: 12px; background: var(--pkbg); color: var(--pk); font-weight: 900; font-size: 14px; }
+.an .dd.past { background: #f1edef; color: var(--sub); }
+.an b { display: block; font-size: 14.5px; } .an small { color: var(--sub); font-size: 12px; }
+.bk { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 14px; }
+.bk i { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--pk2); flex: none; display: grid; place-items: center; color: #fff; font-style: normal; font-size: 12px; font-weight: 900; }
+.bk.done i { background: var(--pk); border-color: var(--pk); } .bk.done span { text-decoration: line-through; color: var(--sub); }
+/* 앨범 */
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.ph { aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: linear-gradient(160deg, #ffd6e0, #e8dcff); display: flex; align-items: flex-end; padding: 6px; color: #fff; font-size: 10.5px; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,.35); position: relative; }
+.ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ph span { position: relative; }
+/* 아래 탭 */
+.tb { display: grid; grid-template-columns: repeat(5, 1fr); padding: 8px 6px 6px; background: #fff; border-top: 1px solid var(--line); }
+.tb span { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10.5px; font-weight: 700; color: #bba9b1; }
+.tb span.on { color: var(--pk); }
+.tb svg { width: 23px; height: 23px; stroke: currentColor; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.hb { height: 24px; display: grid; place-items: center; background: #fff; } .hb i { width: 134px; height: 5px; border-radius: 3px; background: #222; }
+@media (max-width: 440px) { .poster { padding: 8px; border-radius: 46px; } .scr { border-radius: 38px; } .names { gap: 50px; } }
+</style>
+</head>
+<body data-mode="view" data-noframe>
+<header class="bar">
+  <a class="brand" href="../">귀환의 블로그</a>
+  <span class="bar-title">우리 사이</span>
+  <span class="bar-spacer"></span>
+  <div class="tabs" role="tablist"><button data-mode="view" role="tab">보기</button><button data-mode="edit" role="tab">만들기</button></div>
+</header>
+<main class="stage only-view">
+  <p class="shared-note" id="shared-note" hidden>공유받은 커플 앱 화면이에요. 만들기에서 고치면 내 브라우저에만 저장돼요.</p>
+  <div class="wrapv"><div class="tabs2" id="tabs2" role="group" aria-label="화면"></div><article class="poster" id="poster"></article></div>
+  <nav class="actions">
+    <button class="btn primary" id="btn-png">화면 저장</button>
+    <button class="btn" id="btn-link">링크 복사</button>
+    <button class="btn" id="btn-replay">다시 보기</button>
+  </nav>
+</main>
+<main class="editor only-edit" id="editor"></main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/modern-screenshot@4.6.8/dist/index.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(() => {
+const { esc, clamp, num, $ } = Core;
+const TABS = { home: '홈', q: '질문', loc: '위치', anniv: '기념일', album: '앨범' };
+const N = { q: 6, an: 5, al: 6, bk: 5 };
+const eQ = () => ({ q: '', a: '', b: '', date: '' }), eAn = () => ({ title: '', date: '' }), eAl = () => ({ cap: '', date: '' }), eBk = () => ({ text: '', done: false });
+const P = (o) => ({ name: '', nick: '', mood: '🙂', moodText: '', place: '', when: '', ...o });
+const blank = () => ({ v: 1, tab: 'home', rel: '', since: '', start: '', why: '', say: '', sayFrom: 'a', a: P({ name: 'NPC' }), b: P({ name: 'PC' }), dist: '', share: true, qs: Array.from({ length: N.q }, eQ), anniv: Array.from({ length: N.an }, eAn), album: Array.from({ length: N.al }, eAl), bucket: Array.from({ length: N.bk }, eBk) });
+const sample = () => normalize({
+  tab: 'home', rel: '약혼 발표 전 비밀 연애', since: '2026.03.14', start: '2026.10.31', sayFrom: 'a',
+  why: '비 오는 정원에서 망토를 같이 쓴 다음 날, 공녀가 먼저 설치해서 초대 코드를 보냈다. 황태자는 사흘 동안 수락을 누르지 않았다.',
+  say: '내일 연회, 늦지 마십시오. 첫 춤은 비워 두겠습니다.',
+  a: P({ name: 'NPC', nick: '전하', mood: '😶', moodText: '서류가 많음', place: '황궁 집무실', when: '방금' }),
+  b: P({ name: 'PC', nick: '공녀님', mood: '🥰', moodText: '내일 연회 기대', place: '공작가 저택', when: '12분 전' }),
+  dist: '3.4km', share: true,
+  qs: [
+    { q: '상대에게 처음 반한 순간은?', a: '무도회에서 발을 밟고도 웃던 순간.', b: '', date: '11.21' },
+    { q: '요즘 상대에게 가장 고마운 것은?', a: '먼저 말을 걸어 주는 것. 나는 그걸 못 하니까.', b: '서고에 매번 같은 시간에 와 주는 거요.', date: '11.18' },
+    { q: '둘만 아는 장소가 있다면?', a: '정원 끝 회랑.', b: '황궁 서고 창가 자리!', date: '11.12' },
+  ],
+  anniv: [{ title: '처음 만난 날', date: '2026.03.14' }, { title: '커플 앱 시작', date: '2026.10.31' }, { title: '신년 연회', date: '2026.12.31' }, { title: '만난 지 300일', date: '' }],
+  album: [{ cap: '서고 창가', date: '04.02' }, { cap: '비 오는 정원', date: '10.30' }, { cap: '군밤 반 봉지', date: '11.15' }, { cap: '첫 춤', date: '03.14' }],
+  bucket: [{ text: '신분 숨기고 수도 구경', done: true }, { text: '같이 극장 가기', done: true }, { text: '연회에서 첫 춤과 마지막 춤', done: false }, { text: '서로 편지 한 통씩', done: false }],
+});
+const arr = (src, n, mk) => Array.from({ length: n }, (_, i) => ({ ...mk(), ...((Array.isArray(src) ? src : [])[i] || {}) }));
+function normalize(s) {
+  const b = blank(); s = s && typeof s === 'object' ? s : {};
+  const o = { ...b, ...s, a: P({ ...b.a, ...(s.a || {}) }), b: P({ ...b.b, ...(s.b || {}) }) };
+  if (!TABS[o.tab]) o.tab = 'home'; if (!['a', 'b'].includes(o.sayFrom)) o.sayFrom = 'a';
+  o.qs = arr(s.qs, N.q, eQ); o.anniv = arr(s.anniv, N.an, eAn); o.album = arr(s.album, N.al, eAl); o.bucket = arr(s.bucket, N.bk, eBk).map(x => ({ ...x, done: x.done === true || x.done === 'true' }));
+  o.share = o.share !== false && o.share !== 'false';
+  return o;
+}
+function apply(S, o) {
+  const got = []; const g = n => { if (!got.includes(n)) got.push(n); };
+  ['rel', 'since', 'start', 'why', 'say', 'sayFrom', 'dist'].forEach(k => { if (o[k]) { S[k] = o[k]; g('관계'); } });
+  if (o.share != null) S.share = !!o.share;
+  for (const k of ['a', 'b']) if (o[k] && typeof o[k] === 'object') { Object.entries(o[k]).forEach(([kk, v]) => { if (v !== '' && v != null) S[k][kk] = v; }); g('프로필'); }
+  const put = (key, n, mk, label) => { if (Array.isArray(o[key])) { S[key] = Array.from({ length: n }, mk); o[key].slice(0, n).forEach((x, i) => { if (x && typeof x === 'object') S[key][i] = { ...mk(), ...x }; }); g(label); } };
+  put('qs', N.q, eQ, '커플 질문'); put('anniv', N.an, eAn, '기념일'); put('album', N.al, eAl, '앨범'); put('bucket', N.bk, eBk, '버킷리스트');
+  return got;
+}
+function prompts() {
+  const p = `*[OOC: 롤플레잉 잠시 중단. 「우리 사이」 커플 앱 기록.
+NPC와 PC가 어느 날부터 같이 쓰기 시작한 커플 앱 화면을 만든다. 실제 관계가 연인이 아니어도 된다(썸, 계약, 비밀 연애, 친구인 척 등 RP 그대로).
+▪ rel 둘의 관계 한 줄 14자, since 관계가 시작된 날 “2026.03.14”, start 커플 앱을 시작한 날, why 커플 앱을 어쩌다 쓰게 됐는지 80자(누가 먼저 깔았고 상대는 어땠는지)
+▪ a(NPC)·b(PC): nick 앱에 저장한 상대 애칭, mood 오늘 기분 이모지 하나, moodText 기분 한 줄 12자, place 지금 위치 이름 12자, when 위치 갱신 “방금|12분 전”
+▪ dist 둘 사이 거리 “3.4km”, share 위치 공유 켜 둠 true|false
+▪ say 오늘의 한마디 40자, sayFrom 쓴 사람 a|b(PC면 RP에서 실제로 한 말만)
+▪ qs 커플 질문 3~6개(최근 것부터): q 질문(커플 앱 말투), a NPC 답 50자(NPC 말투 그대로), b PC 답(RP에서 실제로 한 말로 답이 되는 경우만, 없으면 “” = 아직 안 답함), date “11.21”
+▪ anniv 기념일 3~5개: title, date(모르면 “”) / album 사진 3~6개: cap 무슨 사진 12자, date / bucket 버킷리스트 3~5개: text 20자, done true|false
+▪ 근거: 설정과 RP에서 실제 있었던 일만. PC의 말·행동은 RP에 나온 것만 쓰고 지어내지 않는다. 여기서 만든 내용은 이후 RP의 사실로 삼지 않는다.
+▪ 출력: 인사·설명 없이 JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만. 값은 형식 예시일 뿐.
+{"rel":"","since":"","start":"","why":"","a":{"nick":"","mood":"🙂","moodText":"","place":"","when":""},"b":{"nick":"","mood":"🙂","moodText":"","place":"","when":""},"dist":"","share":true,"say":"","sayFrom":"a","qs":[{"q":"","a":"","b":"","date":""}],"anniv":[{"title":"","date":""}],"album":[{"cap":"","date":""}],"bucket":[{"text":"","done":false}]}]*`;
+  return [{ label: '우리 사이', sub: '관계 · 질문 · 위치 · 기념일 · 앨범', text: p }];
+}
+function progress(S) { return [{ label: '관계', ok: !!S.rel }, { label: '커플 질문', ok: S.qs.some(q => q.a) }, { label: '위치', ok: !!S.a.place }, { label: '기념일', ok: S.anniv.some(a => a.title) }]; }
+function schema(S) {
+  const per = k => [{ k: `${k}.name`, label: '이름' }, { k: `${k}.nick`, label: '앱 애칭' }, { k: `${k}.mood`, label: '기분 이모지' }, { k: `${k}.moodText`, label: '기분 한 줄' }, { k: `${k}.place`, label: '지금 위치' }, { k: `${k}.when`, label: '위치 갱신' }];
+  const list = (key, n, t, fs) => { const o = []; for (let i = 0; i < n; i++) { o.push({ sub: `${t} ${i + 1}` }); fs.forEach(f => o.push({ ...f, k: `${key}.${i}.${f.k}` })); } return o; };
+  return [
+    { title: '관계', en: 'US', desc: '프로필·앨범 사진은 보기 화면에서 눌러 넣어요.', fields: [{ k: 'rel', label: '관계' }, { k: 'since', label: '시작한 날' }, { k: 'start', label: '앱 시작한 날' }, { k: 'dist', label: '거리' }, { k: 'why', label: '앱을 쓰게 된 이유', type: 'textarea', full: true }, { k: 'say', label: '오늘의 한마디', full: true }, { k: 'sayFrom', label: '한마디 쓴 사람', type: 'select', opts: [['a', 'NPC'], ['b', 'PC']] }] },
+    { title: 'NPC', en: 'A', fields: per('a') }, { title: 'PC', en: 'B', fields: per('b') },
+    { title: '커플 질문', en: 'QUESTIONS', desc: 'PC 답을 비워 두면 “아직 답하지 않았어요”로 잠겨요.', fields: list('qs', N.q, '질문', [{ k: 'q', label: '질문', full: true, ph: '비우면 빠져요' }, { k: 'a', label: 'NPC 답', full: true }, { k: 'b', label: 'PC 답', full: true }, { k: 'date', label: '날짜' }]) },
+    { title: '기념일', en: 'DAYS', fields: list('anniv', N.an, '기념일', [{ k: 'title', label: '이름', ph: '비우면 빠져요' }, { k: 'date', label: '날짜' }]) },
+    { title: '앨범', en: 'ALBUM', fields: list('album', N.al, '사진', [{ k: 'cap', label: '설명', ph: '비우면 빠져요' }, { k: 'date', label: '날짜' }]) },
+    { title: '버킷리스트', en: 'BUCKET', fields: list('bucket', N.bk, '항목', [{ k: 'text', label: '내용', ph: '비우면 빠져요' }, { k: 'done', label: '했음', type: 'select', opts: [['false', '아직'], ['true', '했음']] }]) },
+  ];
+}
+const pd = d => { const m = String(d || '').match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null; };
+const today = () => { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); };
+const dplus = d => { const x = pd(d); return x ? Math.floor((today() - x) / 864e5) + 1 : null; };
+const ddiff = d => { const x = pd(d); return x ? Math.round((x - today()) / 864e5) : null; };
+const pic = (k, S) => { const p = Core.photo(k); return p ? `<img src="${p}" alt="">` : esc([...String(S[k].name || '?')][0]); };
+const ICON = {
+  home: '<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></svg>',
+  q: '<svg viewBox="0 0 24 24"><path d="M5 5h14v10H9l-4 4z"/><path d="M10 9a2 2 0 1 1 3 1.7c-.6.4-1 .8-1 1.3"/></svg>',
+  loc: '<svg viewBox="0 0 24 24"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
+  anniv: '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>',
+  album: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9.5" cy="9.5" r="1.8"/><path d="M20 15l-5-4-9 9"/></svg>',
+};
+const HEART = '<svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z" fill="currentColor"/></svg>';
+function screen(S, an) {
+  const c = (i, h, cls = 'card') => `<section class="${cls}${an ? ' in' : ''}"${an ? ` style="animation-delay:${i * 90}ms"` : ''}>${h}</section>`;
+  if (S.tab === 'home') {
+    const dp = dplus(S.since), by = S[S.sayFrom];
+    return c(0, `<div class="pair"><span class="pf" data-photo="a">${pic('a', S)}</span>${HEART}<span class="pf" data-photo="b">${pic('b', S)}</span></div>
+      <div class="names"><span>${esc(S.a.name)}</span><span>${esc(S.b.name)}</span></div>
+      <div class="dday">${dp != null ? `D+${dp.toLocaleString('ko-KR')}` : 'D+?'}</div><div class="since">${esc(S.since || '시작한 날을 넣어 주세요')}부터 함께</div>${S.rel ? `<span class="rel">${esc(S.rel)}</span>` : ''}`, 'card hero')
+      + c(1, `<h3>오늘 기분</h3><div class="moods">${['a', 'b'].map(k => `<div class="mood"><b>${esc(S[k].mood || '🙂')}</b><span><small>${esc(S[k].nick || S[k].name)}</small>${esc(S[k].moodText || '')}</span></div>`).join('')}</div>`)
+      + (S.say ? c(2, `<h3>오늘의 한마디 <em>${esc(by.name)}</em></h3><div class="say">${esc(S.say)}</div>`) : '')
+      + (S.why ? c(3, `<h3>우리가 이 앱을 시작한 이유 <em>${esc(S.start || '')}</em></h3><div class="story">${esc(S.why)}</div>`) : '');
+  }
+  if (S.tab === 'q') {
+    const qs = S.qs.filter(q => q.q);
+    return qs.map((q, i) => c(i, `<div class="q"><div class="qt"><small>Q${qs.length - i} · ${esc(q.date || '')}</small>${esc(q.q)}</div>
+      <div class="ans"><span class="mini" data-photo="a">${pic('a', S)}</span><p>${esc(q.a || '아직 답하지 않았어요')}</p></div>
+      ${q.b ? `<div class="ans"><span class="mini" data-photo="b">${pic('b', S)}</span><p>${esc(q.b)}</p></div>` : `<div class="ans lock"><span class="mini">${pic('b', S)}</span><p>🔒 ${esc(S.b.name)}님이 답하면 볼 수 있어요</p></div>`}</div>`)).join('') || c(0, '<p class="story">아직 질문이 없어요.</p>');
+  }
+  if (S.tab === 'loc') {
+    return c(0, `<div class="map"><svg viewBox="0 0 340 300" aria-hidden="true"><rect width="340" height="300" fill="#eef3ea"/><path d="M0 210 C80 190 150 240 340 200 V300 H0z" fill="#d5e8f5"/><g stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round"><path d="M-10 90 H350"/><path d="M60 -10 V310"/><path d="M230 -10 V310"/><path d="M-10 160 C100 150 200 170 350 140"/></g><g fill="#dfe9d6"><rect x="80" y="20" width="130" height="55" rx="10"/><rect x="250" y="20" width="80" height="55" rx="10"/><rect x="80" y="105" width="130" height="40" rx="10"/></g><path d="M100 120 Q170 60 260 70" stroke="#ff6f91" stroke-width="2.5" stroke-dasharray="4 6" fill="none"/></svg>
+      <span class="dist">${S.share ? `서로 ${esc(S.dist || '?')}` : '위치 공유 꺼짐'}</span>
+      <span class="pinp" style="left:30%;top:46%"><span class="pf" data-photo="a">${pic('a', S)}</span><i></i><small>${esc(S.a.place || '')}</small></span>
+      <span class="pinp" style="left:77%;top:30%"><span class="pf" data-photo="b">${pic('b', S)}</span><i></i><small>${esc(S.b.place || '')}</small></span></div>`, 'card')
+      + c(1, ['a', 'b'].map(k => `<div class="lrow"><span class="mini">${pic(k, S)}</span><div><b>${esc(S[k].nick || S[k].name)}</b><small>${esc(S[k].place || '위치 없음')} · ${esc(S[k].when || '')}</small></div></div>`).join(''))
+      + c(2, `<div class="share"><span>위치 공유</span><span class="tg${S.share ? '' : ' off'}"></span></div>`);
+  }
+  if (S.tab === 'anniv') {
+    const an = S.anniv.filter(a => a.title).map(a => { const d = ddiff(a.date); return { ...a, d }; });
+    return c(0, `<h3>기념일</h3>${an.map(a => `<div class="an"><span class="dd${a.d != null && a.d < 0 ? ' past' : ''}">${a.d == null ? 'D-?' : a.d === 0 ? 'D-DAY' : a.d > 0 ? `D-${a.d}` : `D+${-a.d + 1}`}</span><div><b>${esc(a.title)}</b><small>${esc(a.date || '날짜 미정')}</small></div></div>`).join('') || '<p class="story">기념일이 없어요.</p>'}`)
+      + c(1, `<h3>버킷리스트 <em>${S.bucket.filter(b => b.text && b.done).length}/${S.bucket.filter(b => b.text).length}</em></h3>${S.bucket.filter(b => b.text).map(b => `<div class="bk${b.done ? ' done' : ''}"><i>${b.done ? '✓' : ''}</i><span>${esc(b.text)}</span></div>`).join('')}`);
+  }
+  const al = S.album.map((a, i) => ({ ...a, i })).filter(a => a.cap);
+  return c(0, `<h3>앨범 <em>${al.length}장</em></h3><div class="grid3">${al.map(a => { const p = Core.photo('al' + a.i); return `<div class="ph" data-photo="al${a.i}">${p ? `<img src="${p}" alt="">` : ''}<span>${esc(a.cap)}<br>${esc(a.date || '')}</span></div>`; }).join('')}</div>`);
+}
+function posterHTML(S, an) {
+  return `<div class="scr"><div class="sb"><span>9:41</span><span class="isl"></span><span>●●●</span></div>
+    <div class="top"><b>우리 사이</b><span>${esc(S.a.nick || S.a.name)} ♥ ${esc(S.b.nick || S.b.name)}</span></div>
+    <div class="body">${screen(S, an)}</div>
+    <nav class="tb">${Object.entries(TABS).map(([k, v]) => `<span class="${S.tab === k ? 'on' : ''}">${ICON[k]}${v}</span>`).join('')}</nav><div class="hb"><i></i></div></div>`;
+}
+function render(S, { animate }) {
+  $('#poster').innerHTML = posterHTML(S, animate);
+  $('#tabs2').innerHTML = Object.entries(TABS).map(([k, v]) => `<button type="button" data-t="${k}" aria-pressed="${S.tab === k}">${v}</button>`).join('');
+}
+document.addEventListener('click', e => { const b = e.target.closest('#tabs2 [data-t]'); if (!b) return; const S = ST.state; S.tab = b.dataset.t; try { localStorage.setItem('2inbun:couple', JSON.stringify(S)); } catch (err) {} render(S, { animate: true }); });
+const ST = Core.app({ key: '2inbun:couple', what: '커플 앱', sample, blank, normalize, schema, prompts, apply, progress, render, fileName: S => `우리사이_${S.a.name}_${S.b.name}` });
+})();
+</script>
+</body>
+</html>

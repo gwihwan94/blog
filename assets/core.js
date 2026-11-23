@@ -427,6 +427,7 @@ window.Core = (() => {
 .skin-pop .sk-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:0 6px 6px}
 .skin-pop .sk-foot p{margin:0;font-size:12px;color:#444}
 .skin-pop .sk-reset{all:unset;box-sizing:border-box;min-height:28px;padding:0 10px;border:1px solid #141414;background:#ececec;box-shadow:1px 1px 0 #141414;font-size:12px;cursor:pointer}
+.ph-slot{cursor:pointer;position:relative}.ph-slot::after{content:"사진 넣기";position:absolute;left:50%;bottom:6px;transform:translateX(-50%);padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.62);color:#fff;font:600 11px 'Pretendard Variable',sans-serif;white-space:nowrap;opacity:0;transition:opacity .15s;pointer-events:none}.ph-slot:hover::after,.ph-slot:focus-visible::after{opacity:1}.ph-slot:focus-visible{outline:2px solid #2f6bff;outline-offset:2px}.ph-x{all:unset;position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.62);color:#fff;font:700 13px/20px sans-serif;text-align:center;cursor:pointer;opacity:0;transition:opacity .15s;z-index:3}.ph-slot:hover .ph-x,.ph-x:focus-visible{opacity:1}.capturing .ph-slot::after,.capturing .ph-x{display:none!important}
 @media (max-width:560px){.skin-pop .sk-row{grid-template-columns:repeat(auto-fill,minmax(84px,1fr))}}`;
     document.head.append(st);
   }
@@ -438,6 +439,29 @@ window.Core = (() => {
     h.dataset.skinTheme = sk.theme; h.dataset.skinFont = sk.font;
     if (sk.font !== 'base') loadSkinFonts();
     setTimeout(autoInk, 60);
+  }
+
+  /* ── 사진 칸 ──
+     툴 화면에서 [data-photo="이름"] 칸을 누르면 사진을 골라 넣는다.
+     사진은 이 브라우저에만 저장되고(공유 링크에는 안 실림, 링크가 너무 길어지므로) 이미지 저장에는 그대로 들어간다. */
+  const PKEY = k => 'photo:' + location.pathname + ':' + k;
+  function photo(k) { try { return localStorage.getItem(PKEY(k)) || ''; } catch (e) { return ''; } }
+  function setPhoto(k, v) { try { if (v) localStorage.setItem(PKEY(k), v); else localStorage.removeItem(PKEY(k)); return true; } catch (e) { toast('사진이 너무 커서 넣지 못했어요'); return false; } }
+  function shrink(file, max = 720) {
+    return new Promise((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const im = new Image(); im.onerror = rej; im.onload = () => {
+      const k = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', .86)); }; im.src = r.result; }; r.readAsDataURL(file); });
+  }
+  function mountPhotos(root, again) {
+    if (!root) return;
+    root.querySelectorAll('[data-photo]').forEach(el => {
+      const k = el.dataset.photo; el.classList.add('ph-slot'); el.setAttribute('role', 'button'); el.tabIndex = 0;
+      el.setAttribute('aria-label', photo(k) ? '사진 바꾸기' : '사진 넣기');
+      if (photo(k) && !el.querySelector('.ph-x')) { const x = document.createElement('button'); x.type = 'button'; x.className = 'ph-x'; x.setAttribute('aria-label', '사진 빼기'); x.textContent = '×'; x.onclick = e => { e.stopPropagation(); setPhoto(k, ''); again(); }; el.append(x); }
+      const pick = () => { const f = document.createElement('input'); f.type = 'file'; f.accept = 'image/*'; f.onchange = async () => { const file = f.files && f.files[0]; if (!file) return; try { if (setPhoto(k, await shrink(file))) { again(); toast('사진을 넣었어요'); } } catch (e) { toast('사진을 읽지 못했어요'); } }; f.click(); };
+      el.onclick = e => { if (e.target.closest('.ph-x')) return; pick(); };
+      el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } };
+    });
   }
 
   /* ── 폼 생성 ──
@@ -497,7 +521,7 @@ window.Core = (() => {
       const i = p.text.indexOf('\n');
       const withRef = p.text.includes(OOC_REF) || i < 0 ? p.text : p.text.slice(0, i + 1) + OOC_REF + '\n' + OOC_SAME + '\n' + p.text.slice(i + 1);
       return { ...p, text: squeezeOOC(withRef, namesIn(s)) }; });
-    const _render = cfg.render; cfg.render =(s, o) => { const v = _render(s, o); document.querySelector(cfg.posterSel || '#poster')?.classList.add('skin-root'); setTimeout(autoInk, 30); setTimeout(autoInk, 600); setTimeout(settleEntrances, 3200); return v; };
+    const _render = cfg.render; cfg.render =(s, o) => { const v = _render(s, o); document.querySelector(cfg.posterSel || '#poster')?.classList.add('skin-root'); mountPhotos($('#poster'), () => cfg.render(S, { animate: false })); setTimeout(autoInk, 30); setTimeout(autoInk, 600); setTimeout(settleEntrances, 3200); return v; };
     const ed = $('#editor'); if (ed && !ed.children.length) ed.innerHTML = editorHTML(cfg.what || '결과');
     /* PC 추천 안내(모든 툴) + Y2K 툴은 결과 화면을 창 틀 안에 넣는다 */
     const stage = document.querySelector('.stage'), poster = document.getElementById('poster');
@@ -668,5 +692,5 @@ window.Core = (() => {
     return { get state() { return S; } };
   }
 
-  return { $, $$, esc, br, pad, initial, rng, toMin, fmtMin, today, josa, clone, get, set, clamp, num, debounce, extractJSON, toast, copy, store, savePNG, buildForm, app };
+  return { photo, $, $$, esc, br, pad, initial, rng, toMin, fmtMin, today, josa, clone, get, set, clamp, num, debounce, extractJSON, toast, copy, store, savePNG, buildForm, app };
 })();

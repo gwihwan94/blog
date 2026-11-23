@@ -45,7 +45,9 @@ body[data-mode="edit"] { background: #eef0f2; color: #111; }
 /* 종목 머리 */
 .head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center; padding: 22px 24px; }
 .who { display: flex; align-items: center; gap: 14px; }
-.av { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; font-size: 22px; font-weight: 800; color: #fff; background: linear-gradient(140deg, #ff8a5c, #ff4d6d); flex: none; }
+.av { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; font-size: 22px; font-weight: 800; color: #fff; background: linear-gradient(140deg, #ff8a5c, #ff4d6d); flex: none; overflow: hidden; }
+.av img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.av.ph-slot::after { content: "사진"; }
 .who h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
 .who small { display: block; margin-top: 3px; font-size: 13px; color: var(--sub); }
 .who small b { color: #c9cfd9; font-weight: 600; }
@@ -321,10 +323,10 @@ function posterHTML(S, ser, still) {
   const tgt = price(S.opinion.target), room = last ? (tgt - last.c) / last.c * 100 : 0;
   const nm = S.title || `${S.a.name}의 호감도`;
   return `
-  <div class="card tick"><span class="live"><i></i>LIVE</span><div class="rail">${tk ? `<div class="tick-in">${tk}${tk}</div>` : ''}</div></div>
+  <div class="card tick"><span class="live"><i></i>LIVE</span><div class="rail">${tk ? `<div class="tick-in" style="animation-duration:${Math.max(90, news.reduce((n, x) => n + [...x.news].length, 0) * 0.55)}s">${tk}${tk}</div>` : ''}</div></div>
   <section class="card head">
     <div>
-      <div class="who"><span class="av">${esc([...String(S.a.name || 'N')][0])}</span><div><h1>${esc(nm)}</h1><small><b>${esc(S.code || '000000')}</b> · 연애 코스닥 · ${esc(S.a.name)} → ${esc(S.b.name)}</small></div></div>
+      <div class="who"><span class="av" data-photo="a">${Core.photo('a') ? `<img src="${Core.photo('a')}" alt="">` : esc([...String(S.a.name || 'N')][0])}</span><div><h1>${esc(nm)}</h1><small><b>${esc(S.code || '000000')}</b> · 연애 코스닥 · ${esc(S.a.name)} → ${esc(S.b.name)}</small></div></div>
       <div class="px-row"><span class="px ${cls(diff)}"><span id="px">${last ? won(last.c) : '-'}</span><em>원</em></span>
         <span class="pill ${cls(diff)}">${arrow(diff)} ${won(Math.abs(diff))} · ${pct(chg)}</span>${last && last.lim ? `<span class="lim ${last.lim}">${last.lim === 'up' ? '상한가' : '하한가'}</span>` : ''}</div>
     </div>
