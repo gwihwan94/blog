@@ -311,7 +311,7 @@ const PX = {
   imprint: ['................','......1111......','.....122221.....','.....122221.....','......1221......','......1221......','....11111111....','...1222222221...','...1111111111...','................','..111111111111..','..1..1....1..1..','..111111111111..','................','................','................'] };
 const icon = k => { let r = ''; PX[k].forEach((row, y) => [...row].forEach((c, x) => { if (c === '1') r += `<rect class="k" x="${x}" y="${y}" width="1" height="1" fill="#111"/>`; else if (c === '2') r += `<rect class="g" x="${x}" y="${y}" width="1" height="1" fill="#d6d6d6"/>`; })); return `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`; };
 const TOOLS = [
-  { k: 'pair', c: 'pair', href: 'pair/', nm: '페어틀', sub: '페어틀.psd', ds: '잡지 · 시트 · 대비 · 스크랩북 · 관계도', oc: 1, kd: '관계', tags: '페어틀 페어 프로필 자캐 틀' },
+  { k: 'pair', c: 'pair', href: 'pair/', nm: '페어틀', sub: '페어틀.psd', ds: '외관 · 정보 · 포스터 · 보고서 · 스크랩북', oc: 1, kd: '관계', tags: '페어틀 페어 프로필 자캐 틀' },
   { k: 'phone', c: 'phone', href: 'phone/', nm: 'NPC의 폰', sub: '폰.app', ds: '하루 재생 · 폰 둘러보기', oc: 4, kd: '폰', tags: '폰 핸드폰 메시지 카톡 일상' },
   { k: 'line', c: 'pair', href: 'line/', nm: '둘의 노선도', sub: '노선도.exe', ds: '관계 단계를 지하철 노선으로', oc: 1, kd: '관계', tags: '노선도 지하철 관계 단계 냅' },
   { k: 'post', c: 'pair', href: 'post/', nm: '마음 우체국', sub: '우체국.exe', ds: '보낸 마음 · 받은 마음', oc: 1, kd: '관계', tags: '편지 우체국 우편 사랑의 언어' },
