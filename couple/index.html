@@ -16,11 +16,12 @@ body[data-mode="view"] { background: linear-gradient(180deg, #fde8ee, #f4eefb) f
 .tabs2 button { all: unset; cursor: pointer; padding: 7px 14px; border-radius: 999px; background: #fff; border: 1px solid #f0d6de; font: 700 13px "Pretendard Variable", sans-serif; color: #7a5e69; }
 .tabs2 button[aria-pressed="true"] { background: var(--pk); color: #fff; border-color: var(--pk); }
 .tabs2 button:focus-visible { outline: 2px solid #2f6bff; outline-offset: 2px; }
-.wrapv { display: flex; flex-direction: column; align-items: center; }
+.wrapv { width: 100%; display: flex; flex-direction: column; align-items: center; }
 .poster { width: 400px; max-width: 100%; padding: 11px; background: #1b1b1d; border-radius: 56px; box-shadow: inset 0 0 0 2px #3a3a3c, 0 30px 60px -24px rgba(120,40,70,.45); font-family: "Pretendard Variable", Pretendard, sans-serif; color: var(--ink); }
 .scr { position: relative; min-height: 780px; border-radius: 46px; overflow: hidden; background: var(--bg); display: flex; flex-direction: column; }
 .sb { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 6px 30px 0 34px; font-weight: 600; font-size: 15.5px; position: relative; }
 .sb .isl { position: absolute; left: 50%; top: 11px; width: 120px; height: 34px; margin-left: -60px; background: #000; border-radius: 20px; }
+.sic { display: flex; gap: 6px; align-items: center; } .sic svg { height: 12px; width: auto; fill: currentColor; }
 .top { display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 8px; }
 .top b { font-size: 19px; font-weight: 800; color: var(--pk); letter-spacing: -.02em; }
 .top span { font-size: 12px; color: var(--sub); }
@@ -35,9 +36,13 @@ body[data-mode="view"] { background: linear-gradient(180deg, #fde8ee, #f4eefb) f
 .pair { display: flex; align-items: center; justify-content: center; gap: 14px; }
 .pf { width: 78px; height: 78px; border-radius: 50%; background: #fff; border: 3px solid #fff; box-shadow: 0 6px 14px -6px rgba(200,80,120,.5); overflow: hidden; display: grid; place-items: center; color: var(--pk); font-weight: 800; font-size: 26px; }
 .pf img { width: 100%; height: 100%; object-fit: cover; }
+.who { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; } .who b { font-size: 13.5px; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pair { align-items: flex-start; } .pair .heart { margin-top: 24px; }
 .heart { width: 30px; height: 30px; color: var(--pk); animation: beat 1.6s ease-in-out infinite; }
 @keyframes beat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.18); } 30% { transform: scale(1); } }
-.capturing .heart { animation: none; }
+.capturing .who { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; } .who b { font-size: 13.5px; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pair { align-items: flex-start; } .pair .heart { margin-top: 24px; }
+.heart { animation: none; }
 .names { display: flex; justify-content: center; gap: 70px; margin-top: 8px; font-size: 13.5px; font-weight: 700; }
 .dday { margin-top: 12px; font-size: 44px; font-weight: 900; letter-spacing: -.03em; color: var(--pk); line-height: 1; }
 .since { margin-top: 6px; font-size: 12.5px; color: var(--sub); }
@@ -57,6 +62,7 @@ body[data-mode="view"] { background: linear-gradient(180deg, #fde8ee, #f4eefb) f
 .ans .mini { width: 28px; height: 28px; border-radius: 50%; background: var(--pkbg); color: var(--pk); display: grid; place-items: center; font-size: 12px; font-weight: 800; flex: none; overflow: hidden; }
 .ans .mini img { width: 100%; height: 100%; object-fit: cover; }
 .ans p { margin: 0; flex: 1; padding: 9px 12px; background: #fbf5f7; border-radius: 4px 14px 14px 14px; font-size: 13.5px; line-height: 1.5; }
+.ans.pc p { background: var(--pkbg); }
 .ans.lock p { background: repeating-linear-gradient(0deg, #f6eef1, #f6eef1); color: var(--sub); display: flex; align-items: center; gap: 6px; font-size: 12.5px; }
 /* 위치 */
 .map { position: relative; height: 300px; border-radius: 20px; overflow: hidden; background: #eef3ea; }
@@ -88,7 +94,10 @@ body[data-mode="view"] { background: linear-gradient(180deg, #fde8ee, #f4eefb) f
 .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .ph { aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: linear-gradient(160deg, #ffd6e0, #e8dcff); display: flex; align-items: flex-end; padding: 6px; color: #fff; font-size: 10.5px; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,.35); position: relative; }
 .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.ph span { position: relative; }
+.ph span { position: relative; z-index: 1; }
+.ph::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, rgba(60,20,40,.55)); }
+.ph.add { background: #fff; border: 2px dashed var(--pk2); color: var(--pk); text-shadow: none; justify-content: center; align-items: center; font-size: 22px; }
+.ph.add::after { display: none; }
 /* 아래 탭 */
 .tb { display: grid; grid-template-columns: repeat(5, 1fr); padding: 8px 6px 6px; background: #fff; border-top: 1px solid var(--line); }
 .tb span { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10.5px; font-weight: 700; color: #bba9b1; }
@@ -205,8 +214,7 @@ function screen(S, an) {
   const c = (i, h, cls = 'card') => `<section class="${cls}${an ? ' in' : ''}"${an ? ` style="animation-delay:${i * 90}ms"` : ''}>${h}</section>`;
   if (S.tab === 'home') {
     const dp = dplus(S.since), by = S[S.sayFrom];
-    return c(0, `<div class="pair"><span class="pf" data-photo="a">${pic('a', S)}</span>${HEART}<span class="pf" data-photo="b">${pic('b', S)}</span></div>
-      <div class="names"><span>${esc(S.a.name)}</span><span>${esc(S.b.name)}</span></div>
+    return c(0, `<div class="pair"><span class="who"><span class="pf" data-photo="a">${pic('a', S)}</span><b>${esc(S.a.name)}</b></span>${HEART}<span class="who"><span class="pf" data-photo="b">${pic('b', S)}</span><b>${esc(S.b.name)}</b></span></div>
       <div class="dday">${dp != null ? `D+${dp.toLocaleString('ko-KR')}` : 'D+?'}</div><div class="since">${esc(S.since || '시작한 날을 넣어 주세요')}부터 함께</div>${S.rel ? `<span class="rel">${esc(S.rel)}</span>` : ''}`, 'card hero')
       + c(1, `<h3>오늘 기분</h3><div class="moods">${['a', 'b'].map(k => `<div class="mood"><b>${esc(S[k].mood || '🙂')}</b><span><small>${esc(S[k].nick || S[k].name)}</small>${esc(S[k].moodText || '')}</span></div>`).join('')}</div>`)
       + (S.say ? c(2, `<h3>오늘의 한마디 <em>${esc(by.name)}</em></h3><div class="say">${esc(S.say)}</div>`) : '')
@@ -216,7 +224,7 @@ function screen(S, an) {
     const qs = S.qs.filter(q => q.q);
     return qs.map((q, i) => c(i, `<div class="q"><div class="qt"><small>Q${qs.length - i} · ${esc(q.date || '')}</small>${esc(q.q)}</div>
       <div class="ans"><span class="mini" data-photo="a">${pic('a', S)}</span><p>${esc(q.a || '아직 답하지 않았어요')}</p></div>
-      ${q.b ? `<div class="ans"><span class="mini" data-photo="b">${pic('b', S)}</span><p>${esc(q.b)}</p></div>` : `<div class="ans lock"><span class="mini">${pic('b', S)}</span><p>🔒 ${esc(S.b.name)}님이 답하면 볼 수 있어요</p></div>`}</div>`)).join('') || c(0, '<p class="story">아직 질문이 없어요.</p>');
+      ${q.b ? `<div class="ans pc"><span class="mini" data-photo="b">${pic('b', S)}</span><p>${esc(q.b)}</p></div>` : `<div class="ans lock"><span class="mini">${pic('b', S)}</span><p>🔒 ${esc(S.b.name)}님이 답하면 볼 수 있어요</p></div>`}</div>`)).join('') || c(0, '<p class="story">아직 질문이 없어요.</p>');
   }
   if (S.tab === 'loc') {
     return c(0, `<div class="map"><svg viewBox="0 0 340 300" aria-hidden="true"><rect width="340" height="300" fill="#eef3ea"/><path d="M0 210 C80 190 150 240 340 200 V300 H0z" fill="#d5e8f5"/><g stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round"><path d="M-10 90 H350"/><path d="M60 -10 V310"/><path d="M230 -10 V310"/><path d="M-10 160 C100 150 200 170 350 140"/></g><g fill="#dfe9d6"><rect x="80" y="20" width="130" height="55" rx="10"/><rect x="250" y="20" width="80" height="55" rx="10"/><rect x="80" y="105" width="130" height="40" rx="10"/></g><path d="M100 120 Q170 60 260 70" stroke="#ff6f91" stroke-width="2.5" stroke-dasharray="4 6" fill="none"/></svg>
@@ -227,15 +235,15 @@ function screen(S, an) {
       + c(2, `<div class="share"><span>위치 공유</span><span class="tg${S.share ? '' : ' off'}"></span></div>`);
   }
   if (S.tab === 'anniv') {
-    const an = S.anniv.filter(a => a.title).map(a => { const d = ddiff(a.date); return { ...a, d }; });
+    const an = S.anniv.filter(a => a.title).map(a => { let date = a.date; const m = !date && String(a.title).match(/(\d+)\s*일/); const st = pd(S.since); if (m && st) { const x = new Date(st); x.setDate(x.getDate() + +m[1] - 1); date = `${x.getFullYear()}.${String(x.getMonth() + 1).padStart(2, '0')}.${String(x.getDate()).padStart(2, '0')}`; } return { ...a, date, d: ddiff(date) }; });
     return c(0, `<h3>기념일</h3>${an.map(a => `<div class="an"><span class="dd${a.d != null && a.d < 0 ? ' past' : ''}">${a.d == null ? 'D-?' : a.d === 0 ? 'D-DAY' : a.d > 0 ? `D-${a.d}` : `D+${-a.d + 1}`}</span><div><b>${esc(a.title)}</b><small>${esc(a.date || '날짜 미정')}</small></div></div>`).join('') || '<p class="story">기념일이 없어요.</p>'}`)
       + c(1, `<h3>버킷리스트 <em>${S.bucket.filter(b => b.text && b.done).length}/${S.bucket.filter(b => b.text).length}</em></h3>${S.bucket.filter(b => b.text).map(b => `<div class="bk${b.done ? ' done' : ''}"><i>${b.done ? '✓' : ''}</i><span>${esc(b.text)}</span></div>`).join('')}`);
   }
-  const al = S.album.map((a, i) => ({ ...a, i })).filter(a => a.cap);
-  return c(0, `<h3>앨범 <em>${al.length}장</em></h3><div class="grid3">${al.map(a => { const p = Core.photo('al' + a.i); return `<div class="ph" data-photo="al${a.i}">${p ? `<img src="${p}" alt="">` : ''}<span>${esc(a.cap)}<br>${esc(a.date || '')}</span></div>`; }).join('')}</div>`);
+  const al = S.album.map((a, i) => ({ ...a, i, p: Core.photo('al' + a.i) })).filter(a => a.cap || a.p), empty = S.album.map((a, i) => i).filter(i => !S.album[i].cap && !Core.photo('al' + i));
+  return c(0, `<h3>앨범 <em>${al.length}장</em></h3><div class="grid3">${al.map(a => `<div class="ph" data-photo="al${a.i}">${a.p ? `<img src="${a.p}" alt="">` : ''}<span>${esc(a.cap)}<br>${esc(a.date || '')}</span></div>`).join('')}${empty.length ? `<div class="ph add" data-photo="al${empty[0]}" aria-label="사진 추가">＋</div>` : ''}</div>`);
 }
 function posterHTML(S, an) {
-  return `<div class="scr"><div class="sb"><span>9:41</span><span class="isl"></span><span>●●●</span></div>
+  return `<div class="scr"><div class="sb"><span>9:41</span><span class="isl"></span><span class="sic"><svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="currentColor"/><rect x="2" y="2" width="15" height="8" rx="2"/><rect x="23.5" y="4" width="2" height="4" rx="1"/></svg></span></div>
     <div class="top"><b>우리 사이</b><span>${esc(S.a.nick || S.a.name)} ♥ ${esc(S.b.nick || S.b.name)}</span></div>
     <div class="body">${screen(S, an)}</div>
     <nav class="tb">${Object.entries(TABS).map(([k, v]) => `<span class="${S.tab === k ? 'on' : ''}">${ICON[k]}${v}</span>`).join('')}</nav><div class="hb"><i></i></div></div>`;

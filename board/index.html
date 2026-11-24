@@ -216,9 +216,16 @@ function posterHTML(S, still) {
   let labels = '';
   let strs = cs.map((o, k) => `<path class="str" d="${sag(pinOf(o.i), [cx, cy - 152], 26)}" style="${still ? '' : `animation-delay:${900 + k * 120}ms`}"/>`).join('');
   S.links.filter(l => l.a && l.b && pos[l.a - 1] != null && pos[l.b - 1] != null && l.a !== l.b).forEach((l, k) => {
-    const A = pinOf(l.a - 1), B = pinOf(l.b - 1), mx = (A[0] + B[0]) / 2, my = (A[1] + B[1]) / 2 + 40;
+    const A = pinOf(l.a - 1), B = pinOf(l.b - 1), C = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2 + 80], t = .24, mx = (1 - t) * (1 - t) * A[0] + 2 * (1 - t) * t * C[0] + t * t * B[0], my = (1 - t) * (1 - t) * A[1] + 2 * (1 - t) * t * C[1] + t * t * B[1] + 18; /* 이름표는 실의 한쪽 끝 가까이: 가운데 용의자 사진을 가리지 않게 */
     strs += `<path class="str" d="${sag(A, B, 80)}" style="stroke-dasharray:6 5;${still ? '' : `animation-delay:${1500 + k * 150}ms`}"/>`;
-    if (l.why) { const w = [...l.why].length * 11 + 14; labels += `<g><rect class="lkb" x="${mx - w / 2}" y="${my - 10}" width="${w}" height="20" rx="3"/><text class="lk" x="${mx}" y="${my + 4}" text-anchor="middle">${esc(l.why)}</text></g>`; }
+    if (l.why) { const w = [...l.why].length * 11 + 14;
+      /* 카드·용의자 사진과 겹치지 않는 자리를 실 위에서 찾는다 */
+      const rects = [...Object.values(pos).map(k => [SLOT[k][0] - 6, SLOT[k][1] - 8, 190, 190]), [cx - 106, cy - 160, 212, 320]];
+      const hit = (x, y) => rects.some(([rx, ry, rw, rh]) => x + w / 2 > rx && x - w / 2 < rx + rw && y + 10 > ry && y - 10 < ry + rh);
+      let px = mx, py = my;
+      for (const tt of [.5, .42, .58, .34, .66, .26, .74]) { const qx = (1 - tt) * (1 - tt) * A[0] + 2 * (1 - tt) * tt * C[0] + tt * tt * B[0], qy = (1 - tt) * (1 - tt) * A[1] + 2 * (1 - tt) * tt * C[1] + tt * tt * B[1]; if (!hit(qx, qy)) { px = qx; py = qy; break; } }
+      const mx2 = px, my2 = py;
+      labels += `<g><rect class="lkb" x="${mx2 - w / 2}" y="${my2 - 10}" width="${w}" height="20" rx="3"/><text class="lk" x="${mx2}" y="${my2 + 4}" text-anchor="middle">${esc(l.why)}</text></g>`; }
   });
   const pa = Core.photo('a'), pb = Core.photo('b'), v = S.verdict, solved = v.conf >= 80;
   return `
