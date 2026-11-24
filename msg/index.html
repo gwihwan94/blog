@@ -293,10 +293,10 @@ function inputBar(app) {
   if (app === 'line') return `<div class="ip">${IC.plus}${IC.cam}${IC.img}<span class="fld">Aa</span>${IC.smile}${IC.mic}</div>`;
   return `<div class="ip">${IC.plus}<span class="fld"></span>${IC.smile}<span style="font-weight:700;font-size:19px">#</span></div>`;
 }
-function bubble(app, m) {
+function bubble(app, m, idx) {
   if (m.kind === 'emoji') return `<div class="bb emo">${esc(m.text || '🙂')}</div>`;
   if (m.kind === 'deleted') return `<div class="bb del">${app === 'kakao' ? '삭제된 메시지입니다.' : app === 'insta' ? '메시지를 보냈다가 취소했습니다' : app === 'imsg' ? '메시지를 취소함' : '삭제된 메시지입니다.'}</div>`;
-  if (m.kind === 'photo') return `<div class="bb ph"><div class="pi">${esc(m.text || '사진')}</div></div>`;
+  if (m.kind === 'photo') { const p = Core.photo('m' + idx); return `<div class="bb ph"><div class="pi" data-photo="m${idx}">${p ? `<img src="${p}" alt="${esc(m.text || '사진')}">` : esc(m.text || '사진')}</div></div>`; }
   if (m.kind === 'call' || m.kind === 'missed') {
     const label = m.kind === 'missed' ? (app === 'kakao' ? '보이스톡 부재중' : '부재중 전화') : (app === 'kakao' ? '보이스톡' : app === 'imsg' ? 'FaceTime 오디오' : '음성 통화');
     return `<div class="bb call"><span class="ci">${IC.phoneF}</span><span><b>${label}</b><small>${m.kind === 'missed' ? '받지 않음' : esc(m.text || '')}</small></span></div>`;
@@ -343,7 +343,7 @@ function posterHTML(S, animate) {
     const av = mine ? '' : `<span class="av${avOn ? '' : ' blank'}" ${avOn ? 'data-photo="other"' : ''}>${avOn ? (pic ? `<img src="${pic}" alt="">` : esc([...String(other.name || '?')][0])) : ''}</span>`;
     const nm = !mine && !cont && (app === 'kakao' || app === 'line') ? `<div class="nm">${esc(other.name)}</div>` : '';
     const meta = `<span class="meta">${unread}${lineRead}${showTime ? `<span>${ko(m.t)}</span>` : ''}</span>`;
-    h += `<div class="row${mine ? ' me' : ''}${cont ? ' cont' : ' gap'}${lastOfGroup ? ' last' : ''}${animate ? ' in' : ''}"${animate ? ` style="animation-delay:${Math.min(k++ * 70, 2400)}ms"` : ''}>${av}<div class="col">${nm}<div class="bw">${bubble(app, m)}${meta}</div></div></div>`;
+    h += `<div class="row${mine ? ' me' : ''}${cont ? ' cont' : ' gap'}${lastOfGroup ? ' last' : ''}${animate ? ' in' : ''}"${animate ? ` style="animation-delay:${Math.min(k++ * 70, 2400)}ms"` : ''}>${av}<div class="col">${nm}<div class="bw">${bubble(app, m, S.msgs.indexOf(m))}${meta}</div></div></div>`;
     if (i === lastMeIdx && (app === 'imsg' || app === 'insta') ) h += `<div class="rd">${S.read ? (app === 'imsg' ? `읽음 ${ko(ms[ms.length - 1].t)}` : '읽음') : (app === 'imsg' ? '전송됨' : '')}</div>`;
     prev = m;
   });
