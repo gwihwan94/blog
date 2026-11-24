@@ -129,6 +129,8 @@ h2.sh .ht { cursor: pointer; }
 .sec.fold h2.sh { opacity: .6; }
 h2.sh em { cursor: pointer; }
 .intro { margin-bottom: 14px; }
+.mh { font-size: 16px; margin: 14px 0 6px; }
+.sec hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
 .intro p { margin: 0 0 10px; }
 .redir { margin: 0 0 8px; font-size: 13px; color: var(--sub); }
 .navw { padding: 0 26px; }
@@ -317,12 +319,15 @@ function md(t, fns) {
   const inline = s => esc(s)
     .replace(/\(\((.+?)\)\)/g, fn).replace(/\[\*\s?(.+?)\]/g, fn)
     .replace(/(?:'|&#39;|&#x27;){3}(.+?)(?:'|&#39;|&#x27;){3}/g, '<b>$1</b>')
+    .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
     .replace(/~~(.+?)~~/g, '<del>$1</del>')
     .replace(/\[\[(.+?)\]\]/g, link);
   const lines = String(t || '').split(/\n|\\n/); let h = '', ul = false;
   lines.forEach(l => {
-    if (/^\s*\*\s+/.test(l)) { if (!ul) { h += '<ul>'; ul = true; } h += `<li>${inline(l.replace(/^\s*\*\s+/, ''))}</li>`; return; }
+    if (/^\s*[*\-•·]\s+/.test(l)) { if (!ul) { h += '<ul>'; ul = true; } h += `<li>${inline(l.replace(/^\s*[*\-•·]\s+/, ''))}</li>`; return; }
     if (ul) { h += '</ul>'; ul = false; }
+    const hl = headLine(l); if (hl) { h += `<h3 class="mh">${inline(hl.h)}</h3>`; return; }
+    if (/^\s*(-{3,}|\*{3,})\s*$/.test(l)) { h += '<hr>'; return; }
     if (/^\s*>\s*/.test(l)) { h += `<div class="dlg">${inline(l.replace(/^\s*>\s*/, ''))}</div>`; return; }
     if (l.trim()) h += `<p>${inline(l)}</p>`;
   });
@@ -332,11 +337,21 @@ function md(t, fns) {
 /* 각주 글: 굵게·취소선·링크까지 */
 const fnText = f => md(f, []).replace(/<\/?p>/g, '');
 /* 연결 문서 본문(== 문단 ==)을 문단 배열로 */
+/* 문단 제목 줄: 나무위키 == 제목 == / === 하위 === 와 마크다운 ## 제목 / ### 하위 둘 다 */
+function headLine(l) {
+  let m = String(l).match(/^\s*(={2,5})\s*(.+?)\s*={2,5}\s*$/); if (m) return { sub: m[1].length > 2, h: m[2] };
+  m = String(l).match(/^\s*(#{1,6})\s+(.+?)\s*#*\s*$/); if (m) return { sub: m[1].length > 2, h: m[2] };
+  return null;
+}
+/* 문단 제목 칸에 ###속마음, ## 과거, == 과거 == 처럼 써도 알아듣는다 */
+const normHead = h => { const t = String(h || ''); const x = headLine(t) || (/^\s*#{3,}/.test(t) ? { sub: true, h: t.replace(/^\s*#{3,}\s*/, '') } : /^\s*#{1,2}(?!#)/.test(t) ? { sub: false, h: t.replace(/^\s*#{1,2}\s*/, '') } : null); return x ? (x.sub ? '### ' : '') + x.h.replace(/^\*\*(.+)\*\*$/, '$1') : t; };
+/* 문단 본문 안에 제목 줄이 섞여 있으면 거기서 문단을 나눈다 */
+function expandSecs(secs) { const out = []; secs.forEach(x => { const b = parseBody(x.text); out.push({ h: normHead(x.h), text: b.intro }); b.secs.forEach(y => out.push({ h: normHead(y.h), text: y.text })); }); return out; }
 function parseBody(body) {
   const out = []; let intro = [], cur = null;
   String(body || '').split(/\n|\\n/).forEach(l => {
-    const m = l.match(/^\s*(={2,4})\s*(.+?)\s*={2,4}\s*$/);
-    if (m) { cur = { h: (m[1].length > 2 ? '### ' : '') + m[2], text: '' }; out.push(cur); return; }
+    const m = headLine(l);
+    if (m) { cur = { h: (m.sub ? '### ' : '') + m.h, text: '' }; out.push(cur); return; }
     if (cur) cur.text += (cur.text ? '\n' : '') + l; else intro.push(l);
   });
   return { intro: intro.join('\n').trim(), secs: out };
@@ -344,10 +359,10 @@ function parseBody(body) {
 /* 지금 보는 문서 */
 const NAV = { page: '', stack: [] };
 function docOf(S, i) {
-  if (i < 0) return { main: true, title: S.title, alias: S.alias, cats: S.cats, parent: S.parent, notice: S.notice, intro: '', secs: S.secs.filter(x => x.h), info: S.info.filter(x => x.k), photo: 'a', related: S.related };
+  if (i < 0) return { main: true, title: S.title, alias: S.alias, cats: S.cats, parent: S.parent, notice: S.notice, intro: '', secs: expandSecs(S.secs.filter(x => x.h)), info: S.info.filter(x => x.k), photo: 'a', related: S.related };
   const d = S.docs[i]; const b = parseBody(d.body);
   const info = String(d.info || '').split(/\n|\\n/).map(l => { const j = l.search(/[:：]/); return j < 0 ? null : { k: l.slice(0, j).trim(), v: l.slice(j + 1).trim() }; }).filter(x => x && x.k);
-  return { title: d.title, alias: d.alias, cats: d.cats, parent: d.parent, notice: '', intro: b.intro, secs: b.secs, info, photo: 'd' + i, related: '' };
+  return { title: d.title, alias: d.alias, cats: d.cats, parent: d.parent, notice: '', intro: b.intro, secs: expandSecs(b.secs), info, photo: 'd' + i, related: '' };
 }
 const CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
 const initial = s => { const c = String(s).charCodeAt(0) - 0xAC00; if (c >= 0 && c < 11172) { const x = CHO[Math.floor(c / 588)]; return { 'ㄲ': 'ㄱ', 'ㄸ': 'ㄷ', 'ㅃ': 'ㅂ', 'ㅆ': 'ㅅ', 'ㅉ': 'ㅈ' }[x] || x; } return String(s).charAt(0).toUpperCase(); };
