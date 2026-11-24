@@ -461,6 +461,10 @@ window.Core = (() => {
       const pick = () => { const f = document.createElement('input'); f.type = 'file'; f.accept = 'image/*'; f.onchange = async () => { const file = f.files && f.files[0]; if (!file) return; try { if (setPhoto(k, await shrink(file))) { again(); toast('사진을 넣었어요'); } } catch (e) { toast('사진을 읽지 못했어요'); } }; f.click(); };
       el.onclick = e => { if (e.target.closest('.ph-x')) return; pick(); };
       el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } };
+      /* 파일을 칸에 끌어다 놓아도 들어간다 */
+      el.ondragover = e => { e.preventDefault(); el.style.outline = '2px dashed #2f6bff'; };
+      el.ondragleave = () => { el.style.outline = ''; };
+      el.ondrop = async e => { e.preventDefault(); el.style.outline = ''; const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (!file || !/^image\//.test(file.type)) return; try { if (setPhoto(k, await shrink(file))) { again(); toast('사진을 넣었어요'); } } catch (err) { toast('사진을 읽지 못했어요'); } };
     });
   }
 

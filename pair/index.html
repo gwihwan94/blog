@@ -3,197 +3,173 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>페어틀</title>
+<title>페어틀 편집기</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%3E%3Crect%20width%3D%2716%27%20height%3D%2716%27%20rx%3D%273%27%20fill%3D%27%23111%27%2F%3E%3Crect%20x%3D%273%27%20y%3D%273%27%20width%3D%274%27%20height%3D%2710%27%20rx%3D%271%27%20fill%3D%27%23e8e2d4%27%2F%3E%3Crect%20x%3D%279%27%20y%3D%273%27%20width%3D%274%27%20height%3D%2710%27%20rx%3D%271%27%20fill%3D%27%233b5bdb%27%2F%3E%3C%2Fsvg%3E">
-<meta name="description" content="NPC와 PC의 페어틀을 여러 형태로 만들어 주는 메이커">
+<meta name="description" content="프로그램 없이 웹에서 바로 만드는 페어틀 편집기. 블록을 쌓고, 글자를 바로 고치고, 그림을 끌어 넣어 PNG로 저장">
 <link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@300;500;800&family=Noto+Serif+KR:wght@500;800&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;800&family=Noto+Serif+KR:wght@500;800&family=Nanum+Pen+Script&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
 <link rel="stylesheet" href="../assets/base.css">
 <style>
-/* 페어틀: 같은 내용으로 다섯 가지 틀. 캐릭터 그림은 칸을 눌러 넣는다. 움직임 없음.
-   외관틀(가운데 전신 + 양옆 정보) · 정보틀(2×2 그림 + 색 견본 + 체크) · 포스터(큰 글자 + 기울인 사진) · 보고서(창 화면) · 스크랩북 */
-:root { --a: #8c1c13; --b: #24427a; --ink: #18181a; --sub: #8a8a90; --ln: #d9d9de; }
-body[data-mode="view"] { background: #e7e6e3; }
-.tpls { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 12px; }
-.tpls button { all: unset; cursor: pointer; padding: 8px 15px; border-radius: 999px; background: #fff; border: 1px solid #d3d1cc; font: 700 13px "Pretendard Variable", sans-serif; color: #333; }
-.tpls button[aria-pressed="true"] { background: #18181a; color: #fff; border-color: #18181a; }
-.tpls button:focus-visible { outline: 2px solid #2f6bff; outline-offset: 2px; }
-.viewer { width: 100%; display: flex; flex-direction: column; align-items: center; }
-#wrap { width: 100%; display: flex; justify-content: center; }
-.poster { width: 1000px; flex: none; position: relative; overflow: hidden; font: 400 13px/1.5 "Pretendard Variable", Pretendard, sans-serif; color: var(--ink); box-shadow: 0 20px 50px -24px rgba(0,0,0,.4); }
-.poster.capturing { box-shadow: none; }
+/* 페어틀 편집기: 왼쪽(시작 양식 · 블록 · 스티커) · 가운데(용지) · 오른쪽(디자인 · 고른 블록). 용지 위에서 바로 고친다. 움직임 없음 */
+:root { --ui: #f3f3f5; --ui2: #ffffff; --uil: #dcdce2; --uit: #222226; --uis: #74747c; --acc: #3b5bdb; }
+body[data-mode="view"] { background: var(--ui); }
+body[data-mode="view"] .stage { max-width: none; padding: 0; }
+body[data-mode="view"] .pc-note { display: none; }
+.actions[hidden] { display: none !important; }
+.app { display: grid; grid-template-columns: 250px minmax(0, 1fr) 270px; grid-template-rows: auto 1fr; height: calc(100vh - 50px); height: calc(100dvh - 50px); font: 500 13px "Pretendard Variable", sans-serif; color: var(--uit); }
+.top { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: var(--ui2); border-bottom: 1px solid var(--uil); flex-wrap: wrap; }
+.top .nm { font-weight: 800; margin-right: 6px; }
+.top .sp { flex: 1; }
+.ib { all: unset; box-sizing: border-box; cursor: pointer; height: 32px; padding: 0 11px; border-radius: 8px; border: 1px solid var(--uil); background: #fff; display: inline-flex; align-items: center; gap: 6px; font: 700 12.5px "Pretendard Variable", sans-serif; color: var(--uit); }
+.ib:hover { border-color: #b9b9c2; }
+.ib:disabled { opacity: .4; cursor: default; }
+.ib.pri { background: var(--acc); border-color: var(--acc); color: #fff; }
+.ib:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+.zoomv { min-width: 44px; text-align: center; font-weight: 700; color: var(--uis); }
+.side { background: var(--ui2); border-right: 1px solid var(--uil); overflow: auto; }
+.side.r { border-right: 0; border-left: 1px solid var(--uil); }
+.stabs { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--uil); position: sticky; top: 0; background: var(--ui2); z-index: 2; }
+.stabs button { all: unset; cursor: pointer; text-align: center; padding: 10px 0; font-weight: 700; color: var(--uis); border-bottom: 2px solid transparent; }
+.stabs button[aria-pressed="true"] { color: var(--uit); border-bottom-color: var(--uit); }
+.pane { padding: 12px; display: grid; gap: 8px; }
+.pane h5 { margin: 6px 0 0; font-size: 11.5px; color: var(--uis); letter-spacing: .04em; }
+.tile { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: center; padding: 9px 10px; border: 1px solid var(--uil); border-radius: 10px; background: #fff; }
+.tile:hover { border-color: var(--acc); }
+.tile i { width: 34px; height: 34px; border-radius: 8px; background: var(--ui); display: grid; place-items: center; font-style: normal; font-size: 15px; }
+.tile b { display: block; font-size: 13px; } .tile small { color: var(--uis); font-size: 11.5px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.grid2 .tile { grid-template-columns: 1fr; text-align: center; justify-items: center; gap: 4px; padding: 10px 6px; }
+.fld { display: grid; gap: 5px; }
+.fld label { font-size: 12px; color: var(--uis); font-weight: 600; }
+.fld input[type=range] { width: 100%; }
+.cols { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.cols input[type=color] { width: 34px; height: 28px; border: 1px solid var(--uil); border-radius: 6px; padding: 0; background: #fff; }
+.seg { display: inline-flex; border: 1px solid var(--uil); border-radius: 8px; overflow: hidden; flex-wrap: wrap; }
+.seg button { all: unset; cursor: pointer; padding: 5px 10px; font-weight: 700; font-size: 12px; color: var(--uis); }
+.seg button[aria-pressed="true"] { background: var(--uit); color: #fff; }
+.note { font-size: 11.5px; color: var(--uis); line-height: 1.55; margin: 0; }
+.canvas { overflow: auto; padding: 30px 24px 120px; display: flex; justify-content: safe center; align-items: flex-start; background: #e9e9ed; min-width: 0; }
 #zoomer:has(.capturing) { zoom: 1 !important; }
-/* 그림 칸 */
-.pic { position: relative; overflow: hidden; background: #f1f1f3; display: grid; place-items: end center; }
-.pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
-.pic svg.sil { width: 56%; max-width: 200px; height: auto; }
-.pic svg.sil.full { width: auto; height: 92%; max-width: none; }
-.pic .ph-t { position: absolute; top: 10px; left: 0; right: 0; text-align: center; font-size: 11px; color: #a3a3aa; letter-spacing: .04em; }
-.pic img ~ svg, .pic img ~ .ph-t { display: none; }
-.chk { display: inline-block; width: 11px; height: 11px; border: 1.3px solid currentColor; border-radius: 2px; flex: none; position: relative; top: 1px; }
-.dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; flex: none; }
 
-/* ── 1. 외관틀 ── */
-.t-look { background: #e9e9ec; padding: 18px; display: grid; grid-template-columns: 236px minmax(0, 1fr) 236px; gap: 14px; }
-.t-look .card { background: #fff; border: 1.5px solid #2a2a2e; border-radius: 16px; overflow: hidden; }
-.t-look .col { display: grid; gap: 12px; align-content: start; }
-.t-look .hd { display: flex; align-items: center; gap: 6px; padding: 12px 14px 4px; }
-.t-look .hd b { margin-left: auto; font: 400 44px/0.8 "Archivo Black", sans-serif; }
-.t-look .bust { height: 230px; margin: 4px 12px 12px; border-radius: 10px; }
-.t-look ul { list-style: none; margin: 0; padding: 12px 14px; display: grid; gap: 6px; font-size: 12.5px; }
-.t-look li { display: flex; gap: 7px; align-items: flex-start; }
-.t-look .scn { height: 150px; margin: 10px 10px 0; border-radius: 10px; }
-.t-look .scn + p { margin: 6px 12px 10px; text-align: center; font-size: 11.5px; color: var(--sub); }
-.t-look .mid { position: relative; display: flex; flex-direction: column; }
-.t-look .mid .full { flex: 1; min-height: 640px; background: #fff; }
-.t-look .mid .top { position: absolute; top: 10px; left: 0; right: 0; text-align: center; font-size: 10.5px; color: var(--sub); letter-spacing: .12em; z-index: 2; }
-.t-look .tag { position: absolute; z-index: 2; background: #1b1b1e; color: #fff; border-radius: 10px; padding: 6px 12px; text-align: center; font-size: 12px; font-weight: 700; line-height: 1.25; }
-.t-look .tag small { display: block; font-size: 10px; font-weight: 500; opacity: .75; }
-.t-look .tag::after { content: ""; position: absolute; bottom: -6px; left: 50%; margin-left: -6px; border: 6px solid transparent; border-bottom: 0; border-top-color: #1b1b1e; }
-.t-look .ta { left: 22px; top: 58px; } .t-look .tb { right: 22px; top: 52px; }
-.t-look .pills { display: grid; gap: 6px; padding: 12px; border-top: 1.5px solid #2a2a2e; }
-.t-look .pl { display: grid; grid-template-columns: 1fr 34px 1fr; gap: 6px; align-items: center; }
-.t-look .pl span { border: 1px solid #c9c9cf; border-radius: 999px; padding: 4px 10px; font-size: 12px; text-align: center; min-height: 26px; }
-.t-look .pl em { font-style: normal; text-align: center; font-size: 11px; color: var(--sub); font-weight: 700; }
-
-/* ── 2. 정보틀 ── */
-.t-info { background: #fff; padding: 30px 26px 26px; }
-.t-info .h { text-align: center; }
-.t-info .h small { display: block; font-size: 10.5px; color: var(--sub); letter-spacing: .2em; }
-.t-info .h h1 { margin: 2px 0 10px; font: 800 26px "Archivo", "Pretendard Variable", sans-serif; letter-spacing: .5em; padding-left: .5em; text-transform: uppercase; }
-.t-info .line { display: flex; align-items: center; gap: 10px; width: 440px; margin: 0 auto 22px; }
-.t-info .line i { flex: 1; height: 1px; background: #bbb; }
-.t-info .line span.p { padding: 3px 18px; border: 1px solid #c9c9cf; border-radius: 999px; font-size: 11px; color: #555; white-space: nowrap; }
-.t-info .grid { display: grid; grid-template-columns: 170px 1fr 1fr 170px; gap: 12px; align-items: start; }
-.t-info .pic { border: 1px solid #d5d5da; border-radius: 16px; }
-.t-info .p1 { height: 250px; } .t-info .p2 { height: 380px; margin-top: 12px; }
-.t-info .side { display: grid; gap: 7px; font-size: 11.5px; }
-.t-info .sw { display: grid; grid-template-columns: 1fr 50px; gap: 6px; align-items: center; }
-.t-info .sw span { border: 1px solid #d5d5da; border-radius: 6px; padding: 3px 8px; text-align: center; font-size: 10.5px; letter-spacing: .1em; }
-.t-info .sw i { height: 22px; border-radius: 6px; border: 1px solid rgba(0,0,0,.1); }
-.t-info .ck { display: flex; justify-content: flex-end; align-items: center; gap: 7px; color: #444; }
-.t-info .R .ck { flex-direction: row-reverse; justify-content: flex-end; }
-.t-info .R .sw { grid-template-columns: 50px 1fr; }
-.t-info .R .sw i { order: -1; }
-.t-info .i { border: 1px solid #d5d5da; border-radius: 10px; padding: 8px 10px; display: grid; grid-template-columns: 14px 1fr; gap: 8px; align-items: center; font-size: 11px; color: #555; margin: 8px 0; }
-.t-info .i b { font: 400 22px/1 "Noto Serif KR", serif; }
-.t-info .gap { height: 6px; }
-.t-info .nmc { margin-top: 8px; border: 1px solid #d5d5da; border-radius: 12px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: flex-end; }
-.t-info .nmc b { font-size: 15px; } .t-info .nmc b small { display: block; font-size: 10px; color: var(--sub); font-weight: 500; letter-spacing: .08em; }
-.t-info .nmc span { font-size: 10.5px; color: var(--sub); }
-.t-info .rows { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 520px; margin: 16px auto 0; }
-.t-info .rw { display: grid; gap: 6px; }
-.t-info .pr { display: grid; grid-template-columns: 60px 1fr; border: 1px solid #d5d5da; border-radius: 999px; overflow: hidden; font-size: 11px; }
-.t-info .pr b { background: #f3f3f5; text-align: center; padding: 4px 0; font-weight: 600; }
-.t-info .pr span { padding: 4px 10px; text-align: center; }
-.t-info .rel { display: grid; grid-template-columns: 1fr 34px 1fr; gap: 8px; align-items: center; width: 520px; margin: 8px auto 0; }
-.t-info .rel span { border: 1px solid #d5d5da; border-radius: 999px; padding: 6px 12px; text-align: center; font-size: 11px; line-height: 1.35; }
-.t-info .rel em { font-style: normal; text-align: center; color: var(--sub); }
-.t-info .foot { margin-top: 16px; text-align: center; font-size: 10px; color: #aaa; letter-spacing: .1em; }
-
-/* ── 3. 포스터 ── */
-.t-poster { background: #efeeea; height: 1240px; }
-.t-poster .ghost { position: absolute; left: -20px; right: -20px; top: 300px; font: 400 300px/1 "Archivo Black", sans-serif; color: rgba(0,0,0,.05); white-space: nowrap; text-transform: uppercase; letter-spacing: -.02em; }
-.t-poster .hdr { position: absolute; top: 34px; left: 0; right: 0; text-align: center; font: 500 13px "Archivo", sans-serif; letter-spacing: .14em; text-transform: uppercase; }
-.t-poster .sq { position: absolute; width: 26px; height: 26px; background: #444; }
-.t-poster .handle { position: absolute; top: 30px; right: 40px; border: 1.5px solid #222; padding: 3px 14px; font-size: 12px; font-weight: 700; }
-.t-poster .card { position: absolute; background: #fff; padding: 10px; box-shadow: 0 6px 16px rgba(0,0,0,.18); }
-.t-poster .card .pic { width: 330px; height: 400px; }
-.t-poster .c1 { left: 150px; top: 130px; transform: rotate(-6deg); z-index: 2; }
-.t-poster .c2 { left: 470px; top: 210px; transform: rotate(5deg); z-index: 1; }
-.t-poster .card .who { position: absolute; left: 12px; bottom: -32px; font: 800 14px "Archivo", sans-serif; letter-spacing: .1em; text-transform: uppercase; }
-.t-poster .title { position: absolute; left: 70px; top: 610px; z-index: 3; font: 400 172px/0.86 "Archivo Black", sans-serif; letter-spacing: -.04em; text-transform: uppercase; }
-.t-poster .stk { position: absolute; z-index: 4; background: #fff; border: 1.5px solid #222; padding: 5px 12px; font: 500 16px "Noto Serif KR", serif; }
-.t-poster .s1 { left: 560px; top: 700px; transform: rotate(-3deg); } .t-poster .s2 { left: 470px; top: 770px; transform: rotate(2deg); }
-.t-poster .ov { position: absolute; z-index: 3; border: 2px solid #222; border-radius: 50%; padding: 8px 28px; font: 800 28px "Archivo", sans-serif; letter-spacing: .02em; background: rgba(239,238,234,.6); }
-.t-poster .o1 { left: 40px; top: 130px; transform: rotate(-4deg); } .t-poster .o2 { left: 24px; top: 196px; transform: rotate(2deg); }
-.t-poster svg.spark { position: absolute; right: 70px; top: 640px; width: 190px; height: 190px; z-index: 3; }
-.t-poster .tc { position: absolute; left: 70px; top: 830px; z-index: 3; }
-.t-poster .tc h5 { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; font: 800 15px "Archivo", sans-serif; letter-spacing: .04em; }
-.t-poster .tc h5::before { content: ""; width: 54px; height: 3px; background: #222; }
-.t-poster .chip { width: 170px; height: 58px; border-radius: 10px; margin-bottom: 10px; display: grid; place-items: center; color: #fff; font: 500 13px "Archivo", sans-serif; border: 2px solid rgba(0,0,0,.25); }
-.t-poster .yr { position: absolute; right: 50px; top: 960px; z-index: 3; text-align: right; }
-.t-poster .yr span { display: inline-block; margin-bottom: 4px; font: 800 14px "Archivo", sans-serif; letter-spacing: .04em; }
-.t-poster .yr span::before { content: "[ "; } .t-poster .yr span::after { content: " ]"; }
-.t-poster .yr b { display: block; font: 300 170px/0.85 "Archivo", sans-serif; letter-spacing: -.05em; color: #2a2a2a; }
-.t-poster .ft { position: absolute; left: 70px; right: 50px; bottom: 34px; z-index: 3; display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; }
-.t-poster .ft b { font: 800 22px "Noto Serif KR", serif; white-space: nowrap; }
-.t-poster .ft p { margin: 0; max-width: 520px; font-size: 11.5px; color: #555; line-height: 1.55; }
-
-/* ── 4. 보고서 ── */
-.t-rep { background: #f4f4f6; padding: 18px; }
-.t-rep .win { background: #fff; border: 1.5px solid #2b2b30; border-radius: 14px; overflow: hidden; }
-.t-rep .tb { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1.5px solid #2b2b30; background: #f9f9fb; }
-.t-rep .tb .ttl { flex: 1; text-align: center; }
-.t-rep .tb .ttl span { display: inline-block; padding: 4px 26px; border: 1.5px solid #2b2b30; border-radius: 999px; font-weight: 800; font-size: 14px; letter-spacing: .1em; }
-.t-rep .tb .dots { display: flex; gap: 6px; } .t-rep .tb .dots i { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #2b2b30; }
-.t-rep .tb .sr { width: 160px; height: 24px; border: 1.5px solid #2b2b30; border-radius: 999px; }
-.t-rep .bd { display: grid; grid-template-columns: 250px 1fr 250px; gap: 14px; padding: 16px; align-items: start; }
-.t-rep .pane { border: 1.5px solid #2b2b30; border-radius: 12px; overflow: hidden; }
-.t-rep .pane h6 { margin: 0; padding: 6px 12px; border-bottom: 1.5px solid #2b2b30; font-size: 11px; letter-spacing: .14em; background: #f3f3f6; display: flex; justify-content: space-between; }
-.t-rep .pane .pic { height: 260px; }
-.t-rep .pane .nm { padding: 10px 12px; border-top: 1.5px solid #2b2b30; }
-.t-rep .pane .nm b { font-size: 18px; } .t-rep .pane .nm small { display: block; color: var(--sub); font-size: 11px; }
-.t-rep dl { margin: 0; padding: 8px 12px 12px; display: grid; grid-template-columns: 54px 1fr; gap: 5px 8px; font-size: 12px; }
-.t-rep dt { color: var(--sub); }
-.t-rep .cen { display: grid; gap: 14px; align-content: start; }
-.t-rep .duo { height: 300px; }
-.t-rep .bars { padding: 10px 14px 14px; display: grid; gap: 9px; }
-.t-rep .br { display: grid; grid-template-columns: 1fr 70px 1fr; gap: 8px; align-items: center; font-size: 11.5px; }
-.t-rep .br em { font-style: normal; text-align: center; font-weight: 700; }
-.t-rep .br i { height: 10px; border: 1.3px solid #2b2b30; border-radius: 999px; position: relative; overflow: hidden; }
-.t-rep .br i u { position: absolute; top: 0; bottom: 0; }
-.t-rep .br i:first-child u { right: 0; } .t-rep .br i:last-child u { left: 0; }
-.t-rep .arrows { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; padding: 12px 14px; font-size: 12.5px; }
-.t-rep .arrows span { text-align: center; } .t-rep .arrows b { padding: 4px 14px; border-radius: 999px; background: #1b1b1e; color: #fff; font-size: 12px; }
-.t-rep .qa { padding: 4px 14px 12px; }
-.t-rep .qa div { padding: 8px 0; border-bottom: 1px dashed #c9c9cf; font-size: 12px; display: grid; gap: 3px; }
-.t-rep .qa div:last-child { border-bottom: 0; }
-.t-rep .kw { padding: 10px 12px 12px; display: flex; flex-wrap: wrap; gap: 5px; }
-.t-rep .kw span { border: 1.3px solid #2b2b30; border-radius: 999px; padding: 2px 9px; font-size: 11.5px; }
-.t-rep .st { padding: 8px 14px; border-top: 1.5px solid #2b2b30; display: flex; justify-content: space-between; font-size: 11px; color: var(--sub); background: #f9f9fb; }
-
-/* ── 5. 스크랩북 ── */
-.t-scrap { background: #f3ecdd; padding: 36px 40px 40px; }
-.t-scrap h1 { margin: 0 0 4px; font: 400 64px/1 "Nanum Pen Script", cursive; text-align: center; }
-.t-scrap .sub { text-align: center; font: 400 26px "Nanum Pen Script", cursive; color: #6a5b45; margin-bottom: 22px; }
-.t-scrap .row { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-.t-scrap .pol { background: #fff; padding: 12px 12px 16px; box-shadow: 0 10px 18px -10px rgba(60,40,10,.45); position: relative; }
-.t-scrap .pol:nth-child(1) { transform: rotate(-2.5deg); } .t-scrap .pol:nth-child(2) { transform: rotate(2deg); }
-.t-scrap .pol .pic { height: 360px; background: #ece6da; }
-.t-scrap .pol .tape { position: absolute; top: -12px; left: 50%; width: 110px; height: 26px; margin-left: -55px; background: rgba(255,245,200,.85); transform: rotate(-3deg); z-index: 2; }
-.t-scrap .pol .cap { margin-top: 10px; font: 400 30px/1 "Nanum Pen Script", cursive; display: flex; justify-content: space-between; align-items: baseline; }
-.t-scrap .pol .cap small { font-size: 21px; color: #7a6a52; }
-.t-scrap .pol ul { list-style: none; margin: 8px 0 0; padding: 0; font: 400 21px/1.3 "Nanum Pen Script", cursive; color: #3c3326; }
-.t-scrap .notes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 34px; }
-.t-scrap .note { padding: 16px 16px 18px; font: 400 21px/1.3 "Nanum Pen Script", cursive; box-shadow: 0 8px 14px -8px rgba(60,40,10,.4); }
-.t-scrap .note:nth-child(1) { background: #fff3a8; transform: rotate(-1.5deg); }
-.t-scrap .note:nth-child(2) { background: #ffd8e1; transform: rotate(1.2deg); }
-.t-scrap .note:nth-child(3) { background: #d5ecff; transform: rotate(-.8deg); }
-.t-scrap .note b { display: block; font-size: 25px; margin-bottom: 4px; }
-.t-scrap .ticket { margin: 30px auto 0; width: 520px; display: grid; grid-template-columns: 1fr 120px; background: #fff; border-radius: 6px; overflow: hidden; box-shadow: 0 8px 14px -8px rgba(60,40,10,.4); }
-.t-scrap .ticket div { padding: 14px 18px; }
-.t-scrap .ticket div:last-child { border-left: 2px dashed #d8cfbe; background: var(--a); color: #fff; display: grid; place-items: center; text-align: center; font-weight: 800; font-size: 13px; }
-.t-scrap .ticket small { display: block; font-size: 11px; letter-spacing: .2em; color: var(--sub); }
-.t-scrap .ticket b { font-size: 17px; }
+/* ── 용지 ── */
+.poster { --a: #8c1c13; --b: #24427a; --bg: #f6f5f2; --ink: #1c1c1f; --r: 14px; --gap: 14px; --bd: 1.5px solid rgba(0,0,0,.85); width: var(--w, 1000px); background: var(--bg); color: var(--ink); padding: 26px; display: flex; flex-direction: column; gap: var(--gap); position: relative; font: 400 13.5px/1.55 var(--font, "Pretendard Variable"), sans-serif; box-shadow: 0 16px 40px -20px rgba(0,0,0,.4); }
+.poster.capturing { box-shadow: none; }
+.poster.nob { --bd: 0 solid transparent; }
+.f-serif { --font: "Noto Serif KR"; } .f-round { --font: "Gowun Dodum"; } .f-pen { --font: "Nanum Pen Script"; font-size: 18px; } .f-dot { --font: "Galmuri11"; }
+.blk { position: relative; border-radius: var(--r); }
+.blk.box { background: color-mix(in srgb, var(--bg) 70%, #fff); border: var(--bd); padding: 16px 18px; }
+.blk:hover { outline: 1px dashed rgba(59,91,219,.6); outline-offset: 4px; }
+.blk.sel { outline: 2px solid var(--acc); outline-offset: 4px; }
+.capturing .blk { outline: none !important; }
+.bctl { position: absolute; top: -14px; right: 10px; z-index: 6; display: none; gap: 3px; }
+.blk:hover .bctl, .blk.sel .bctl { display: flex; }
+.capturing .bctl { display: none !important; }
+.bctl button { all: unset; cursor: pointer; width: 26px; height: 26px; border-radius: 7px; background: #222; color: #fff; font: 700 12px/26px "Pretendard Variable", sans-serif; text-align: center; }
+.bctl button:hover { background: var(--acc); }
+[data-e] { outline: none; border-radius: 3px; min-width: 8px; display: inline-block; }
+[data-e]:empty::before { content: attr(data-ph); opacity: .35; }
+[data-e]:hover { box-shadow: 0 0 0 1px rgba(59,91,219,.5); }
+[data-e]:focus { box-shadow: 0 0 0 2px var(--acc); background: rgba(59,91,219,.06); }
+.capturing [data-e] { box-shadow: none !important; background: none !important; }
+.capturing [data-e]:empty::before { content: ""; }
+.chipc { display: inline-block; width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); cursor: pointer; vertical-align: -4px; }
+.pic { position: relative; overflow: hidden; background: color-mix(in srgb, var(--ink) 8%, var(--bg)); border-radius: calc(var(--r) * .7); display: grid; place-items: center; }
+.pic img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; user-select: none; -webkit-user-drag: none; cursor: grab; }
+.pic .ph { font-size: 12px; opacity: .45; text-align: center; padding: 8px; }
+.pic img ~ .ph { display: none; }
+.adj { position: absolute; left: 6px; bottom: 6px; z-index: 4; display: none; gap: 4px; }
+.pic:hover .adj { display: flex; }
+.capturing .adj { display: none !important; }
+.adj button { all: unset; cursor: pointer; width: 24px; height: 24px; border-radius: 50%; background: rgba(0,0,0,.65); color: #fff; font: 700 14px/24px sans-serif; text-align: center; }
+.b-head { text-align: center; padding: 10px 0 4px; }
+.b-head .t { font: 800 48px/1.05 "Archivo", var(--font, "Pretendard Variable"), sans-serif; letter-spacing: -.01em; }
+.b-head .s { margin-top: 6px; opacity: .75; }
+.b-head .d { margin-top: 10px; display: inline-flex; align-items: center; gap: 10px; font-size: 12px; opacity: .8; }
+.b-head .d i { width: 10px; height: 10px; border-radius: 50%; }
+.al-l { text-align: left; }
+.b-people { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+.pc { display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: start; }
+.pc .pic { height: 190px; }
+.pc .nm { font-size: 22px; font-weight: 800; line-height: 1.15; }
+.pc .en { font-size: 11px; letter-spacing: .16em; opacity: .6; text-transform: uppercase; }
+.pc .mt { margin: 4px 0 8px; font-size: 12px; opacity: .75; }
+.pc .kw { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+.pc .kw span { padding: 2px 9px; border-radius: 999px; color: #fff; font-size: 11.5px; font-weight: 700; }
+.pc .ft { display: grid; gap: 3px; font-size: 12.5px; margin-bottom: 8px; }
+.pc .ft div::before { content: "□ "; opacity: .6; }
+.pc .ok { display: grid; grid-template-columns: 30px 1fr; gap: 3px 8px; font-size: 12.5px; }
+.pc .ok b { font-size: 11px; font-weight: 800; }
+.pc .cc { margin-top: 8px; display: flex; gap: 6px; align-items: center; font-size: 11px; opacity: .85; }
+.b-full { display: grid; gap: var(--gap); }
+.b-full .pic { height: var(--h, 520px); }
+.b-full .lab { position: absolute; top: 12px; z-index: 3; background: var(--ink); color: var(--bg); padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.b-rel { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: center; text-align: center; }
+.b-rel .badge { padding: 8px 20px; border-radius: 999px; background: var(--ink); color: var(--bg); font-weight: 800; }
+.b-rel .side1 { color: var(--a); } .b-rel .side2 { color: var(--b); }
+.b-rel small { display: block; font-size: 11.5px; opacity: .7; color: var(--ink); }
+.b-rel .call { grid-column: 1 / -1; display: flex; justify-content: center; gap: 16px; font-size: 12.5px; flex-wrap: wrap; }
+.b-rel .call span { padding: 3px 12px; border: 1px solid currentColor; border-radius: 999px; }
+.b-qa { display: grid; gap: 10px; }
+.b-qa .q { font-weight: 800; }
+.b-qa .an { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
+.b-qa .an div { padding: 8px 12px; border-radius: 10px; background: color-mix(in srgb, var(--c) 10%, transparent); border-left: 3px solid var(--c); }
+.b-tl { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 10px; }
+.b-tl div { border-top: 3px solid var(--ink); padding-top: 8px; }
+.b-tl em { display: block; font-style: normal; font-weight: 800; font-size: 12px; }
+.b-talk { display: grid; gap: 6px; }
+.b-talk div { max-width: 70%; padding: 8px 14px; border-radius: 16px; background: color-mix(in srgb, var(--a) 12%, var(--bg)); }
+.b-talk div.r { justify-self: end; background: color-mix(in srgb, var(--b) 12%, var(--bg)); }
+.b-talk div small { display: block; font-size: 10.5px; font-weight: 800; opacity: .7; }
+.lbl { font-size: 11px; font-weight: 800; letter-spacing: .14em; opacity: .55; margin-bottom: 6px; text-transform: uppercase; }
+.b-song { display: flex; align-items: center; gap: 14px; }
+.b-song .cv { width: 64px; height: 64px; border-radius: 10px; flex: none; }
+.b-song b { font-size: 16px; } .b-song .ctl { margin-left: auto; letter-spacing: .3em; opacity: .7; }
+.b-stats { display: grid; gap: 8px; }
+.b-stats .r { display: grid; grid-template-columns: 1fr 90px 1fr; gap: 10px; align-items: center; font-size: 12.5px; }
+.b-stats em { font-style: normal; text-align: center; font-weight: 700; }
+.b-stats i { height: 10px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 10%, transparent); position: relative; overflow: hidden; }
+.b-stats i u { position: absolute; top: 0; bottom: 0; }
+.b-stats i:first-child u { right: 0; background: var(--a); } .b-stats i:last-child u { left: 0; background: var(--b); }
+.b-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.b-tags span { padding: 5px 14px; border-radius: 999px; border: var(--bd); font-weight: 700; font-size: 12.5px; }
+.b-line hr { border: 0; border-top: 1.5px solid currentColor; opacity: .5; margin: 4px 0; }
+.b-img .pic { height: var(--h, 320px); }
+.b-text { white-space: pre-wrap; }
+.stl { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
+.stk { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; cursor: move; user-select: none; white-space: nowrap; }
+.stk .x { position: absolute; top: -10px; right: -10px; width: 18px; height: 18px; border-radius: 50%; background: #111; color: #fff; font: 700 11px/18px sans-serif; text-align: center; cursor: pointer; display: none; }
+.stk:hover .x { display: block; } .capturing .stk .x { display: none !important; }
+.stk.text { font: 800 22px var(--font, "Pretendard Variable"), sans-serif; background: var(--bg); padding: 4px 12px; border: 2px solid var(--ink); }
+.stk.pen { font: 400 32px "Nanum Pen Script", cursive; color: var(--a); }
+.stk.bubble { background: #fff; border: 2px solid var(--ink); border-radius: 18px; padding: 8px 14px; font-weight: 600; font-size: 15px; }
+.stk.icon { font-size: 44px; line-height: 1; }
+@media (max-width: 1000px) {
+  .app { grid-template-columns: 1fr; height: auto; }
+  .side, .side.r { border: 0; border-top: 1px solid var(--uil); }
+  .canvas { order: 2; padding: 14px 8px 30px; }
+  .side { order: 3; } .side.r { order: 4; }
+}
 </style>
 </head>
 <body data-mode="view" data-noframe>
 <header class="bar">
   <a class="brand" href="../">귀환의 블로그</a>
-  <span class="bar-title">페어틀</span>
+  <span class="bar-title">페어틀 편집기</span>
   <span class="bar-spacer"></span>
-  <div class="tabs" role="tablist"><button data-mode="view" role="tab">보기</button><button data-mode="edit" role="tab">만들기</button></div>
+  <div class="tabs" role="tablist"><button data-mode="view" role="tab">편집기</button><button data-mode="edit" role="tab">AI로 채우기</button></div>
 </header>
 <main class="stage only-view">
-  <p class="shared-note" id="shared-note" hidden>공유받은 페어틀이에요. 만들기에서 고치면 내 브라우저에만 저장돼요.</p>
-  <div class="viewer"><div class="tpls" id="tpls" role="group" aria-label="틀"></div><div id="wrap"><div id="zoomer"><article class="poster" id="poster"></article></div></div></div>
-  <nav class="actions">
-    <button class="btn primary" id="btn-png">이미지 저장</button>
-    <button class="btn" id="btn-link">링크 복사</button>
-  </nav>
+  <p class="shared-note" id="shared-note" hidden>공유받은 페어틀이에요. 고치면 내 브라우저에만 저장돼요.</p>
+  <div class="app">
+    <div class="top" id="top"></div>
+    <aside class="side" id="left"></aside>
+    <div class="canvas" id="wrap"><div id="zoomer"><article class="poster" id="poster"></article></div></div>
+    <aside class="side r" id="right"></aside>
+  </div>
+  <nav class="actions" hidden><button class="btn primary" id="btn-png">PNG 저장</button><button class="btn" id="btn-link">링크 복사</button></nav>
 </main>
 <main class="editor only-edit" id="editor"></main>
 
@@ -202,154 +178,254 @@ body[data-mode="view"] { background: #e7e6e3; }
 <script src="../assets/core.js"></script>
 <script>
 (() => {
-const { esc, clamp, num, $ } = Core;
-const TPL = { look: '외관틀', info: '정보틀', poster: '포스터', rep: '보고서', scrap: '스크랩북' };
-const P = o => ({ name: '', en: '', sex: '', age: '', height: '', role: '', keys: '', feats: '', like: '', dislike: '', color: '#888888', hair: '#2a2a2a', eye: '#555555', outfit: '', quote: '', intro: '', ...o });
-const eQA = () => ({ q: '', a: '', b: '' }), eSt = () => ({ k: '', a: 50, b: 50 });
-const blank = () => ({ v: 2, tpl: 'look', title: '', sub: '', since: '', a: P({ name: 'NPC', color: '#8c1c13' }), b: P({ name: 'PC', color: '#24427a' }), rel: '', a2b: '', b2a: '', tags: '', first: '', now: '', stats: Array.from({ length: 4 }, eSt), qa: Array.from({ length: 3 }, eQA) });
+const { esc, clamp, num, $, get, set } = Core;
+const KEY = '2inbun:pair';
+const P = o => ({ name: '', en: '', sex: '', age: '', height: '', role: '', keys: '', feats: '', like: '', dislike: '', color: '#888888', hair: '#2a2a2a', eye: '#555555', quote: '', intro: '', ...o });
+const eQA = () => ({ q: '', a: '', b: '' }), eSt = () => ({ k: '', a: 50, b: 50 }), eTL = () => ({ t: '', text: '' }), eTK = () => ({ who: 'a', text: '' });
+const BT = {
+  head: ['페어 이름', '제목 · 한 줄 · 날짜', 'T'], people: ['인물 카드', '두상 · 정보 · 키워드', '人'], full: ['전신 그림', '두 사람 전신 칸', '▯'],
+  rel: ['관계', '서로를 보는 말 · 호칭', '⇄'], qa: ['문답', '질문과 두 사람 답', 'Q'], timeline: ['타임라인', '시간 순 사건', '→'],
+  talk: ['대화', '주고받은 대사', '“'], stats: ['수치', '나란히 비교 막대', '▤'], world: ['세계관', '배경 설명', '◎'],
+  song: ['테마곡', '노래 제목 · 가수', '♪'], tags: ['태그', '해시태그', '#'], text: ['글 상자', '자유롭게 쓰기', '✎'], img: ['그림 칸', '그림 한 장', '▣'], line: ['구분선', '가로 줄', '—'],
+};
+const PRESET = {
+  simple: ['간단', '이름 · 인물 · 관계 · 태그', ['head', 'people', 'rel', 'tags']],
+  full: ['전신', '전신 그림 중심', ['head', 'full', 'people', 'rel']],
+  story: ['서사', '타임라인 · 대화 · 테마곡', ['head', 'rel', 'timeline', 'talk', 'song']],
+  detail: ['자세히', '다 넣은 판', ['head', 'people', 'full', 'rel', 'stats', 'qa', 'timeline', 'talk', 'world', 'song', 'tags']],
+  empty: ['빈 용지', '이름만 두고 직접', ['head']],
+};
+let uid = 0; const nid = () => 'b' + Date.now().toString(36) + (uid++);
+const B = t => ({ id: nid(), t, box: !['head', 'line', 'tags'].includes(t), cols: t === 'full' ? 2 : 1, h: t === 'full' ? 520 : 320, text: '', al: 'c' });
+const D = () => ({ w: 1000, bg: '#f6f5f2', ink: '#1c1c1f', font: 'base', r: 14, gap: 14, border: true });
+const blank = () => ({ v: 4, title: '', sub: '', since: '', a: P({ name: 'NPC', color: '#8c1c13' }), b: P({ name: 'PC', color: '#24427a' }), rel: '', a2b: '', b2a: '', callA: '', callB: '', world: '', song: { title: '', artist: '' }, tags: '', stats: Array.from({ length: 4 }, eSt), qa: Array.from({ length: 3 }, eQA), timeline: Array.from({ length: 4 }, eTL), talk: Array.from({ length: 4 }, eTK), design: D(), blocks: PRESET.detail[2].map(B), stickers: [] });
 const sample = () => normalize({
-  tpl: 'look', title: 'Crown', sub: '정략으로 시작해 정략만은 아니게 된 두 사람', since: '2026.03.14',
-  a: P({ name: 'NPC', en: 'npc', sex: '남', age: '24', height: '187cm', role: '제국 황태자', keys: '과묵, 예법, 행동파', feats: '검은 머리 반묶음, 왼쪽 눈 밑 점, 늘 장갑 착용, 금색 단추 제복', like: '서고 창가 자리, 설탕 없는 홍차', dislike: '먼저 말 꺼내기', color: '#8c1c13', hair: '#1d1d22', eye: '#b08a3c', outfit: '검은 제복, 붉은 망토', quote: '우연입니다. 매번.', intro: '말보다 행동이 먼저인 황태자. 걱정되면 시종 대신 직접 간다.' }),
-  b: P({ name: 'PC', en: 'pc', sex: '여', age: '21', height: '164cm', role: '공작가 공녀', keys: '솔직함, 다정함, 먼저 말 거는 쪽', feats: '밝은 갈색 긴 머리, 리본 머리끈, 웃을 때 보조개', like: '서고, 군밤', dislike: '비밀', color: '#24427a', hair: '#8a5a3b', eye: '#3d5a8a', outfit: '하늘색 드레스', quote: '전하께 제일 먼저 말하고 싶었어요.', intro: '좋으면 바로 말하는 공녀. 황태자의 홍차 취향을 먼저 기억했다.' }),
-  rel: '정략 약혼자', a2b: '놓치기 싫은 사람', b2a: '먼저 손 내밀고 싶은 사람', tags: '#정략결혼 #서고 #망토하나 #말보다행동',
-  first: '봄 무도회, 의례상 첫 춤', now: '신년 연회 파트너',
+  title: 'Crown', sub: '정략으로 시작해 정략만은 아니게 된 두 사람', since: '2026.03.14',
+  a: P({ name: 'NPC', en: 'npc', sex: '남', age: '24', height: '187cm', role: '제국 황태자', keys: '과묵, 예법, 행동파', feats: '검은 머리 반묶음, 왼쪽 눈 밑 점, 늘 장갑 착용', like: '서고 창가 자리, 설탕 없는 홍차', dislike: '먼저 말 꺼내기', color: '#8c1c13', hair: '#1d1d22', eye: '#b08a3c', quote: '우연입니다. 매번.', intro: '말보다 행동이 먼저인 황태자.' }),
+  b: P({ name: 'PC', en: 'pc', sex: '여', age: '21', height: '164cm', role: '공작가 공녀', keys: '솔직함, 다정함, 먼저 말 거는 쪽', feats: '밝은 갈색 긴 머리, 리본 머리끈, 웃을 때 보조개', like: '서고, 군밤', dislike: '비밀', color: '#24427a', hair: '#8a5a3b', eye: '#3d5a8a', quote: '전하께 제일 먼저 말하고 싶었어요.', intro: '좋으면 바로 말하는 공녀.' }),
+  rel: '정략 약혼자', a2b: '놓치기 싫은 사람', b2a: '먼저 손 내밀고 싶은 사람', callA: '공녀', callB: '전하',
+  world: '마법이 사라진 지 백 년 된 제국. 황실과 공작가가 정략으로 힘을 나눈다.', song: { title: '왈츠 3번', artist: '궁정 악단' }, tags: '#정략결혼 #서고 #망토하나 #말보다행동',
   stats: [{ k: '호감', a: 88, b: 80 }, { k: '솔직함', a: 25, b: 85 }, { k: '질투', a: 70, b: 40 }, { k: '먼저 연락', a: 20, b: 75 }],
   qa: [{ q: '상대의 첫인상', a: '시끄러운 공녀.', b: '무서운데 발은 안 밟히게 해 주는 사람.' }, { q: '상대가 제일 귀여울 때', a: '군밤 값을 물어볼 때 웃는 얼굴.', b: '우연이라고 우길 때요.' }, { q: '둘만의 장소', a: '정원 끝 회랑.', b: '서고 창가 자리!' }],
+  timeline: [{ t: '03.14', text: '무도회 첫 춤' }, { t: '06.20', text: '정략 약혼 발표' }, { t: '10.30', text: '비 오는 정원, 망토 하나' }, { t: '12.31', text: '신년 연회 파트너' }],
+  talk: [{ who: 'a', text: '한 곡만 추면 됩니다.' }, { who: 'b', text: '두 곡째인데요, 전하.' }, { who: 'a', text: '…우연입니다.' }, { who: 'b', text: '매번요?' }],
+  blocks: PRESET.simple[2].map(B),
 });
 const hex = (v, d) => /^#[0-9a-f]{6}$/i.test(v || '') ? v : d;
+const arr = (src, n, mk) => Array.from({ length: n }, (_, i) => ({ ...mk(), ...((Array.isArray(src) ? src : [])[i] || {}) }));
 function normalize(s) {
   const b = blank(); s = s && typeof s === 'object' ? s : {};
-  const o = { ...b, ...s, a: P({ ...b.a, ...(s.a || {}) }), b: P({ ...b.b, ...(s.b || {}) }) };
-  if (!TPL[o.tpl]) o.tpl = 'look';
-  o.stats = Array.from({ length: 4 }, (_, i) => { const x = { ...eSt(), ...((s.stats || [])[i] || {}) }; x.a = clamp(Math.round(num(x.a, 50)), 0, 100); x.b = clamp(Math.round(num(x.b, 50)), 0, 100); return x; });
-  o.qa = Array.from({ length: 3 }, (_, i) => ({ ...eQA(), ...((s.qa || [])[i] || {}) }));
-  ['a', 'b'].forEach(k => { ['color', 'hair', 'eye'].forEach(c => o[k][c] = hex(o[k][c], b[k][c])); });
+  const o = { ...b, ...s, a: P({ ...b.a, ...(s.a || {}) }), b: P({ ...b.b, ...(s.b || {}) }), song: { ...b.song, ...(s.song || {}) }, design: { ...D(), ...(s.design || {}) } };
+  o.stats = arr(s.stats, 4, eSt).map(x => ({ ...x, a: clamp(Math.round(num(x.a, 50)), 0, 100), b: clamp(Math.round(num(x.b, 50)), 0, 100) }));
+  o.qa = arr(s.qa, 3, eQA); o.timeline = arr(s.timeline, 4, eTL); o.talk = arr(s.talk, 4, eTK);
+  o.blocks = (Array.isArray(s.blocks) && s.blocks.length ? s.blocks : b.blocks).filter(x => x && BT[x.t]).map(x => ({ ...B(x.t), ...x }));
+  o.stickers = Array.isArray(s.stickers) ? s.stickers.slice(0, 40) : [];
+  ['a', 'b'].forEach(k => ['color', 'hair', 'eye'].forEach(c => o[k][c] = hex(o[k][c], b[k][c])));
+  ['bg', 'ink'].forEach(c => o.design[c] = hex(o.design[c], D()[c]));
   return o;
 }
 function apply(S, o) {
   const got = []; const g = n => { if (!got.includes(n)) got.push(n); };
-  ['title', 'sub', 'since', 'rel', 'a2b', 'b2a', 'tags', 'first', 'now'].forEach(k => { if (o[k]) { S[k] = o[k]; g('관계'); } });
+  ['title', 'sub', 'since', 'rel', 'a2b', 'b2a', 'callA', 'callB', 'world', 'tags'].forEach(k => { if (o[k]) { S[k] = o[k]; g('관계'); } });
+  if (o.song && typeof o.song === 'object') { S.song = { ...S.song, ...o.song }; g('테마곡'); }
   for (const k of ['a', 'b']) if (o[k] && typeof o[k] === 'object') { Object.entries(o[k]).forEach(([kk, v]) => { if (v !== '' && v != null) S[k][kk] = v; }); g(k === 'a' ? 'NPC' : 'PC'); }
-  if (Array.isArray(o.stats)) { o.stats.slice(0, 4).forEach((x, i) => { if (x) S.stats[i] = { ...eSt(), ...x }; }); g('수치'); }
-  if (Array.isArray(o.qa)) { S.qa = Array.from({ length: 3 }, eQA); o.qa.slice(0, 3).forEach((x, i) => { if (x) S.qa[i] = { ...eQA(), ...x }; }); g('문답'); }
+  const put = (key, n, mk, label) => { if (Array.isArray(o[key])) { S[key] = Array.from({ length: n }, mk); o[key].slice(0, n).forEach((x, i) => { if (x && typeof x === 'object') S[key][i] = { ...mk(), ...x }; }); g(label); } };
+  put('stats', 4, eSt, '수치'); put('qa', 3, eQA, '문답'); put('timeline', 4, eTL, '타임라인'); put('talk', 4, eTK, '대화');
   return got;
 }
 function prompts() {
-  const p = `*[OOC: 롤플레잉 잠시 중단. 「페어틀」 기록.
-NPC와 PC 두 사람을 한 장에 소개하는 페어틀을 채운다.
-▪ title 페어 이름 8자(영문 대문자로 어울리는 짧은 말), sub 한 줄 소개 30자, since 둘이 처음 만난 날 “2026.03.14”
-▪ a(NPC)·b(PC): name, en 영문 표기, sex, age, height, role 신분·직업 12자, keys 성격 3개 쉼표로, feats 외관 특징 4개 쉼표로(머리·눈·점·옷 버릇 같은 눈에 보이는 것), like, dislike, color 상징색 “#8c1c13”, hair 머리색, eye 눈색(hex), outfit 대표 옷차림 15자, quote 대표 대사 30자(RP에서 실제로 한 말), intro 소개 50자. 설정에 없는 값은 “”.
-▪ rel 관계 10자, a2b NPC가 보는 PC 14자, b2a PC가 보는 NPC 14자(RP에 드러난 만큼만), tags 해시태그 4개, first 첫 만남 20자, now 지금 20자
-▪ stats 4개: k 항목(이 둘에게 어울리는 것), a·b 각자 0~100
-▪ qa 3개: q 질문, a NPC 답 30자(말투 그대로), b PC 답(RP에서 실제로 한 말로 답이 되는 경우만, 없으면 “”)
-▪ 근거: 설정과 RP에서 실제 있었던 일만. PC의 말·행동은 RP에 나온 것만 쓰고 지어내지 않는다. 여기서 만든 내용은 이후 RP의 사실로 삼지 않는다.
-▪ 출력: 인사·설명 없이 JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만. 값은 형식 예시일 뿐.
-{"title":"","sub":"","since":"","a":{"name":"","en":"","sex":"","age":"","height":"","role":"","keys":"","feats":"","like":"","dislike":"","color":"","hair":"","eye":"","outfit":"","quote":"","intro":""},"b":{},"rel":"","a2b":"","b2a":"","tags":"","first":"","now":"","stats":[{"k":"","a":50,"b":50}],"qa":[{"q":"","a":"","b":""}]}]*`;
-  return [{ label: '페어틀', sub: '두 사람 외관·성격·관계·문답', text: p }];
+  const p = `*[OOC: 롤플레잉 잠시 중단. 「페어틀」 내용 채우기.
+NPC와 PC 두 사람을 소개하는 페어틀의 글자를 채운다. 꾸미기는 사람이 직접 하니 내용만.
+▪ title 페어 이름 8자, sub 한 줄 소개 30자, since 처음 만난 날 “2026.03.14”
+▪ a(NPC)·b(PC): name, en 영문, sex, age, height, role 12자, keys 성격 3개 쉼표로, feats 외관 특징 3개 쉼표로, like, dislike, color 상징색 hex, hair·eye 머리·눈색 hex, quote 대표 대사 30자(RP에서 실제로 한 말), intro 30자. 설정에 없는 값은 “”.
+▪ rel 관계 10자, a2b NPC가 보는 PC 14자, b2a PC가 보는 NPC 14자(RP에 드러난 만큼), callA·callB 서로 부르는 호칭, world 세계관 50자, song 테마곡 {title, artist}(제목·가수만, 가사 쓰지 않음), tags 해시태그 4개
+▪ stats 4개 {k, a, b 0~100} / qa 3개 {q, a NPC 답, b PC 답(RP에서 실제로 한 말일 때만, 아니면 “”)} / timeline 4개 {t “03.14”, text 15자} / talk 4개 {who a|b, text 25자, 실제 대사}
+▪ 근거: 설정과 RP에서 실제 있었던 일만. PC의 말·행동은 지어내지 않는다. 여기서 만든 내용은 이후 RP의 사실로 삼지 않는다.
+▪ 출력: 인사·설명 없이 JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만.
+{"title":"","sub":"","since":"","a":{"name":"","en":"","sex":"","age":"","height":"","role":"","keys":"","feats":"","like":"","dislike":"","color":"","hair":"","eye":"","quote":"","intro":""},"b":{},"rel":"","a2b":"","b2a":"","callA":"","callB":"","world":"","song":{"title":"","artist":""},"tags":"","stats":[],"qa":[],"timeline":[],"talk":[]}]*`;
+  return [{ label: 'AI로 내용 채우기', sub: '글자만 채우고 꾸미기는 편집기에서', text: p }];
 }
-function progress(S) { return [{ label: 'NPC', ok: !!S.a.intro }, { label: 'PC', ok: !!S.b.intro }, { label: '외관', ok: !!(S.a.feats || S.b.feats) }, { label: '관계', ok: !!S.rel }, { label: '문답', ok: S.qa.some(q => q.a) }]; }
+function progress(S) { return [{ label: 'NPC', ok: !!S.a.role }, { label: 'PC', ok: !!S.b.role }, { label: '관계', ok: !!S.rel }]; }
 function schema(S) {
-  const per = k => [{ k: `${k}.name`, label: '이름' }, { k: `${k}.en`, label: '영문' }, { k: `${k}.sex`, label: '성별' }, { k: `${k}.age`, label: '나이' }, { k: `${k}.height`, label: '키' }, { k: `${k}.role`, label: '신분·직업' }, { k: `${k}.color`, label: '상징색', type: 'color' }, { k: `${k}.hair`, label: '머리색', type: 'color' }, { k: `${k}.eye`, label: '눈색', type: 'color' }, { k: `${k}.outfit`, label: '옷차림' }, { k: `${k}.keys`, label: '성격 (쉼표로)', full: true }, { k: `${k}.feats`, label: '외관 특징 (쉼표로)', full: true }, { k: `${k}.like`, label: '좋아하는 것' }, { k: `${k}.dislike`, label: '싫어하는 것' }, { k: `${k}.quote`, label: '대표 대사', full: true }, { k: `${k}.intro`, label: '소개', type: 'textarea', full: true }];
-  const st = [], qa = [];
-  S.stats.forEach((x, i) => st.push({ sub: `수치 ${i + 1}` }, { k: `stats.${i}.k`, label: '항목' }, { k: `stats.${i}.a`, label: 'NPC', type: 'range' }, { k: `stats.${i}.b`, label: 'PC', type: 'range' }));
-  S.qa.forEach((x, i) => qa.push({ sub: `문답 ${i + 1}` }, { k: `qa.${i}.q`, label: '질문', full: true }, { k: `qa.${i}.a`, label: 'NPC 답', full: true }, { k: `qa.${i}.b`, label: 'PC 답', full: true }));
-  return [
-    { title: '페어', en: 'PAIR', desc: '그림은 보기 화면에서 칸을 눌러 넣어요. 칸마다 따로 저장돼서 틀을 바꿔도 그대로 남아요.', fields: [{ k: 'tpl', label: '틀', type: 'select', opts: Object.entries(TPL) }, { k: 'title', label: '페어 이름' }, { k: 'since', label: '처음 만난 날' }, { k: 'sub', label: '한 줄 소개', full: true }, { k: 'rel', label: '관계' }, { k: 'tags', label: '해시태그' }, { k: 'a2b', label: 'NPC → PC' }, { k: 'b2a', label: 'PC → NPC' }, { k: 'first', label: '첫 만남' }, { k: 'now', label: '지금' }] },
-    { title: 'NPC', en: 'A', fields: per('a') }, { title: 'PC', en: 'B', fields: per('b') },
-    { title: '수치', en: 'STATS', fields: st }, { title: '문답', en: 'Q&A', fields: qa },
-  ];
+  const per = k => [{ k: `${k}.name`, label: '이름' }, { k: `${k}.en`, label: '영문' }, { k: `${k}.role`, label: '신분' }, { k: `${k}.keys`, label: '성격', full: true }, { k: `${k}.feats`, label: '외관 특징', full: true }];
+  return [{ title: '기본', en: 'BASIC', desc: '모든 글자는 편집기 용지 위에서 바로 고칠 수 있어요.', fields: [{ k: 'title', label: '페어 이름' }, { k: 'since', label: '처음 만난 날' }, { k: 'sub', label: '한 줄 소개', full: true }, { k: 'rel', label: '관계' }, { k: 'tags', label: '태그' }] }, { title: 'NPC', en: 'A', fields: per('a') }, { title: 'PC', en: 'B', fields: per('b') }];
 }
-/* ── 그리기 ── */
-const SIL = '<svg class="sil" viewBox="0 0 100 120" aria-hidden="true"><circle cx="50" cy="38" r="21" fill="#d2d2d8"/><path d="M10 120c2-30 18-48 40-48s38 18 40 48z" fill="#d2d2d8"/></svg>';
-const FULL = '<svg class="sil full" viewBox="0 0 60 200" aria-hidden="true"><circle cx="30" cy="16" r="12" fill="#3b3b40"/><path d="M14 32h32l6 64-8 2-4-40-2 140h-9l-2-80-2 80h-9l-2-140-4 40-8-2z" fill="#3b3b40"/></svg>';
-const FULL2 = '<svg class="sil full" viewBox="0 0 130 200" aria-hidden="true"><g fill="#3b3b40"><circle cx="38" cy="16" r="12"/><path d="M22 32h32l6 64-8 2-4-40-2 140h-9l-2-80-2 80h-9l-2-140-4 40-8-2z"/><circle cx="92" cy="20" r="11"/><path d="M77 35h30l6 60-8 2-4-38-2 137h-8l-2-78-2 78h-8l-2-137-4 38-8-2z"/></g></svg>';
-const pic = (k, cls = '', sil = SIL, label = '그림 넣기') => { const p = Core.photo(k); return `<div class="pic ${cls}" data-photo="${k}">${p ? `<img src="${p}" alt="">` : ''}${sil}${p ? '' : `<span class="ph-t">${label}</span>`}</div>`; };
+/* ── 용지 조각 ── */
+const META = k => { try { return JSON.parse(localStorage.getItem('pmeta:' + k)) || { x: 50, y: 30, z: 1 }; } catch (e) { return { x: 50, y: 30, z: 1 }; } };
+const setMeta = (k, m) => { try { localStorage.setItem('pmeta:' + k, JSON.stringify(m)); } catch (e) {} };
+const pic = (k, ph = '그림을 끌어 놓거나 눌러서 넣기') => { const p = Core.photo(k), m = META(k); return `<div class="pic" data-photo="${k}">${p ? `<img src="${p}" alt="" style="object-position:${m.x}% ${m.y}%;transform:scale(${m.z})"><span class="adj"><button type="button" data-z="-1" aria-label="작게">−</button><button type="button" data-z="1" aria-label="크게">+</button></span>` : ''}<span class="ph">${ph}</span></div>`; };
+const E = (path, v, ph = '') => `<span data-e="${path}" data-ph="${esc(ph)}">${esc(v || '')}</span>`;
+let CUR = null;
+const chip = path => `<i class="chipc" data-c="${path}" title="눌러서 색 바꾸기" style="background:${get(CUR, path)}"></i>`;
 const list = s => String(s || '').split(/[,，]/).map(x => x.trim()).filter(Boolean);
 const tags = s => String(s || '').split(/\s+/).map(x => x.trim()).filter(Boolean).map(x => x.startsWith('#') ? x : '#' + x);
-const meta = o => [o.sex, o.age && `${o.age}세`, o.height].filter(Boolean).join(' / ');
-function look(S) {
-  const col = (k, L) => { const o = S[k]; return `<div class="col">
-    <div class="card"><div class="hd"><span class="dot" style="background:${o.hair}"></span><span class="dot" style="background:${o.eye}"></span><span class="dot" style="background:${o.color}"></span><b>${L}</b></div>${pic(k, 'bust', SIL, '얼굴 그림')}</div>
-    <div class="card"><ul>${(list(o.feats).length ? list(o.feats) : ['외관 특징']).map(x => `<li><span class="chk"></span>${esc(x)}</li>`).join('')}${o.outfit ? `<li><span class="chk"></span>${esc(o.outfit)}</li>` : ''}</ul></div>
-    <div class="card">${pic(k + 'x', 'scn', SIL, '장면 그림')}<p>▲ ${esc(k === 'a' ? S.a2b : S.b2a) || '한 장면'}</p></div></div>`; };
-  return `${col('a', 'A')}
-  <div class="card mid"><span class="top">${esc((S.title || 'PAIR') + ' · ' + (S.rel || ''))}</span>
-    ${pic('pair', 'full', FULL2, '두 사람 전신 그림')}
-    <span class="tag ta">${esc(S.a.name)}<small>${esc(meta(S.a))}</small></span><span class="tag tb">${esc(S.b.name)}<small>${esc(meta(S.b))}</small></span>
-    <div class="pills">
-      <div class="pl"><span>${esc(list(S.a.keys).join(', '))}</span><em>성격</em><span>${esc(list(S.b.keys).join(', '))}</span></div>
-      <div class="pl"><span>${esc(S.a.like)}</span><em>좋아함</em><span>${esc(S.b.like)}</span></div>
-      <div class="pl"><span>${esc(S.a2b)}</span><em>⇄</em><span>${esc(S.b2a)}</span></div>
-    </div></div>
-  ${col('b', 'B')}`;
+const R = {
+  head: (S, b) => `<div class="b-head ${b.al === 'l' ? 'al-l' : ''}"><div class="t">${E('title', S.title, '페어 이름')}</div><div class="s">${E('sub', S.sub, '한 줄 소개')}</div><div class="d"><i style="background:${S.a.color}"></i>${E('a.name', S.a.name)} × ${E('b.name', S.b.name)}<i style="background:${S.b.color}"></i> · ${E('since', S.since, '처음 만난 날')}</div></div>`,
+  people: S => `<div class="b-people">${['a', 'b'].map(k => { const o = S[k]; return `<div class="pc">${pic(k)}<div>
+    <div class="en">${E(k + '.en', o.en, 'ENGLISH')}</div><div class="nm">${E(k + '.name', o.name, '이름')}</div>
+    <div class="mt">${E(k + '.role', o.role, '신분')} · ${E(k + '.sex', o.sex, '성별')} · ${E(k + '.age', o.age, '나이')} · ${E(k + '.height', o.height, '키')}</div>
+    <div class="kw">${list(o.keys).map(x => `<span style="background:${o.color}">${esc(x)}</span>`).join('')}</div><div class="mt" style="margin-top:-4px">성격 ${E(k + '.keys', o.keys, '쉼표로 구분')}</div>
+    <div class="ft">${list(o.feats).map(x => `<div>${esc(x)}</div>`).join('')}</div><div class="mt" style="margin-top:-4px">외관 ${E(k + '.feats', o.feats, '쉼표로 구분')}</div>
+    <div class="ok"><b style="color:${o.color}">OK</b>${E(k + '.like', o.like, '좋아하는 것')}<b>NG</b>${E(k + '.dislike', o.dislike, '싫어하는 것')}</div>
+    <div class="cc">${chip(k + '.color')} 상징 ${chip(k + '.hair')} 머리 ${chip(k + '.eye')} 눈</div></div></div>`; }).join('')}</div>`,
+  full: (S, b) => `<div class="b-full" style="grid-template-columns:repeat(${b.cols}, 1fr);--h:${b.h}px">${(b.cols === 1 ? ['pair'] : ['a2', 'b2']).map((k, i) => `<div style="position:relative">${pic(b.id + k, b.cols === 1 ? '두 사람 그림' : '전신 그림')}${b.cols === 2 ? `<span class="lab" style="${i ? 'right:12px' : 'left:12px'}">${esc(S[i ? 'b' : 'a'].name)} · ${esc(S[i ? 'b' : 'a'].height)}</span>` : ''}</div>`).join('')}</div>`,
+  rel: S => `<div class="b-rel"><div class="side1">${E('a2b', S.a2b, 'NPC가 보는 PC')}<small>${esc(S.a.name)} → ${esc(S.b.name)}</small></div><span class="badge">${E('rel', S.rel, '관계')}</span><div class="side2">${E('b2a', S.b2a, 'PC가 보는 NPC')}<small>${esc(S.b.name)} → ${esc(S.a.name)}</small></div>
+    <div class="call"><span style="color:${S.a.color}">${esc(S.a.name)}의 호칭 “${E('callA', S.callA, '호칭')}”</span><span style="color:${S.b.color}">${esc(S.b.name)}의 호칭 “${E('callB', S.callB, '호칭')}”</span></div></div>`,
+  qa: S => `<div class="lbl">Q&amp;A</div><div class="b-qa">${S.qa.map((q, i) => `<div><div class="q">Q. ${E(`qa.${i}.q`, q.q, '질문')}</div><div class="an"><div style="--c:${S.a.color}"><b>${esc(S.a.name)}</b> ${E(`qa.${i}.a`, q.a, '답')}</div><div style="--c:${S.b.color}"><b>${esc(S.b.name)}</b> ${E(`qa.${i}.b`, q.b, '답')}</div></div></div>`).join('')}</div>`,
+  timeline: S => `<div class="lbl">Timeline</div><div class="b-tl">${S.timeline.map((t, i) => `<div><em>${E(`timeline.${i}.t`, t.t, '때')}</em>${E(`timeline.${i}.text`, t.text, '일')}</div>`).join('')}</div>`,
+  talk: S => `<div class="lbl">Talk</div><div class="b-talk">${S.talk.map((t, i) => `<div class="${t.who === 'b' ? 'r' : ''}"><small>${esc(S[t.who === 'b' ? 'b' : 'a'].name)}</small>${E(`talk.${i}.text`, t.text, '대사')}</div>`).join('')}</div>`,
+  stats: S => `<div class="lbl">Status</div><div class="b-stats">${S.stats.map((x, i) => `<div class="r"><i><u style="width:${x.a}%"></u></i><em>${E(`stats.${i}.k`, x.k, '항목')}</em><i><u style="width:${x.b}%"></u></i></div>`).join('')}</div>`,
+  world: S => `<div class="lbl">World</div>${E('world', S.world, '세계관을 적어요')}`,
+  song: S => `<div class="b-song"><span class="cv" style="background:linear-gradient(135deg,${S.a.color},${S.b.color})"></span><div><div class="lbl" style="margin:0">Theme song</div><b>${E('song.title', S.song.title, '곡 제목')}</b><div>${E('song.artist', S.song.artist, '가수')}</div></div><span class="ctl">◀◀ ❚❚ ▶▶</span></div>`,
+  tags: S => `<div class="b-tags">${tags(S.tags).map(t => `<span>${esc(t)}</span>`).join('')}</div><div style="text-align:center;font-size:11px;opacity:.6;margin-top:6px">${E('tags', S.tags, '#태그 #태그')}</div>`,
+  text: (S, b, i) => `<div class="b-text">${E(`blocks.${i}.text`, b.text, '여기에 자유롭게 적어요')}</div>`,
+  img: (S, b) => `<div class="b-img" style="--h:${b.h}px">${pic(b.id + 'i')}</div>`,
+  line: () => `<div class="b-line"><hr></div>`,
+};
+const STK = { text: '글자', pen: '손글씨', bubble: '말풍선', '♥': '♥', '★': '★', '✦': '✦', '→': '→' };
+const TXT = ['text', 'pen', 'bubble'];
+let ST = null, SEL = null, TAB = 'preset', ZOOM = 0;
+function posterHTML(S) {
+  return S.blocks.map((b, i) => `<section class="blk${b.box ? ' box' : ''}${SEL === b.id ? ' sel' : ''}" data-bi="${i}"><span class="bctl"><button type="button" data-act="up" aria-label="위로">↑</button><button type="button" data-act="down" aria-label="아래로">↓</button><button type="button" data-act="dup" aria-label="복제">⧉</button><button type="button" data-act="del" aria-label="지우기">×</button></span>${R[b.t](S, b, i)}</section>`).join('')
+    + `<div class="stl">${S.stickers.map((t, i) => `<div class="stk ${TXT.includes(t.t) ? t.t : 'icon'}" data-si="${i}" style="left:${t.x}%;top:${t.y}%;${TXT.includes(t.t) ? '' : `color:${i % 2 ? S.b.color : S.a.color}`}">${TXT.includes(t.t) ? E(`stickers.${i}.text`, t.text) : esc(t.t)}<span class="x" data-sx="${i}">×</span></div>`).join('')}</div>`;
 }
-function info(S) {
-  const side = (k, R) => { const o = S[k]; return `<div class="side ${R ? 'R' : ''}">
-    <div class="sw"><span>HAIR</span><i style="background:${o.hair}"></i></div><div class="sw"><span>EYE</span><i style="background:${o.eye}"></i></div><div class="sw"><span>COLOR</span><i style="background:${o.color}"></i></div>
-    <div class="gap"></div>${list(o.feats).map(x => `<div class="ck">${esc(x)}<span class="chk"></span></div>`).join('')}
-    <div class="i"><b>i</b><span>${esc(o.role || '')}<br>${esc(meta(o))}</span></div>
-    ${list(o.keys).map(x => `<div class="ck">${esc(x)}<span class="chk"></span></div>`).join('')}
-    <div class="gap"></div><div class="i" style="grid-template-columns:1fr"><span>${esc(o.intro || '')}</span></div></div>`; };
-  const nmc = k => `<div class="nmc"><b>${esc(S[k].name)}<small>${esc(String(S[k].en || '').toUpperCase())}</small></b><span>${esc(meta(S[k]))}</span></div>`;
-  return `<div class="h"><small>${esc(S.rel || '')}</small><h1>${esc(S.title || 'PAIRNAME')}</h1></div>
-  <div class="line"><span class="dot" style="background:${S.a.color}"></span><i></i><span class="p">${esc(S.sub || '')}</span><i></i><span class="dot" style="background:${S.b.color}"></span></div>
-  <div class="grid">${side('a')}
-    <div>${pic('a', 'p1', SIL, '얼굴 그림')}${pic('ax', 'p2', FULL, '옷차림 그림')}${nmc('a')}</div>
-    <div>${pic('b', 'p1', SIL, '얼굴 그림')}${pic('bx', 'p2', FULL, '옷차림 그림')}${nmc('b')}</div>
-    ${side('b', true)}</div>
-  <div class="rows">${['a', 'b'].map(k => `<div class="rw"><div class="pr"><b>성격</b><span>${esc(list(S[k].keys).join(', '))}</span></div><div class="pr"><b>좋아함</b><span>${esc(S[k].like)}</span></div><div class="pr"><b>싫어함</b><span>${esc(S[k].dislike)}</span></div></div>`).join('')}</div>
-  <div class="rel"><span>${esc(S.a.name)} → ${esc(S.a2b)}</span><em>⇄</em><span>${esc(S.b.name)} → ${esc(S.b2a)}</span></div>
-  <div class="foot">${esc(tags(S.tags).join('  '))}</div>`;
+const S_ = () => (ST ? ST.state : CUR);
+const hist = [], fut = [];
+const snap = () => JSON.stringify(S_());
+let lastSnap = '';
+const commit = Core.debounce(() => { const s = snap(); if (s === lastSnap) return; hist.push(lastSnap); if (hist.length > 60) hist.shift(); fut.length = 0; lastSnap = s; try { localStorage.setItem(KEY, s); } catch (e) {} topbar(); }, 350);
+function load(o) { const S = S_(); Object.keys(S).forEach(k => delete S[k]); Object.assign(S, normalize(o)); }
+function fitZoom() { const w = $('#wrap'); return Math.min(1, (w.clientWidth - 80) / S_().design.w); }
+function applyZoom() { $('#zoomer').style.zoom = ZOOM || fitZoom(); $('#wrap').style.overflowX = ZOOM ? 'auto' : 'hidden'; }
+function topbar() {
+  const z = Math.round((parseFloat($('#zoomer').style.zoom) || 1) * 100);
+  const sl = n => { let v = null; try { v = localStorage.getItem('pairslot' + n); } catch (e) {} return v; };
+  $('#top').innerHTML = `<span class="nm">${esc(S_().title || '페어틀')}</span>
+    <button class="ib" data-t="undo" ${hist.length ? '' : 'disabled'}>↶ 되돌리기</button><button class="ib" data-t="redo" ${fut.length ? '' : 'disabled'} aria-label="다시 하기">↷</button>
+    <span class="sp"></span>
+    <button class="ib" data-t="zo" aria-label="작게">−</button><span class="zoomv">${z}%</span><button class="ib" data-t="zi" aria-label="크게">+</button><button class="ib" data-t="zf">맞춤</button>
+    <span class="sp"></span>
+    ${[1, 2, 3].map(n => `<button class="ib" data-t="slot" data-n="${n}">칸${n} ${sl(n) ? '불러오기' : '저장'}</button>`).join('')}
+    <button class="ib" data-t="exp">파일로 저장</button><label class="ib">파일 열기<input type="file" id="imp" accept=".json,application/json" hidden></label>
+    <button class="ib pri" data-t="png">PNG 저장</button>`;
 }
-function poster(S) {
-  const d = String(S.since || '').match(/(\d{4})\D*(\d{1,2})\D*(\d{1,2})/), yy = d ? d[1] : '', mmdd = d ? `${d[1].slice(2)}${d[2].padStart(2, '0')}${d[3].padStart(2, '0')}` : '';
-  return `<div class="ghost">${esc((S.title || 'PAIR') + ' ' + (S.title || 'PAIR'))}</div>
-  <span class="sq" style="left:40px;top:34px"></span><span class="sq" style="left:40px;top:66px;background:#888"></span><span class="sq" style="right:40px;top:76px;background:${S.b.color}"></span>
-  <div class="hdr">${esc(String(S.a.en || S.a.name).toUpperCase())} &nbsp;X&nbsp; ${esc(String(S.b.en || S.b.name).toUpperCase())}</div>
-  <span class="handle">${esc(S.rel || '')}</span>
-  ${mmdd ? `<span class="ov o1">${mmdd}</span>` : ''}<span class="ov o2">JUST BEGIN</span>
-  <div class="card c1">${pic('a', '', SIL, '그림 넣기')}<span class="who">${esc(S.a.name)}</span></div>
-  <div class="card c2">${pic('b', '', SIL, '그림 넣기')}<span class="who">${esc(S.b.name)}</span></div>
-  <div class="title">${esc(S.title || 'PAIR')}</div>
-  <span class="stk s1">${esc(S.a2b || '')}</span><span class="stk s2">${esc(S.b2a || '')}</span>
-  <svg class="spark" viewBox="0 0 100 100" aria-hidden="true"><g stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"><path d="M50 4v92M4 50h92M17 17l66 66M83 17l-66 66"/></g></svg>
-  <div class="tc"><h5>THEME COLOR</h5><div class="chip" style="background:${S.a.color}">${esc(S.a.color.toUpperCase())}</div><div class="chip" style="background:${S.b.color}">${esc(S.b.color.toUpperCase())}</div></div>
-  <div class="yr"><span>${esc(S.first ? 'SINCE' : 'PAIR')}</span><b>${esc(yy || '2026')}</b></div>
-  <div class="ft"><b>${esc(S.sub || '')}</b><p>${esc(S.a.intro || '')} ${esc(S.b.intro || '')}</p></div>`;
+function left() {
+  const t = (k, v) => `<button type="button" data-tab="${k}" aria-pressed="${TAB === k}">${v}</button>`;
+  let h = `<div class="stabs">${t('preset', '시작 양식')}${t('block', '블록')}${t('stk', '스티커')}</div><div class="pane">`;
+  if (TAB === 'preset') h += `<p class="note">양식을 고르면 블록 배치만 바뀌고, 써 둔 글자와 그림은 그대로 남아요.</p>` + Object.entries(PRESET).map(([k, v]) => `<button class="tile" data-preset="${k}"><i>▦</i><span><b>${v[0]}</b><small>${v[1]}</small></span></button>`).join('');
+  if (TAB === 'block') h += `<p class="note">누르면 용지 맨 아래에 붙어요. 블록에 마우스를 올리면 ↑ ↓ 복제 × 단추가 나와요.</p><div class="grid2">` + Object.entries(BT).map(([k, v]) => `<button class="tile" data-add="${k}"><i>${v[2]}</i><b>${v[0]}</b></button>`).join('') + '</div>';
+  if (TAB === 'stk') h += `<p class="note">스티커는 용지 위 아무 데나 끌어서 옮겨요. 글자 스티커는 눌러서 고쳐요.</p><div class="grid2">` + Object.entries(STK).map(([k, v]) => `<button class="tile" data-stk="${k}"><i>${k.length === 1 ? k : 'Aa'}</i><b>${v}</b></button>`).join('') + '</div>';
+  $('#left').innerHTML = h + '</div>';
 }
-function rep(S) {
-  const pane = k => { const o = S[k]; return `<div class="pane"><h6><span>PROFILE ${k === 'a' ? 'A' : 'B'}</span><span>●</span></h6>${pic(k, '', SIL, '얼굴 그림')}
-    <div class="nm"><b>${esc(o.name)}</b><small>${esc(o.role || '')} · ${esc(meta(o))}</small></div>
-    <dl><dt>성격</dt><dd>${esc(list(o.keys).join(', '))}</dd><dt>외관</dt><dd>${esc(list(o.feats).slice(0, 3).join(', '))}</dd><dt>좋아함</dt><dd>${esc(o.like)}</dd><dt>싫어함</dt><dd>${esc(o.dislike)}</dd><dt>대사</dt><dd>“${esc(o.quote)}”</dd></dl></div>`; };
-  const st = S.stats.filter(x => x.k), qa = S.qa.filter(q => q.q);
-  return `<div class="win"><div class="tb"><span class="dots"><i></i><i></i><i></i></span><span class="ttl"><span>${esc(S.title || 'PAIR')} · 관계 보고서</span></span><span class="sr"></span></div>
-  <div class="bd">${pane('a')}<div class="cen">
-    <div class="pane"><h6><span>TOGETHER</span><span>${esc(S.since || '')}</span></h6>${pic('pair', 'duo', FULL2, '두 사람 그림')}
-      <div class="arrows"><span style="color:${S.a.color}">${esc(S.a2b)} →</span><b>${esc(S.rel || '관계')}</b><span style="color:${S.b.color}">← ${esc(S.b2a)}</span></div></div>
-    ${st.length ? `<div class="pane"><h6><span>STATUS</span><span>A · B</span></h6><div class="bars">${st.map(x => `<div class="br"><i><u style="width:${x.a}%;background:${S.a.color}"></u></i><em>${esc(x.k)}</em><i><u style="width:${x.b}%;background:${S.b.color}"></u></i></div>`).join('')}</div></div>` : ''}
-    ${qa.length ? `<div class="pane"><h6><span>Q&amp;A</span><span>${qa.length}</span></h6><div class="qa">${qa.map(q => `<div><b>Q. ${esc(q.q)}</b><span><b style="color:${S.a.color}">${esc(S.a.name)}</b> ${esc(q.a)}</span><span><b style="color:${S.b.color}">${esc(S.b.name)}</b> ${esc(q.b || '아직 답하지 않음')}</span></div>`).join('')}</div></div>` : ''}
-    <div class="pane"><h6><span>TAG</span><span>#</span></h6><div class="kw">${tags(S.tags).map(t => `<span>${esc(t)}</span>`).join('')}</div></div>
-  </div>${pane('b')}</div>
-  <div class="st"><span>처음 · ${esc(S.first || '')}</span><span>지금 · ${esc(S.now || '')}</span></div></div>`;
+function right() {
+  const S = S_(), d = S.design, b = S.blocks.find(x => x.id === SEL);
+  const fonts = [['base', '기본'], ['serif', '명조'], ['round', '둥근'], ['pen', '손글씨'], ['dot', '도트']];
+  let h = `<div class="pane"><h5>용지</h5>
+    <div class="fld"><label>너비 ${d.w}px</label><input type="range" min="640" max="1400" step="20" value="${d.w}" data-d="w"></div>
+    <div class="cols"><span>바탕</span><input type="color" value="${d.bg}" data-d="bg"><span>글자</span><input type="color" value="${d.ink}" data-d="ink"></div>
+    <div class="cols"><span>상징색</span>${chip('a.color')}${chip('b.color')}</div>
+    <h5>글꼴</h5><div class="seg">${fonts.map(([k, v]) => `<button type="button" data-font="${k}" aria-pressed="${d.font === k}">${v}</button>`).join('')}</div>
+    <div class="fld"><label>모서리 둥글기 ${d.r}px</label><input type="range" min="0" max="30" value="${d.r}" data-d="r"></div>
+    <div class="fld"><label>블록 사이 ${d.gap}px</label><input type="range" min="4" max="40" value="${d.gap}" data-d="gap"></div>
+    <div class="cols"><span>칸 테두리</span><div class="seg"><button type="button" data-border="1" aria-pressed="${d.border}">있음</button><button type="button" data-border="0" aria-pressed="${!d.border}">없음</button></div></div>
+    <h5>고른 블록</h5>`;
+  if (!b) h += `<p class="note">용지에서 블록을 누르면 여기서 다듬을 수 있어요.</p>`;
+  else {
+    h += `<p class="note"><b>${BT[b.t][0]}</b> · ${BT[b.t][1]}</p><div class="cols"><span>상자</span><div class="seg"><button type="button" data-bx="1" aria-pressed="${b.box}">있음</button><button type="button" data-bx="0" aria-pressed="${!b.box}">없음</button></div></div>`;
+    if (b.t === 'full') h += `<div class="cols"><span>칸 수</span><div class="seg"><button type="button" data-cols="1" aria-pressed="${b.cols === 1}">한 장</button><button type="button" data-cols="2" aria-pressed="${b.cols === 2}">두 장</button></div></div>`;
+    if (b.t === 'full' || b.t === 'img') h += `<div class="fld"><label>그림 높이 ${b.h}px</label><input type="range" min="160" max="900" step="10" value="${b.h}" data-bh="1"></div>`;
+    if (b.t === 'head') h += `<div class="cols"><span>정렬</span><div class="seg"><button type="button" data-al="c" aria-pressed="${b.al !== 'l'}">가운데</button><button type="button" data-al="l" aria-pressed="${b.al === 'l'}">왼쪽</button></div></div>`;
+    if (b.t === 'stats') h += S.stats.map((x, i) => `<div class="fld"><label>${esc(x.k || '항목')} · ${esc(S.a.name)} ${x.a} / ${esc(S.b.name)} ${x.b}</label><input type="range" min="0" max="100" value="${x.a}" data-st="${i}.a"><input type="range" min="0" max="100" value="${x.b}" data-st="${i}.b"></div>`).join('');
+    if (b.t === 'talk') h += S.talk.map((t, i) => `<div class="cols"><span>대사 ${i + 1}</span><div class="seg"><button type="button" data-tw="${i}.a" aria-pressed="${t.who !== 'b'}">${esc(S.a.name)}</button><button type="button" data-tw="${i}.b" aria-pressed="${t.who === 'b'}">${esc(S.b.name)}</button></div></div>`).join('');
+  }
+  $('#right').innerHTML = h + `<h5 style="margin-top:14px">도움말</h5><p class="note">글자는 용지 위에서 눌러 바로 고쳐요. 그림 칸은 눌러서 고르거나 파일을 끌어다 놓고, 넣은 그림은 끌어서 위치를, −/+로 크기를 맞춰요. 색 동그라미를 누르면 색이 바뀌어요. Ctrl+Z로 되돌려요.</p></div>`;
 }
-function scrap(S) {
-  const pol = k => { const o = S[k]; return `<div class="pol"><span class="tape"></span>${pic(k, '', SIL, '그림 넣기')}<div class="cap">${esc(o.name)}<small>${esc(o.role || '')}</small></div><ul>${list(o.keys).map(x => `<li>♡ ${esc(x)}</li>`).join('')}${o.like ? `<li>좋아하는 것: ${esc(o.like)}</li>` : ''}</ul></div>`; };
-  const qa = S.qa.filter(q => q.q);
-  return `<h1>${esc(S.title || '우리 둘')}</h1><div class="sub">${esc(S.sub || '')}</div>
-  <div class="row">${pol('a')}${pol('b')}</div>
-  <div class="notes">${qa.map(q => `<div class="note"><b>${esc(q.q)}</b>${esc(S.a.name)}: ${esc(q.a || '')}<br>${esc(S.b.name)}: ${esc(q.b || '…')}</div>`).join('')}</div>
-  <div class="ticket"><div><small>FIRST MEET</small><b>${esc(S.first || '')}</b><small style="margin-top:8px">NOW</small><b>${esc(S.now || '')}</b></div><div>${esc(S.rel || '')}</div></div>`;
-}
-const DRAW = { look, info, poster, rep, scrap };
-function fit() { const w = $('#wrap'), z = $('#zoomer'); if (w && z) z.style.zoom = Math.min(1, (w.clientWidth - 4) / 1000); }
-window.addEventListener('resize', Core.debounce(fit, 120));
 function render(S) {
-  const el = $('#poster'); el.className = 'poster t-' + S.tpl; el.style.setProperty('--a', S.a.color); el.style.setProperty('--b', S.b.color);
-  el.innerHTML = DRAW[S.tpl](S); fit();
-  $('#tpls').innerHTML = Object.entries(TPL).map(([k, v]) => `<button type="button" data-t="${k}" aria-pressed="${S.tpl === k}">${v}</button>`).join('');
+  CUR = S;
+  const el = $('#poster'), d = S.design;
+  el.className = 'poster' + (d.border ? '' : ' nob') + (d.font !== 'base' ? ' f-' + d.font : '');
+  el.style.cssText = `--a:${S.a.color};--b:${S.b.color};--bg:${d.bg};--ink:${d.ink};--r:${d.r}px;--gap:${d.gap}px;--w:${d.w}px`;
+  el.innerHTML = posterHTML(S);
+  el.querySelectorAll('[data-e]').forEach(n => { n.contentEditable = 'plaintext-only'; n.spellcheck = false; });
+  if (!lastSnap) lastSnap = snap();
+  topbar(); left(); right(); applyZoom(); requestAnimationFrame(() => { applyZoom(); topbar(); });
 }
-document.addEventListener('click', e => { const b = e.target.closest('#tpls [data-t]'); if (!b) return; const S = ST.state; S.tpl = b.dataset.t; try { localStorage.setItem('2inbun:pair', JSON.stringify(S)); } catch (err) {} render(S); });
-const ST = Core.app({ key: '2inbun:pair', what: '페어틀', sample, blank, normalize, schema, prompts, apply, progress, render, fileName: S => `페어틀_${S.a.name}_${S.b.name}` });
+const rerender = () => { render(S_()); commit(); };
+document.addEventListener('input', e => { const n = e.target.closest && e.target.closest('#poster [data-e]'); if (!n) return; set(S_(), n.dataset.e, n.textContent); commit(); });
+document.addEventListener('focusout', e => { if (e.target.closest && e.target.closest('#poster [data-e]')) setTimeout(() => { const a = document.activeElement; if (!(a && a.closest && a.closest('#poster [data-e]'))) render(S_()); }, 0); });
+function undo() { if (!hist.length) return; fut.push(snap()); const s = hist.pop(); load(JSON.parse(s)); lastSnap = s; try { localStorage.setItem(KEY, s); } catch (e) {} render(S_()); }
+function redo() { if (!fut.length) return; hist.push(snap()); const s = fut.pop(); load(JSON.parse(s)); lastSnap = s; try { localStorage.setItem(KEY, s); } catch (e) {} render(S_()); }
+document.addEventListener('keydown', e => {
+  const n = e.target.closest && e.target.closest('#poster [data-e]');
+  if (n && e.key === 'Enter' && !n.closest('.b-text')) { e.preventDefault(); n.blur(); }
+  if ((e.ctrlKey || e.metaKey) && !n && document.body.dataset.mode === 'view' && !/INPUT|TEXTAREA/.test(e.target.tagName)) { if (e.key === 'z') { e.preventDefault(); undo(); } if (e.key === 'y') { e.preventDefault(); redo(); } }
+});
+let drag = null, moved = false;
+document.addEventListener('pointerdown', e => {
+  const st = e.target.closest('#poster .stk'), im = e.target.closest('#poster .pic img'), ed = e.target.closest('[data-e]');
+  if (st && !e.target.closest('.x') && !(ed && document.activeElement === ed)) { drag = { t: 'stk', i: +st.dataset.si, r: $('#poster').getBoundingClientRect(), el: st }; moved = false; return; }
+  if (im) { const p = im.closest('.pic'), k = p.dataset.photo, m = META(k); drag = { t: 'img', k, m, sx: e.clientX, sy: e.clientY, x0: m.x, y0: m.y, w: p.clientWidth, h: p.clientHeight, im }; moved = false; e.preventDefault(); }
+});
+document.addEventListener('pointermove', e => {
+  if (!drag) return; moved = true;
+  if (drag.t === 'img') { const zf = parseFloat($('#zoomer').style.zoom) || 1; drag.m.x = clamp(drag.x0 - (e.clientX - drag.sx) / (drag.w * zf) * 100, 0, 100); drag.m.y = clamp(drag.y0 - (e.clientY - drag.sy) / (drag.h * zf) * 100, 0, 100); drag.im.style.objectPosition = `${drag.m.x}% ${drag.m.y}%`; }
+  else { const r = drag.r, x = clamp((e.clientX - r.left) / r.width * 100, 0, 100), y = clamp((e.clientY - r.top) / r.height * 100, 0, 100); drag.el.style.left = x + '%'; drag.el.style.top = y + '%'; S_().stickers[drag.i].x = +x.toFixed(1); S_().stickers[drag.i].y = +y.toFixed(1); }
+});
+document.addEventListener('pointerup', () => { if (!drag) return; if (drag.t === 'img') setMeta(drag.k, drag.m); else commit(); drag = null; });
+function pickColor(path) { const inp = document.createElement('input'); inp.type = 'color'; inp.value = get(S_(), path) || '#888888'; inp.oninput = () => { set(S_(), path, inp.value); rerender(); }; inp.click(); }
+document.addEventListener('click', e => {
+  if (!e.target.closest('#poster')) return;
+  if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; return; }
+  const z = e.target.closest('.adj [data-z]');
+  if (z) { e.stopPropagation(); e.preventDefault(); const p = z.closest('.pic'), k = p.dataset.photo, m = META(k); m.z = clamp(+(m.z + (+z.dataset.z) * .1).toFixed(2), 1, 3); setMeta(k, m); p.querySelector('img').style.transform = `scale(${m.z})`; return; }
+  const act = e.target.closest('.bctl [data-act]');
+  if (act) { e.stopPropagation(); const i = +act.closest('.blk').dataset.bi, bl = S_().blocks, a = act.dataset.act;
+    if (a === 'up' && i > 0) [bl[i - 1], bl[i]] = [bl[i], bl[i - 1]];
+    if (a === 'down' && i < bl.length - 1) [bl[i + 1], bl[i]] = [bl[i], bl[i + 1]];
+    if (a === 'dup') bl.splice(i + 1, 0, { ...bl[i], id: nid() });
+    if (a === 'del') { bl.splice(i, 1); SEL = null; }
+    rerender(); return; }
+  const sx = e.target.closest('[data-sx]'); if (sx) { e.stopPropagation(); S_().stickers.splice(+sx.dataset.sx, 1); rerender(); return; }
+  const c = e.target.closest('[data-c]'); if (c) { e.stopPropagation(); pickColor(c.dataset.c); return; }
+  if (e.target.closest('[data-e]')) e.stopPropagation();
+  const blk = e.target.closest('.blk');
+  if (blk && !e.target.closest('[data-photo]')) { const id = S_().blocks[+blk.dataset.bi].id; if (SEL !== id) { SEL = id; $('#poster').querySelectorAll('.blk').forEach(x => x.classList.toggle('sel', x === blk)); right(); } }
+}, true);
+document.addEventListener('click', e => {
+  if (!ST) return; const S = S_(), q = s => e.target.closest(s);
+  if (q('#right [data-c]')) { pickColor(q('#right [data-c]').dataset.c); return; }
+  const tb = q('#top [data-t]');
+  if (tb) { const t = tb.dataset.t, zf = parseFloat($('#zoomer').style.zoom) || 1;
+    if (t === 'undo') undo(); if (t === 'redo') redo();
+    if (t === 'zi') { ZOOM = Math.min(2, zf + .1); applyZoom(); topbar(); }
+    if (t === 'zo') { ZOOM = Math.max(.3, zf - .1); applyZoom(); topbar(); }
+    if (t === 'zf') { ZOOM = 0; applyZoom(); topbar(); }
+    if (t === 'png') $('#btn-png').click();
+    if (t === 'slot') { const n = tb.dataset.n; let v = null; try { v = localStorage.getItem('pairslot' + n); } catch (err) {} if (v) { hist.push(snap()); load(JSON.parse(v)); rerender(); Core.toast(`칸${n}을 불러왔어요`); } else { try { localStorage.setItem('pairslot' + n, snap()); Core.toast(`칸${n}에 저장했어요`); } catch (err) {} topbar(); } }
+    if (t === 'exp') { const a = document.createElement('a'); a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(snap()); a.download = `페어틀_${S.title || 'pair'}.json`; a.click(); }
+    return; }
+  const tab = q('#left [data-tab]'); if (tab) { TAB = tab.dataset.tab; left(); return; }
+  const pr = q('#left [data-preset]'); if (pr) { const old = S.blocks; S.blocks = PRESET[pr.dataset.preset][2].map(t => { const keep = old.find(x => x.t === t); return keep ? { ...keep } : B(t); }); SEL = null; rerender(); return; }
+  const ad = q('#left [data-add]'); if (ad) { const nb = B(ad.dataset.add); S.blocks.push(nb); SEL = nb.id; rerender(); $('#wrap').scrollTop = $('#wrap').scrollHeight; return; }
+  const sk = q('#left [data-stk]'); if (sk) { const k = sk.dataset.stk; S.stickers.push({ t: k, text: STK[k], x: 50 + (S.stickers.length % 6) * 3, y: 20 + (S.stickers.length % 6) * 4 }); rerender(); return; }
+  const fo = q('#right [data-font]'); if (fo) { S.design.font = fo.dataset.font; rerender(); return; }
+  const bo = q('#right [data-border]'); if (bo) { S.design.border = bo.dataset.border === '1'; rerender(); return; }
+  const b = S.blocks.find(x => x.id === SEL);
+  if (b) { const bx = q('#right [data-bx]'), co = q('#right [data-cols]'), al = q('#right [data-al]'), tw = q('#right [data-tw]');
+    if (bx) { b.box = bx.dataset.bx === '1'; rerender(); }
+    if (co) { b.cols = +co.dataset.cols; rerender(); }
+    if (al) { b.al = al.dataset.al; rerender(); }
+    if (tw) { const [i, w] = tw.dataset.tw.split('.'); S.talk[+i].who = w; rerender(); } }
+});
+document.addEventListener('input', e => {
+  if (!ST) return; const S = S_(), t = e.target;
+  if (t.matches('#right [data-d]')) { const k = t.dataset.d; S.design[k] = t.type === 'range' ? +t.value : t.value; render(S); commit(); return; }
+  if (t.matches('#right [data-bh]')) { const b = S.blocks.find(x => x.id === SEL); if (b) { b.h = +t.value; render(S); commit(); } return; }
+  if (t.matches('#right [data-st]')) { const [i, k] = t.dataset.st.split('.'); S.stats[+i][k] = +t.value; render(S); commit(); }
+});
+document.addEventListener('change', e => { if (e.target.id !== 'imp') return; const f = e.target.files && e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { hist.push(snap()); load(JSON.parse(r.result)); rerender(); Core.toast('불러왔어요'); } catch (err) { Core.toast('파일을 읽지 못했어요'); } }; r.readAsText(f); });
+window.addEventListener('resize', Core.debounce(() => { if (!ZOOM) { applyZoom(); topbar(); } }, 150));
+ST = Core.app({ key: KEY, what: '페어틀', sample, blank, normalize, schema, prompts, apply, progress, render, skin: false, fileName: S => `페어틀_${S.title || S.a.name}` });
 })();
 </script>
 </body>
