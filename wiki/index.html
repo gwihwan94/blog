@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>둘의 위키</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%3E%3Crect%20width%3D%2716%27%20height%3D%2716%27%20rx%3D%273%27%20fill%3D%27%2300a495%27%2F%3E%3Cpath%20d%3D%27M4%204h8M4%207h8M4%2010h5%27%20stroke%3D%27%23fff%27%20stroke-width%3D%271.6%27%2F%3E%3C%2Fsvg%3E">
+<meta name="description" content="NPC와 PC에 대한 자캐 위키 문서를 만들어 주는 메이커">
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/base.css">
+<style>
+/* 콘셉트: 자캐·트위터용 위키 문서. 위 색 띠 · 문서 제목 · 오른쪽 정보 상자 · 목차 · 번호 붙은 문단 · 각주 · 편집 역사. 색 띠는 스킨으로 바꿈 */
+:root { --c: #00a495; --c2: #e6f6f4; --ink: #212529; --sub: #6c757d; --line: #dfe3e8; --link: #0275d8; --bg: #f5f5f5; }
+.s-blue { --c: #2c64c6; --c2: #e8effb; --link: #2c64c6; }
+.s-pink { --c: #e0558a; --c2: #fdecf2; --link: #c43f74; }
+.s-dark { --c: #2b2f36; --c2: #eceef1; --link: #0b6bcb; }
+body[data-mode="view"] { background: var(--bg); }
+.skins { display: flex; gap: 6px; justify-content: center; margin-bottom: 10px; font: 600 12.5px "Pretendard Variable", sans-serif; color: #555; align-items: center; }
+.skins button { all: unset; cursor: pointer; width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #ccc; }
+.skins button[aria-pressed="true"] { box-shadow: 0 0 0 2px #111; }
+.poster { width: min(1060px, 100%); background: #fff; color: var(--ink); font: 400 15px/1.75 "Pretendard Variable", Pretendard, sans-serif; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.top { display: flex; align-items: center; gap: 14px; height: 52px; padding: 0 18px; background: var(--c); color: #fff; }
+.top b { font-size: 19px; font-weight: 800; letter-spacing: -.02em; }
+.top .sp { flex: 1; }
+.top .sr { width: 240px; max-width: 40%; height: 32px; border-radius: 4px; background: rgba(255,255,255,.95); color: #999; font-size: 13px; display: flex; align-items: center; padding: 0 10px; }
+.wrap { padding: 22px 26px 30px; }
+.ttl { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+.ttl h1 { margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2; }
+.ttl h1 small { font-size: 15px; font-weight: 500; color: var(--sub); margin-left: 8px; }
+.btns { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.btns span { padding: 5px 12px; font-size: 13px; border-left: 1px solid var(--line); color: #333; background: #fff; cursor: pointer; }
+.btns span:first-child { border-left: 0; }
+.btns span.on { background: var(--c2); color: var(--c); font-weight: 700; }
+.meta { margin: 8px 0 14px; font-size: 12.5px; color: var(--sub); text-align: right; }
+.cats { border: 1px solid var(--line); border-radius: 4px; padding: 6px 12px; font-size: 13px; margin-bottom: 18px; }
+.cats b { margin-right: 6px; }
+.cats a { color: var(--link); text-decoration: none; }
+.cats i { font-style: normal; color: #bbb; margin: 0 6px; }
+.lay { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
+.info { border: 2px solid var(--c); border-radius: 4px; overflow: hidden; font-size: 13.5px; }
+.info .ih { background: var(--c); color: #fff; text-align: center; padding: 8px; font-weight: 800; font-size: 16px; }
+.info .ih small { display: block; font-weight: 500; font-size: 12px; opacity: .9; }
+.info .pic { aspect-ratio: 3 / 4; background: linear-gradient(160deg, #e9ecef, #cfd6dd); display: grid; place-items: center; color: #8a94a0; font-size: 12.5px; overflow: hidden; border-bottom: 1px solid var(--line); }
+.info .pic img { width: 100%; height: 100%; object-fit: cover; }
+.info table { width: 100%; border-collapse: collapse; }
+.info th { width: 34%; background: var(--c2); color: var(--c); font-weight: 700; text-align: center; padding: 6px 8px; border-top: 1px solid var(--line); }
+.info td { padding: 6px 10px; border-top: 1px solid var(--line); text-align: center; }
+.toc { display: inline-block; min-width: 220px; border: 1px solid var(--line); border-radius: 4px; padding: 10px 18px 12px; margin-bottom: 18px; font-size: 14px; }
+.toc b { display: block; margin-bottom: 4px; }
+.toc a { display: block; color: var(--link); text-decoration: none; line-height: 1.8; }
+.toc a span { color: var(--c); margin-right: 6px; font-weight: 700; }
+h2.sh { display: flex; align-items: baseline; gap: 8px; margin: 26px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--line); font-size: 24px; font-weight: 800; }
+h2.sh span { color: var(--c); }
+h2.sh em { margin-left: auto; font-style: normal; font-size: 12px; font-weight: 500; color: var(--link); }
+.sec p { margin: 0 0 10px; }
+.sec ul { margin: 0 0 10px; padding-left: 22px; }
+.sec li { margin: 2px 0; }
+.wl { color: var(--link); text-decoration: none; }
+.wl.red { color: #e33; }
+sup.fn { color: var(--link); font-size: 11px; margin-left: 1px; }
+.fns { margin-top: 30px; border-top: 1px solid var(--line); padding-top: 10px; font-size: 13px; color: #444; }
+.fns div { margin: 3px 0; }
+.fns a { color: var(--link); margin-right: 6px; }
+.dlg { border-left: 4px solid var(--c); background: var(--c2); padding: 8px 14px; margin: 0 0 10px; border-radius: 0 4px 4px 0; }
+.hist table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.hist th, .hist td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; }
+.hist th { background: #f8f9fa; font-weight: 700; }
+.hist .p { color: #2a9d3a; font-weight: 700; } .hist .m { color: #d33; font-weight: 700; }
+.hist .r { color: var(--link); font-weight: 700; }
+.foot { margin-top: 26px; padding: 14px 26px; background: #f8f9fa; border-top: 1px solid var(--line); font-size: 12px; color: var(--sub); }
+.in { animation: fadeUp .4s ease-out both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (max-width: 820px) {
+  .lay { grid-template-columns: 1fr; }
+  .info { order: -1; max-width: 360px; margin: 0 auto; width: 100%; }
+  .wrap { padding: 16px 14px 22px; }
+  .ttl h1 { font-size: 27px; }
+  .top .sr { display: none; }
+}
+</style>
+</head>
+<body data-mode="view" data-noframe>
+<header class="bar">
+  <a class="brand" href="../">귀환의 블로그</a>
+  <span class="bar-title">둘의 위키</span>
+  <span class="bar-spacer"></span>
+  <div class="tabs" role="tablist"><button data-mode="view" role="tab">보기</button><button data-mode="edit" role="tab">만들기</button></div>
+</header>
+<main class="stage only-view">
+  <p class="shared-note" id="shared-note" hidden>공유받은 위키 문서예요. 만들기에서 고치면 내 브라우저에만 저장돼요.</p>
+  <div style="width:100%;display:flex;flex-direction:column;align-items:center"><div class="skins" id="skins"></div><article class="poster" id="poster"></article></div>
+  <nav class="actions">
+    <button class="btn primary" id="btn-png">문서 저장</button>
+    <button class="btn" id="btn-link">링크 복사</button>
+    <button class="btn" id="btn-replay">새로 고침</button>
+  </nav>
+</main>
+<main class="editor only-edit" id="editor"></main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/modern-screenshot@4.6.8/dist/index.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+(() => {
+const { esc, clamp, num, $ } = Core;
+const SKIN = { green: '#00a495', blue: '#2c64c6', pink: '#e0558a', dark: '#2b2f36' };
+const N = { info: 9, sec: 8, hist: 6 };
+const eInfo = () => ({ k: '', v: '' }), eSec = () => ({ h: '', text: '' }), eHist = () => ({ t: '', who: '', diff: 0, msg: '' });
+const blank = () => ({ v: 1, skin: 'green', wiki: '자캐 위키', title: 'NPC', alias: '', cats: '', updated: '', view: 'doc', info: Array.from({ length: N.info }, eInfo), secs: Array.from({ length: N.sec }, eSec), hist: Array.from({ length: N.hist }, eHist) });
+const sample = () => normalize({
+  skin: 'green', wiki: '황궁 위키', title: 'NPC', alias: '황태자', cats: '등장인물, 황실, 서고 단골, 말보다 행동',
+  updated: '2026-11-24 22:41:07',
+  info: [{ k: '이름', v: 'NPC' }, { k: '신분', v: '제국 황태자' }, { k: '나이', v: '24세' }, { k: '생일', v: '3월 14일' }, { k: '키', v: '187cm' }, { k: '좋아하는 것', v: '서고 창가 자리, 홍차(설탕 없이)' }, { k: '싫어하는 것', v: '말을 먼저 꺼내는 일' }, { k: '관계', v: '[[PC]]의 약혼자' }],
+  secs: [
+    { h: '개요', text: "제국의 황태자. 정략으로 [[PC]]와 약혼했지만 정략'''만'''은 아니라는 게 중론이다.((본인은 끝까지 부정한다.))" },
+    { h: '성격', text: "말수가 적고 예법을 중시한다. 감정을 말로 표현하는 데 서툴러서 대부분 행동으로 대신한다.\n* 걱정되면 시종을 보내는 대신 직접 간다.\n* \"우연입니다\"를 자주 쓰지만 우연이었던 적은 거의 없다." },
+    { h: '행적', text: "봄 무도회에서 [[PC]]에게 의례상 첫 춤을 청했다가 두 곡째까지 손을 놓지 않았다.\n> 한 곡만 추면 됩니다.\n이후 황궁 서고 방문 시간이 [[PC]]와 열한 번 연속 겹친 사실이 알려졌다.((출입 기록 기준.))" },
+    { h: '[[PC]]와의 관계', text: "공식적으로는 정략 약혼자. 비 오는 정원에서 망토를 같이 쓴 이후로 둘의 거리가 눈에 띄게 줄었다.\n* 사절단 일을 남에게 먼저 듣고 하루 종일 말수가 줄었다.\n* 다음 날 바로 풀렸다." },
+    { h: '여담', text: "* 홍차는 설탕 없이. [[PC]]가 이걸 기억하고 먼저 주문한 일이 있다.\n* 부치지 않은 편지가 세 장 있다는 설이 있다.((본인 확인 불가.))\n* 군밤 값을 몰라서 물어본 적이 있다." },
+  ],
+  hist: [
+    { t: '2026-11-24 22:41', who: '211.***.**.14', diff: 86, msg: '여담 추가' },
+    { t: '2026-11-21 01:12', who: 'PC', diff: 42, msg: '관계 문단 수정' },
+    { t: '2026-10-30 23:55', who: '118.***.**.201', diff: 133, msg: '비 오는 정원 추가' },
+    { t: '2026-10-02 09:20', who: 'NPC', diff: -57, msg: '“부치지 않은 편지” 삭제' },
+    { t: '2026-09-09 18:03', who: '211.***.**.14', diff: 210, msg: '행적 정리' },
+  ],
+});
+const arr = (src, n, mk) => Array.from({ length: n }, (_, i) => ({ ...mk(), ...((Array.isArray(src) ? src : [])[i] || {}) }));
+function normalize(s) {
+  const b = blank(); s = s && typeof s === 'object' ? s : {};
+  const o = { ...b, ...s }; if (!SKIN[o.skin]) o.skin = 'green'; if (!['doc', 'hist'].includes(o.view)) o.view = 'doc';
+  o.info = arr(s.info, N.info, eInfo); o.secs = arr(s.secs, N.sec, eSec); o.hist = arr(s.hist, N.hist, eHist).map(h => ({ ...h, diff: Math.round(num(h.diff, 0)) }));
+  return o;
+}
+function apply(S, o) {
+  const got = []; const g = n => { if (!got.includes(n)) got.push(n); };
+  ['wiki', 'title', 'alias', 'cats', 'updated'].forEach(k => { if (o[k]) { S[k] = o[k]; g('문서'); } });
+  const put = (key, n, mk, label) => { if (Array.isArray(o[key])) { S[key] = Array.from({ length: n }, mk); o[key].slice(0, n).forEach((x, i) => { if (x && typeof x === 'object') S[key][i] = { ...mk(), ...x }; }); g(label); } };
+  put('info', N.info, eInfo, '정보 상자'); put('secs', N.sec, eSec, '문단'); put('hist', N.hist, eHist, '편집 역사');
+  return got;
+}
+function prompts() {
+  const p = `*[OOC: 롤플레잉 잠시 중단. 「둘의 위키」 문서.
+NPC에 대한 자캐용 위키 문서를 만든다. 팬들이 함께 고치는 위키 문서 말투(“~이다.”, 여담은 “~함”, “~라는 설이 있다”)로 쓴다.
+▪ wiki 위키 이름 10자(세계관에 맞게, 예: “황궁 위키”), title 문서 제목(NPC 이름), alias 별칭, cats 분류 3~5개 쉼표로, updated 최근 수정 “2026-11-24 22:41:07”
+▪ info 정보 상자 5~9줄: k 항목, v 값(설정에 있는 것만, 모르면 넣지 않음)
+▪ secs 문단 4~8개: h 제목(개요, 성격, 외모, 행적, [[PC]]와의 관계, 여담 등), text 본문 200자 안팎. 문법: [[이름]] 문서 링크, '''굵게''', ((각주)), 줄 맨 앞 “* ”는 목록, “> ”는 대사 인용, 줄바꿈은 \\n
+▪ hist 편집 역사 3~6개(최근 것부터): t “2026-11-24 22:41”, who 편집자(“211.***.**.14” 같은 가린 IP, 또는 NPC|PC 본인), diff 바뀐 글자 수(+/-), msg 편집 요약 15자
+▪ 행적·관계는 RP에서 실제 있었던 일만, 위키다운 건조한 서술과 은근한 드립. 다른 인물 이름은 쓰지 않는다.
+▪ PC의 말·행동은 RP에 나온 것만 쓰고 지어내지 않는다. 여기서 만든 내용은 이후 RP의 사실로 삼지 않는다.
+▪ 출력: 인사·설명 없이 JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만. 값은 형식 예시일 뿐.
+{"wiki":"","title":"","alias":"","cats":"","updated":"","info":[{"k":"","v":""}],"secs":[{"h":"","text":""}],"hist":[{"t":"","who":"","diff":0,"msg":""}]}]*`;
+  return [{ label: '둘의 위키', sub: '정보 상자 · 문단 · 편집 역사', text: p }];
+}
+function progress(S) { return [{ label: '문서', ok: !!S.title }, { label: '정보 상자', ok: S.info.some(i => i.k) }, { label: `문단 ${S.secs.filter(x => x.h).length}개`, ok: S.secs.some(x => x.text) }, { label: '편집 역사', ok: S.hist.some(h => h.t) }]; }
+function schema(S) {
+  const list = (key, n, t, fs) => { const o = []; for (let i = 0; i < n; i++) { o.push({ sub: `${t} ${i + 1}` }); fs.forEach(f => o.push({ ...f, k: `${key}.${i}.${f.k}` })); } return o; };
+  return [
+    { title: '문서', en: 'PAGE', desc: "본문 문법: [[이름]] 링크 · '''굵게''' · ((각주)) · 줄 앞 * 목록 · 줄 앞 > 대사. 사진은 보기 화면에서 정보 상자 사진 칸을 눌러 넣어요.", fields: [{ k: 'wiki', label: '위키 이름' }, { k: 'title', label: '문서 제목' }, { k: 'alias', label: '별칭' }, { k: 'updated', label: '최근 수정' }, { k: 'cats', label: '분류 (쉼표로)', full: true }, { k: 'skin', label: '색', type: 'select', opts: [['green', '초록'], ['blue', '파랑'], ['pink', '분홍'], ['dark', '먹색']] }] },
+    { title: '정보 상자', en: 'INFOBOX', fields: list('info', N.info, '줄', [{ k: 'k', label: '항목', ph: '비우면 빠져요' }, { k: 'v', label: '값' }]) },
+    { title: '문단', en: 'SECTIONS', fields: list('secs', N.sec, '문단', [{ k: 'h', label: '제목', ph: '비우면 빠져요' }, { k: 'text', label: '본문', type: 'textarea', full: true, rows: 5 }]) },
+    { title: '편집 역사', en: 'HISTORY', fields: list('hist', N.hist, '판', [{ k: 't', label: '시각' }, { k: 'who', label: '편집자' }, { k: 'diff', label: '바뀐 글자 수', num: true }, { k: 'msg', label: '요약' }]) },
+  ];
+}
+/* 위키 문법 → HTML */
+function md(t, fns) {
+  const inline = s => esc(s)
+    .replace(/\(\((.+?)\)\)/g, (_, x) => { fns.push(x); const n = fns.length; return `<sup class="fn" id="r${n}">[${n}]</sup>`; })
+    .replace(/(?:'|&#39;|&#x27;){3}(.+?)(?:'|&#39;|&#x27;){3}/g, '<b>$1</b>')
+    .replace(/\[\[(.+?)\]\]/g, (_, x) => `<a class="wl" href="#" onclick="return false">${x}</a>`);
+  const lines = String(t || '').split(/\n|\\n/); let h = '', ul = false;
+  lines.forEach(l => {
+    if (/^\s*\*\s+/.test(l)) { if (!ul) { h += '<ul>'; ul = true; } h += `<li>${inline(l.replace(/^\s*\*\s+/, ''))}</li>`; return; }
+    if (ul) { h += '</ul>'; ul = false; }
+    if (/^\s*>\s*/.test(l)) { h += `<div class="dlg">${inline(l.replace(/^\s*>\s*/, ''))}</div>`; return; }
+    if (l.trim()) h += `<p>${inline(l)}</p>`;
+  });
+  if (ul) h += '</ul>';
+  return h;
+}
+function posterHTML(S, an) {
+  const secs = S.secs.filter(x => x.h), info = S.info.filter(x => x.k), fns = [];
+  const head = (t) => t.replace(/\[\[(.+?)\]\]/g, '$1');
+  const pic = Core.photo('a');
+  const cats = String(S.cats || '').split(/[,，]/).map(x => x.trim()).filter(Boolean);
+  let body = '';
+  if (S.view === 'hist') {
+    const hs = S.hist.filter(h => h.t); const rev = hs.length + 6;
+    body = `<div class="hist"><table><thead><tr><th>판</th><th>시각</th><th>편집자</th><th>변경</th><th>요약</th></tr></thead><tbody>${hs.map((h, i) => `<tr><td class="r">r${rev - i}</td><td>${esc(h.t)}</td><td>${esc(h.who)}</td><td class="${h.diff >= 0 ? 'p' : 'm'}">(${h.diff >= 0 ? '+' : ''}${h.diff})</td><td>${esc(h.msg)}</td></tr>`).join('')}</tbody></table></div>`;
+  } else {
+    const secHTML = secs.map((x, i) => `<section class="sec${an ? ' in' : ''}"${an ? ` style="animation-delay:${i * 80}ms"` : ''}><h2 class="sh"><span>${i + 1}.</span>${esc(head(x.h))}<em>[편집]</em></h2>${md(x.text, fns)}</section>`).join('');
+    body = `<div class="lay"><div>
+      ${secs.length > 2 ? `<nav class="toc"><b>목차</b>${secs.map((x, i) => `<a href="#" onclick="return false"><span>${i + 1}.</span>${esc(head(x.h))}</a>`).join('')}</nav>` : ''}
+      ${secHTML}
+      ${fns.length ? `<div class="fns">${fns.map((f, i) => `<div><a>[${i + 1}]</a>${esc(f).replace(/(?:'|&#39;|&#x27;){3}(.+?)(?:'|&#39;|&#x27;){3}/g, '<b>$1</b>')}</div>`).join('')}</div>` : ''}
+    </div>
+    <aside class="info"><div class="ih">${esc(S.title)}${S.alias ? `<small>${esc(S.alias)}</small>` : ''}</div><div class="pic" data-photo="a">${pic ? `<img src="${pic}" alt="${esc(S.title)}">` : '사진'}</div>
+      <table><tbody>${info.map(r => `<tr><th>${esc(r.k)}</th><td>${md(r.v, []).replace(/<\/?p>/g, '')}</td></tr>`).join('')}</tbody></table></aside></div>`;
+  }
+  return `<div class="top"><b>${esc(S.wiki || '자캐 위키')}</b><span class="sp"></span><span class="sr">여기에서 검색</span></div>
+  <div class="wrap">
+    <div class="ttl"><h1>${esc(S.title)}${S.view === 'hist' ? '<small>(문서 역사)</small>' : S.alias ? `<small>${esc(S.alias)}</small>` : ''}</h1>
+      <div class="btns"><span data-v="doc" class="${S.view === 'doc' ? 'on' : ''}">문서</span><span>편집</span><span>토론</span><span data-v="hist" class="${S.view === 'hist' ? 'on' : ''}">역사</span></div></div>
+    <div class="meta">최근 수정 시각: ${esc(S.updated || '')}</div>
+    ${cats.length ? `<div class="cats"><b>분류</b>${cats.map(c => `<a href="#" onclick="return false">${esc(c)}</a>`).join('<i>|</i>')}</div>` : ''}
+    ${body}
+  </div>
+  <div class="foot">이 문서의 내용은 RP 속 사실만을 바탕으로 작성되었습니다. 최근 수정 ${esc(S.updated || '')}</div>`;
+}
+function render(S, { animate }) {
+  const el = $('#poster'); el.className = 'poster s-' + S.skin; el.innerHTML = posterHTML(S, animate);
+  $('#skins').innerHTML = '색 ' + Object.entries(SKIN).map(([k, c]) => `<button type="button" data-sk="${k}" aria-label="${k}" aria-pressed="${S.skin === k}" style="background:${c}"></button>`).join('');
+}
+document.addEventListener('click', e => {
+  const sk = e.target.closest('#skins [data-sk]'), v = e.target.closest('#poster .btns [data-v]');
+  if (!sk && !v) return; const S = ST.state;
+  if (sk) S.skin = sk.dataset.sk; if (v) S.view = v.dataset.v;
+  try { localStorage.setItem('2inbun:wiki', JSON.stringify(S)); } catch (err) {}
+  render(S, { animate: !!v });
+});
+const ST = Core.app({ key: '2inbun:wiki', what: '위키 문서', sample, blank, normalize, schema, prompts, apply, progress, render, fileName: S => `위키_${S.title}` });
+})();
+</script>
+</body>
+</html>
