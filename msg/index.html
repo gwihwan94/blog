@@ -40,7 +40,7 @@ body[data-mode="view"] { background: var(--desk); }
 .row { display: flex; align-items: flex-end; gap: 6px; max-width: 100%; }
 .row.me { justify-content: flex-end; }
 .row.gap { margin-top: 10px; }
-.av { width: 38px; height: 38px; flex: none; background: #c9d3dd; overflow: hidden; display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 15px; align-self: flex-start; }
+.av { width: 38px; height: 38px; flex: none; background: var(--avbg, #c9d3dd); overflow: hidden; display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 15px; align-self: flex-start; }
 .av img { width: 100%; height: 100%; object-fit: cover; }
 .av.blank { visibility: hidden; }
 .col { display: flex; flex-direction: column; min-width: 0; max-width: 72%; }
@@ -65,7 +65,7 @@ body[data-mode="view"] { background: var(--desk); }
 .bb.call small { display: block; font-size: 11.5px; opacity: .7; }
 .rd { align-self: flex-end; font-size: 11px; color: var(--tm); margin: 2px 4px 0; }
 .typing { display: inline-flex; gap: 4px; padding: 12px 14px; }
-.typing i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .45; animation: dt 1.2s infinite ease-in-out; }
+.typing i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .45; }
 .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
 @keyframes dt { 0%, 60%, 100% { transform: none; opacity: .35; } 30% { transform: translateY(-4px); opacity: .8; } }
 .ip { display: flex; align-items: center; gap: 10px; padding: 8px 12px 10px; background: var(--ibg); border-top: 1px solid var(--iline, transparent); color: var(--ifg); }
@@ -73,11 +73,11 @@ body[data-mode="view"] { background: var(--desk); }
 .ip svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.8; flex: none; }
 .hb { height: 26px; display: grid; place-items: center; background: var(--ibg); }
 .hb i { width: 134px; height: 5px; border-radius: 3px; background: var(--hbc, #111); }
-.in { animation: pop .32s ease-out both; }
+.in { animation: none; }
 @keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
 
 /* ── 카카오톡 ── */
-.a-kakao { --bg: #bacee0; --fg: #111; --hbg: #bacee0; --hfg: #111; --ob: #fff; --of: #111; --mb: #fee500; --mf: #111; --tm: #556677; --un: #f2c200; --ibg: #fff; --ifg: #555; --ifield: #f3f3f3; --iph: #9a9a9a; }
+.a-kakao { --avbg: #a3bbd1; --bg: #bacee0; --fg: #111; --hbg: #bacee0; --hfg: #111; --ob: #fff; --of: #111; --mb: #fee500; --mf: #111; --tm: #556677; --un: #f2c200; --ibg: #fff; --ifg: #555; --ifield: #f3f3f3; --iph: #9a9a9a; }
 .a-kakao .av { border-radius: 15px; }
 .a-kakao .bb { border-radius: 4px 15px 15px 15px; }
 .a-kakao .row.me .bb { border-radius: 15px 4px 15px 15px; }
@@ -85,13 +85,13 @@ body[data-mode="view"] { background: var(--desk); }
 .a-kakao .dt { padding: 5px 13px; border-radius: 999px; background: rgba(0,0,0,.13); color: #fff; }
 .a-kakao .hd .tt { font-weight: 600; }
 /* ── 라인 ── */
-.a-line { --bg: #8eaed9; --fg: #111; --hbg: #8eaed9; --hfg: #fff; --sbc: #fff; --ob: #fff; --of: #111; --mb: #85e249; --mf: #111; --tm: #f2f6fb; --ibg: #fff; --ifg: #222; --ifield: #f1f2f4; --iph: #a3a7ad; }
+.a-line { --avbg: #c4cad3; --bg: #8eaed9; --fg: #111; --hbg: #8eaed9; --hfg: #fff; --sbc: #fff; --ob: #fff; --of: #111; --mb: #85e249; --mf: #111; --tm: #f2f6fb; --ibg: #fff; --ifg: #222; --ifield: #f1f2f4; --iph: #a3a7ad; }
 .a-line .av { border-radius: 50%; }
 .a-line .nm { color: #fff; opacity: .95; }
 .a-line .bb { border-radius: 18px; }
 .a-line .dt { padding: 4px 12px; border-radius: 999px; background: rgba(0,0,0,.16); color: #fff; }
 /* ── 인스타그램 DM ── */
-.a-insta { --bg: #fff; --fg: #000; --hbg: #fff; --hfg: #000; --hline: #efefef; --ob: #efefef; --of: #000; --mb: #3797f0; --mf: #fff; --tm: #8e8e8e; --ibg: #fff; --ifg: #000; --ifield: #fff; --ifb: #dbdbdb; --iph: #8e8e8e; }
+.a-insta { --avbg: #dbdbdb; --bg: #fff; --fg: #000; --hbg: #fff; --hfg: #000; --hline: #efefef; --ob: #efefef; --of: #000; --mb: #3797f0; --mf: #fff; --tm: #8e8e8e; --ibg: #fff; --ifg: #000; --ifield: #fff; --ifb: #dbdbdb; --iph: #8e8e8e; }
 .a-insta .av { width: 28px; height: 28px; border-radius: 50%; font-size: 11px; align-self: flex-end; }
 .a-insta .bb { border-radius: 22px; padding: 9px 14px; }
 .a-insta .row.me .bb { background: linear-gradient(140deg, #8a3ffc 0%, #3797f0 100%); }
@@ -100,11 +100,11 @@ body[data-mode="view"] { background: var(--desk); }
 .a-insta .nm { display: none; }
 .a-insta .hd .tt small { opacity: .55; }
 /* ── 아이메시지 ── */
-.a-imsg { --bg: #fff; --fg: #000; --hbg: rgba(246,246,246,.96); --hfg: #000; --hline: #dcdcdc; --ob: #e9e9eb; --of: #000; --mb: #0b84fe; --mf: #fff; --tm: #8a8a8e; --ibg: #fff; --ifg: #8a8a8e; --ifield: #fff; --ifb: #d1d1d6; --iph: #b0b0b5; }
+.a-imsg { --avbg: linear-gradient(180deg, #a5abb5, #858b95); --bg: #fff; --fg: #000; --hbg: rgba(246,246,246,.96); --hfg: #000; --hline: #dcdcdc; --ob: #e9e9eb; --of: #000; --mb: #0b84fe; --mf: #fff; --tm: #8a8a8e; --ibg: #fff; --ifg: #8a8a8e; --ifield: #fff; --ifb: #d1d1d6; --iph: #b0b0b5; }
 .a-imsg .hd { flex-direction: column; gap: 3px; padding: 2px 14px 8px; position: relative; }
 .a-imsg .hd .bk { position: absolute; left: 12px; top: 14px; color: #0b84fe; font-size: 30px; }
 .a-imsg .hd .ics { position: absolute; right: 16px; top: 16px; color: #0b84fe; }
-.a-imsg .hd .hav { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(180deg, #a5abb5, #858b95); display: grid; place-items: center; color: #fff; font-size: 21px; font-weight: 600; overflow: hidden; }
+.a-imsg .hd .hav { width: 52px; height: 52px; border-radius: 50%; background: var(--avbg); display: grid; place-items: center; color: #fff; font-size: 21px; font-weight: 600; overflow: hidden; }
 .a-imsg .hd .hav img { width: 100%; height: 100%; object-fit: cover; }
 .a-imsg .hd .tt { text-align: center; font-size: 12px; font-weight: 500; flex: none; }
 .a-imsg .av { display: none; }
@@ -122,7 +122,7 @@ body[data-mode="view"] { background: var(--desk); }
 .a-imsg .row.me.last .bb:not(.emo)::before { left: auto; right: -7px; background: var(--mb); border-bottom-right-radius: 0; border-bottom-left-radius: 15px 14px; }
 .a-imsg .row.me.last .bb:not(.emo)::after { left: auto; right: -10px; border-bottom-right-radius: 0; border-bottom-left-radius: 10px; }
 /* ── 삼성 메시지 ── */
-.a-galaxy { --bg: #fafafa; --fg: #111; --hbg: #fafafa; --hfg: #111; --ob: #ececec; --of: #111; --mb: #3e86f5; --mf: #fff; --tm: #8a8a8a; --ibg: #fafafa; --ifg: #555; --ifield: #ececec; --iph: #8a8a8a; --hbc: #222; }
+.a-galaxy { --avbg: #8fb3e6; --bg: #fafafa; --fg: #111; --hbg: #fafafa; --hfg: #111; --ob: #ececec; --of: #111; --mb: #3e86f5; --mf: #fff; --tm: #8a8a8a; --ibg: #fafafa; --ifg: #555; --ifield: #ececec; --iph: #8a8a8a; --hbc: #222; }
 .a-galaxy .poster, .poster.a-galaxy { border-radius: 40px; }
 .poster.a-galaxy .scr { border-radius: 30px; }
 .a-galaxy .sb .isl { width: 12px; height: 12px; margin-left: -6px; top: 14px; border-radius: 50%; }
@@ -150,7 +150,7 @@ body[data-mode="view"] { background: var(--desk); }
 .dots { display: flex; gap: 5px; justify-content: center; margin-top: 4px; }
 .dots i { width: 6px; height: 6px; border-radius: 50%; background: #c9ccd2; }
 .dots i.on { width: 16px; border-radius: 3px; background: #222; }
-.slide-l { animation: sl .28s ease-out both; } .slide-r { animation: sr .28s ease-out both; }
+.slide-l, .slide-r { animation: none; }
 @keyframes sl { from { opacity: 0; transform: translateX(26px); } to { opacity: 1; transform: none; } }
 @keyframes sr { from { opacity: 0; transform: translateX(-26px); } to { opacity: 1; transform: none; } }
 </style>
@@ -165,8 +165,6 @@ body[data-mode="view"] { background: var(--desk); }
 <main class="stage only-view">
   <p class="shared-note" id="shared-note" hidden>공유받은 메시지예요. 만들기에서 고치면 내 브라우저에만 저장돼요.</p>
   <div class="wrapv">
-    <div class="apps" id="apps" role="group" aria-label="앱"></div>
-    <div class="side" id="side"></div>
     <div class="pager" id="pager"></div>
     <article class="poster" id="poster"></article>
   </div>
@@ -187,6 +185,7 @@ const { esc, clamp, num, $ } = Core;
 const APPS = { kakao: ['카카오톡', '#fee500'], line: ['라인', '#06c755'], insta: ['인스타그램 DM', 'linear-gradient(135deg,#f58529,#dd2a7b,#8134af)'], imsg: ['아이메시지', '#0b84fe'], galaxy: ['삼성 메시지', '#3e86f5'] };
 const KIND = { text: '글', emoji: '이모티콘', photo: '사진', call: '통화', missed: '부재중 전화', deleted: '삭제됨' };
 const MAXM = 40;
+const PERSON = '<svg viewBox="0 0 40 40" aria-hidden="true" style="width:100%;height:100%;display:block"><circle cx="20" cy="15.5" r="7.2" fill="#fff"/><path d="M6.5 36c1.2-8 6.6-12.2 13.5-12.2S32.3 28 33.5 36z" fill="#fff"/></svg>';
 const eMsg = () => ({ from: 'a', d: '', t: '', kind: 'text', text: '' });
 const blank = () => ({ v: 1, app: 'kakao', view: 'b', a: { name: 'NPC', sub: '' }, b: { name: 'PC', sub: '' }, read: true, typing: false, msgs: Array.from({ length: MAXM }, eMsg) });
 const M = (from, d, t, text, kind = 'text') => ({ from, d, t, kind, text });
@@ -251,7 +250,7 @@ function schema(S) {
   const f = [];
   S.msgs.forEach((m, i) => f.push({ sub: `${i + 1}` }, { k: `msgs.${i}.from`, label: '보낸 사람', type: 'select', opts: [['a', 'NPC'], ['b', 'PC']] }, { k: `msgs.${i}.kind`, label: '종류', type: 'select', opts: Object.entries(KIND) }, { k: `msgs.${i}.d`, label: '날짜', ph: '2026.11.24' }, { k: `msgs.${i}.t`, label: '시각', ph: '23:41' }, { k: `msgs.${i}.text`, label: '내용', full: true, ph: '비우면 빠져요 (통화·부재중·삭제는 비워도 돼요)' }));
   return [
-    { title: '앱 · 사람', en: 'APP', desc: '프로필 사진은 보기 화면에서 프로필을 눌러 넣어요.', fields: [{ k: 'app', label: '앱', type: 'select', opts: Object.entries(APPS).map(([k, v]) => [k, v[0]]) }, { k: 'view', label: '누구 폰 화면', type: 'select', opts: [['b', 'PC 폰 (NPC가 상대)'], ['a', 'NPC 폰 (PC가 상대)']] }, { k: 'a.name', label: 'NPC 표시 이름' }, { k: 'a.sub', label: 'NPC 아이디·상태' }, { k: 'b.name', label: 'PC 표시 이름' }, { k: 'b.sub', label: 'PC 아이디·상태' }] },
+    { title: '앱 · 사람', en: 'APP', desc: '프로필 사진은 보기 화면에서 프로필을 눌러 넣어요.', fields: [{ k: 'app', label: '쓰는 앱 (OOC가 정해 줘요)', type: 'select', opts: Object.entries(APPS).map(([k, v]) => [k, v[0]]) }, { k: 'view', label: '누구 폰 화면', type: 'select', opts: [['b', 'PC 폰 (NPC가 상대)'], ['a', 'NPC 폰 (PC가 상대)']] }, { k: 'a.name', label: 'NPC 표시 이름' }, { k: 'a.sub', label: 'NPC 아이디·상태' }, { k: 'b.name', label: 'PC 표시 이름' }, { k: 'b.sub', label: 'PC 아이디·상태' }] },
     { title: '메시지', en: 'MESSAGES', fields: f },
   ];
 }
@@ -285,7 +284,7 @@ const IC = {
 };
 const SB = (app) => `<div class="sb"><span>${app === 'galaxy' ? '11:02' : '11:02'}</span><span class="isl"></span><span class="ic"><svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="currentColor"/><rect x="2" y="2" width="15" height="8" rx="2"/><rect x="23.5" y="4" width="2" height="4" rx="1"/></svg></span></div>`;
 function header(app, o, pic) {
-  const av = pic ? `<img src="${pic}" alt="">` : esc([...String(o.name || '?')][0]);
+  const av = pic ? `<img src="${pic}" alt="">` : PERSON;
   if (app === 'imsg') return `<div class="hd">${IC.back}<span class="hav" data-photo="other">${av}</span><span class="tt">${esc(o.name)} ›</span><span class="ics">${IC.video}</span></div>`;
   if (app === 'insta') return `<div class="hd">${IC.back}<span class="av" data-photo="other" style="width:32px;height:32px;border-radius:50%;align-self:center">${av}</span><span class="tt">${esc(o.name)}<small>${esc(o.sub || '')}</small></span><span class="ics">${IC.call}${IC.video}</span></div>`;
   if (app === 'galaxy') return `<div class="hd">${IC.back}<span class="tt">${esc(o.name)}</span><span class="ics">${IC.call}${IC.more}</span></div>`;
@@ -346,14 +345,14 @@ function posterHTML(S, animate) {
     const unread = mine && !S.read && i >= lastMeIdx - 0 && app === 'kakao' ? '<span class="un">1</span>' : '';
     const lineRead = mine && app === 'line' && (S.read || i < lastMeIdx) ? '<span>읽음</span>' : '';
     const avOn = !mine && (app === 'insta' ? lastOfGroup : !cont);
-    const av = mine ? '' : `<span class="av${avOn ? '' : ' blank'}" ${avOn ? 'data-photo="other"' : ''}>${avOn ? (pic ? `<img src="${pic}" alt="">` : esc([...String(other.name || '?')][0])) : ''}</span>`;
+    const av = mine ? '' : `<span class="av${avOn ? '' : ' blank'}" ${avOn ? 'data-photo="other"' : ''}>${avOn ? (pic ? `<img src="${pic}" alt="">` : PERSON) : ''}</span>`;
     const nm = !mine && !cont && (app === 'kakao' || app === 'line') ? `<div class="nm">${esc(other.name)}</div>` : '';
     const meta = `<span class="meta">${unread}${lineRead}${showTime ? `<span>${ko(m.t)}</span>` : ''}</span>`;
     h += `<div class="row${mine ? ' me' : ''}${cont ? ' cont' : ' gap'}${lastOfGroup ? ' last' : ''}${animate ? ' in' : ''}"${animate ? ` style="animation-delay:${Math.min(k++ * 70, 2400)}ms"` : ''}>${av}<div class="col">${nm}<div class="bw">${bubble(app, m, S.msgs.indexOf(m))}${meta}</div></div></div>`;
     if (i === lastMeIdx && (app === 'imsg' || app === 'insta') ) h += `<div class="rd">${S.read ? (app === 'imsg' ? `읽음 ${ko(ms[ms.length - 1].t)}` : '읽음') : (app === 'imsg' ? '전송됨' : '')}</div>`;
     prev = m;
   });
-  if (S.typing && PG === pages.length - 1) h += `<div class="row gap${animate ? ' in' : ''}"${animate ? ` style="animation-delay:${Math.min(k * 70, 2400) + 200}ms"` : ''}><span class="av${app === 'imsg' ? '' : ''}" data-photo="other">${pic ? `<img src="${pic}" alt="">` : esc([...String(other.name || '?')][0])}</span><div class="col"><div class="bb typing" aria-label="입력 중"><i></i><i></i><i></i></div></div></div>`;
+  if (S.typing && PG === pages.length - 1) h += `<div class="row gap${animate ? ' in' : ''}"${animate ? ` style="animation-delay:${Math.min(k * 70, 2400) + 200}ms"` : ''}><span class="av${app === 'imsg' ? '' : ''}" data-photo="other">${pic ? `<img src="${pic}" alt="">` : PERSON}</span><div class="col"><div class="bb typing" aria-label="입력 중"><i></i><i></i><i></i></div></div></div>`;
   return `<div class="scr">${SB(app)}${header(app, other, pic)}<div class="log${DIR > 0 ? ' slide-l' : DIR < 0 ? ' slide-r' : ''}">${h || '<p style="text-align:center;opacity:.6;margin-top:40px">메시지가 없어요</p>'}</div>${inputBar(app)}<div class="hb"><i></i></div></div>`;
 }
 let CUR = null, PAGES = [], MS = [];
@@ -361,20 +360,13 @@ function render(S, { animate }) {
   CUR = S;
   const el = $('#poster'); el.className = 'poster a-' + S.app; el.innerHTML = posterHTML(S, animate);
   for (let n = 0; n < 8; n++) { const lg = el.querySelector('.log'); if (!lg || lg.scrollHeight <= lg.clientHeight + 1) break; CUT[S.app] = (CUT[S.app] || 0) + 40; el.innerHTML = posterHTML(S, false); }
-  $('#apps').innerHTML = Object.entries(APPS).map(([k, v]) => `<button type="button" data-app="${k}" aria-pressed="${S.app === k}"><i style="background:${v[1]}"></i>${v[0]}</button>`).join('');
   const P = PAGES[PG], first = MS[P.s];
   $('#pager').innerHTML = PAGES.length > 1 ? `<button type="button" data-pg="-1" aria-label="이전 화면" ${PG === 0 ? 'disabled' : ''}>‹</button><div class="lb">${first && first.d ? esc(first.d) : ''}${first && first.t ? ' · ' + ko(first.t) : ''}<small>${PG + 1} / ${PAGES.length} 화면 · 넘겨서 보기</small><div class="dots">${PAGES.map((_, i) => `<i class="${i === PG ? 'on' : ''}"></i>`).join('')}</div></div><button type="button" data-pg="1" aria-label="다음 화면" ${PG === PAGES.length - 1 ? 'disabled' : ''}>›</button>` : '';
   DIR = 0;
-  $('#side').innerHTML = `누구 폰 <button type="button" data-v="b" aria-pressed="${S.view === 'b'}">${esc(S.b.name)}</button><button type="button" data-v="a" aria-pressed="${S.view === 'a'}">${esc(S.a.name)}</button>`;
 }
 /* 앱 · 화면 주인 바꾸기: 상태에 저장돼 링크·캡처에 그대로 */
 document.addEventListener('click', e => {
-  const pgb = e.target.closest('#pager [data-pg]'); if (pgb) { go(+pgb.dataset.pg); return; }
-  const a = e.target.closest('#apps [data-app]'), v = e.target.closest('#side [data-v]');
-  if (!a && !v) return; const S = APP_ST.state;
-  if (a) S.app = a.dataset.app; if (v) S.view = v.dataset.v;
-  try { localStorage.setItem('2inbun:msg', JSON.stringify(S)); } catch (err) {}
-  render(S, { animate: false });
+  const pgb = e.target.closest('#pager [data-pg]'); if (pgb) go(+pgb.dataset.pg);
 });
 function go(d) { const n = clamp(PG + d, 0, PAGES.length - 1); if (n === PG) return; DIR = d; PG = n; render(APP_ST.state, { animate: false }); }
 document.addEventListener('keydown', e => { if (document.body.dataset.mode !== 'view' || /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return; if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1); });

@@ -36,8 +36,10 @@ body[data-mode="edit"] { background: #eef0f2; color: #111; }
 .tick { display: flex; align-items: center; gap: 12px; height: 38px; padding: 0 6px 0 14px; overflow: hidden; }
 .tick .live { flex: none; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--gold); letter-spacing: .04em; }
 .tick .live i { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 3px rgba(255,207,74,.18); }
-.tick .rail { flex: 1; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
-.tick-in { display: inline-flex; gap: 34px; white-space: nowrap; animation: tk 60s linear infinite; font-size: 13px; color: #c9cfd9; }
+.tick .rail { flex: 1; min-width: 0; overflow: hidden; }
+.tick-in { display: flex; gap: 26px; white-space: nowrap; overflow: hidden; font-size: 13px; color: #c9cfd9; }
+.tick-in span { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.tick-in span:first-child { flex: none; max-width: 60%; }
 .tick-in b { margin-right: 6px; font-weight: 700; }
 @keyframes tk { to { transform: translateX(-50%); } }
 .capturing .tick-in { animation: none; }
@@ -323,7 +325,7 @@ function posterHTML(S, ser, still) {
   const tgt = price(S.opinion.target), room = last ? (tgt - last.c) / last.c * 100 : 0;
   const nm = S.title || `${S.a.name}의 호감도`;
   return `
-  <div class="card tick"><span class="live"><i></i>LIVE</span><div class="rail">${tk ? `<div class="tick-in" style="animation-duration:${Math.max(90, news.reduce((n, x) => n + [...x.news].length, 0) * 0.55)}s">${tk}${tk}</div>` : ''}</div></div>
+  <div class="card tick"><span class="live"><i></i>LIVE</span><div class="rail">${tk ? `<div class="tick-in">${news.slice(-2).reverse().map(x => `<span><b class="${cls(x.chg)}">${arrow(x.chg)} ${Math.abs(x.chg).toFixed(1)}%</b>${esc(x.news)}</span>`).join('')}</div>` : ''}</div></div>
   <section class="card head">
     <div>
       <div class="who"><span class="av" data-photo="a">${Core.photo('a') ? `<img src="${Core.photo('a')}" alt="">` : esc([...String(S.a.name || 'N')][0])}</span><div><h1>${esc(nm)}</h1><small><b>${esc(S.code || '000000')}</b> · 연애 코스닥 · ${esc(S.a.name)} → ${esc(S.b.name)}</small></div></div>
