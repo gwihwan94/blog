@@ -625,6 +625,7 @@ window.Core = (() => {
       document.body.dataset.mode = m;
       $$('.tabs [data-mode]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.mode === m)));
       if (m === 'view') cfg.render(S, { animate: true });
+      else { mountForm(); mountPrompts(); mountProgress(); }
       window.scrollTo({ top: 0 });
     }
     $$('.tabs [data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
@@ -697,5 +698,5 @@ window.Core = (() => {
     return { get state() { return S; } };
   }
 
-  return { photo, $, $$, esc, br, pad, initial, rng, toMin, fmtMin, today, josa, clone, get, set, clamp, num, debounce, extractJSON, toast, copy, store, savePNG, buildForm, app };
+  return { photo, setPhoto, mountPhotos, $, $, esc, br, pad, initial, rng, toMin, fmtMin, today, josa, clone, get, set, clamp, num, debounce, extractJSON, toast, copy, store, savePNG, buildForm, app };
 })();

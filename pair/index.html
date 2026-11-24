@@ -13,7 +13,7 @@
 <link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
 <link rel="stylesheet" href="../assets/base.css">
 <style>
-/* 페어틀 편집기: 왼쪽(시작 양식 · 블록 · 스티커) · 가운데(용지) · 오른쪽(디자인 · 고른 블록). 용지 위에서 바로 고친다. 움직임 없음 */
+/* 페어틀 편집기: 왼쪽(테마 · 블록 · 스티커) · 가운데(용지) · 오른쪽(디자인 · 고른 블록). 용지 위에서 바로 고친다. 움직임 없음 */
 :root { --ui: #f3f3f5; --ui2: #ffffff; --uil: #dcdce2; --uit: #222226; --uis: #74747c; --acc: #3b5bdb; }
 body[data-mode="view"] { background: var(--ui); }
 body[data-mode="view"] .stage { max-width: none; padding: 0; }
@@ -146,6 +146,112 @@ body[data-mode="view"] .pc-note { display: none; }
 .stk.pen { font: 400 32px "Nanum Pen Script", cursive; color: var(--a); }
 .stk.bubble { background: #fff; border: 2px solid var(--ink); border-radius: 18px; padding: 8px 14px; font-weight: 600; font-size: 15px; }
 .stk.icon { font-size: 44px; line-height: 1; }
+/* ── 편집기 도구 ── */
+.top { position: relative; }
+.slots { display: inline-flex; gap: 4px; }
+.ib .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--acc); display: inline-block; }
+.slotm { position: absolute; z-index: 40; width: 196px; display: grid; gap: 4px; padding: 10px; background: #fff; border: 1px solid var(--uil); border-radius: 10px; box-shadow: 0 12px 28px -10px rgba(0,0,0,.3); }
+.slotm small { color: var(--uis); font-size: 11.5px; margin-bottom: 4px; }
+.slotm button { all: unset; cursor: pointer; padding: 7px 10px; border-radius: 7px; font-weight: 700; font-size: 12.5px; }
+.slotm button:hover, .slotm button:focus-visible { background: var(--ui); }
+.slotm [data-sl="clear"] { color: #c0392b; }
+.kl { display: grid; gap: 5px; font-size: 11.5px; }
+.kl div { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: baseline; }
+.kl kbd { font: 700 10.5px "Pretendard Variable", sans-serif; padding: 2px 6px; border-radius: 5px; background: var(--ui); border: 1px solid var(--uil); white-space: nowrap; }
+.kl span { color: var(--uis); }
+.keys { position: fixed; inset: 0; z-index: 100; background: rgba(20,20,24,.35); display: grid; place-items: center; padding: 16px; }
+.keysb { width: min(460px, 100%); max-height: 86vh; overflow: auto; background: #fff; border-radius: 14px; padding: 18px 20px; display: grid; gap: 12px; font: 500 13px "Pretendard Variable", sans-serif; color: var(--uit); }
+.keysh { display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
+.keysh button { all: unset; cursor: pointer; width: 30px; height: 30px; text-align: center; border-radius: 8px; font-size: 18px; }
+.keysh button:hover { background: var(--ui); }
+.keys .kl { font-size: 13px; gap: 8px; } .keys .kl div { grid-template-columns: 170px 1fr; } .keys .kl kbd { font-size: 12px; justify-self: start; }
+.ghost { position: fixed; z-index: 120; pointer-events: none; padding: 6px 12px; border-radius: 8px; background: #222; color: #fff; font: 700 12.5px "Pretendard Variable", sans-serif; opacity: .9; }
+.ghost.ok { background: var(--acc); }
+.dropline { position: fixed; z-index: 110; height: 4px; margin-top: -2px; background: var(--acc); border-radius: 4px; pointer-events: none; }
+.grab { cursor: grab !important; }
+.tile small { display: block; font-size: 10.5px; line-height: 1.35; }
+.addi { all: unset; cursor: pointer; display: none; margin: 10px auto 0; padding: 4px 12px; border-radius: 999px; border: 1px dashed currentColor; font: 700 11.5px "Pretendard Variable", sans-serif; opacity: .65; text-align: center; width: max-content; }
+.blk:hover > .addi, .blk.sel > .addi { display: block; }
+.addi:hover { opacity: 1; }
+.capturing .addi { display: none !important; }
+.stk.on { outline: 2px solid var(--acc); outline-offset: 4px; }
+.capturing .stk.on { outline: none; }
+.stk.bubble { background: var(--bg); color: var(--ink); }
+.seg button:disabled { opacity: .35; cursor: default; }
+/* 테마 고르기 */
+.thg { display: grid; gap: 10px; }
+.thc { all: unset; box-sizing: border-box; cursor: pointer; display: grid; gap: 7px; padding: 7px; border: 1px solid var(--uil); border-radius: 12px; background: #fff; }
+.thc:hover { border-color: #b9b9c2; }
+.thc[aria-pressed="true"] { border-color: var(--acc); box-shadow: inset 0 0 0 1px var(--acc); }
+.thc:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+.thv { display: block; height: 150px; overflow: hidden; border-radius: 7px; background: var(--ui); pointer-events: none; }
+.thv .poster { display: flex; box-shadow: none; }
+.thv .bctl, .thv .addi, .thv .adj, .thv .stk .x, .thv .ph-x { display: none !important; }
+.thv .blk, .thv .stk { outline: none !important; }
+.thv [data-e] { box-shadow: none !important; }
+.thn { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; padding: 0 3px 2px; }
+.thn b { font-size: 13px; } .thn small { color: var(--uis); font-size: 11px; text-align: right; }
+
+/* ── 테마 ── */
+/* 신문 */
+.th-news .blk.box { background: transparent; border: 0; border-top: 3px double var(--ink); border-bottom: 1px solid var(--ink); border-radius: 0; padding: 16px 6px; }
+.th-news .b-head { border-top: 6px solid var(--ink); border-bottom: 3px double var(--ink); padding: 18px 0 14px; }
+.th-news .b-head .t { font: 800 64px/1 "Noto Serif KR", serif; letter-spacing: -.03em; }
+.th-news .b-head .s { font-family: "Noto Serif KR", serif; font-size: 15px; opacity: .9; }
+.th-news .lbl { font-family: "Noto Serif KR", serif; letter-spacing: .3em; opacity: .85; border-bottom: 1px solid var(--ink); padding-bottom: 5px; }
+.th-news .pc .nm { font-family: "Noto Serif KR", serif; }
+.th-news .pic, .th-news .b-qa .an div, .th-news .pc .kw span, .th-news .b-tags span, .th-news .b-rel .badge, .th-news .b-song .cv { border-radius: 0; }
+.th-news .b-talk div { background: transparent; border-left: 3px solid var(--a); border-radius: 0; }
+.th-news .b-talk div.r { border-left: 0; border-right: 3px solid var(--b); text-align: right; }
+/* 다이어리 */
+.th-note { background: linear-gradient(90deg, transparent 52px, color-mix(in srgb, var(--a) 30%, transparent) 52px 54px, transparent 54px), repeating-linear-gradient(transparent 0 27px, color-mix(in srgb, var(--b) 15%, transparent) 27px 28px), var(--bg); padding-left: 70px; }
+.th-note .blk.box { background: #fff; border: 0; border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 10px 18px -12px rgba(0,0,0,.3); }
+.th-note .blk.box::before { content: ""; position: absolute; top: -10px; left: 50%; width: 96px; height: 22px; margin-left: -48px; transform: rotate(-2deg); background: color-mix(in srgb, var(--a) 28%, #fff); opacity: .85; }
+.th-note .blk.box:nth-child(even)::before { transform: rotate(2.5deg); left: 24%; background: color-mix(in srgb, var(--b) 28%, #fff); }
+.th-note .lbl { font: 400 24px/1 "Nanum Pen Script", cursive; letter-spacing: 0; text-transform: none; opacity: 1; color: var(--a); }
+.th-note .b-head .t { font-family: "Gowun Dodum", sans-serif; }
+.th-note .b-head .s { font: 400 22px "Nanum Pen Script", cursive; opacity: .85; }
+/* 파스텔 */
+.th-soft { background: linear-gradient(160deg, color-mix(in srgb, var(--a) 13%, var(--bg)), color-mix(in srgb, var(--b) 15%, var(--bg))); }
+.th-soft .blk.box { background: rgba(255,255,255,.82); border: 0; border-radius: 24px; box-shadow: 0 14px 30px -22px color-mix(in srgb, var(--b) 60%, #000); }
+.th-soft .b-head .t { font: 800 54px/1.05 "Gowun Dodum", sans-serif; letter-spacing: -.02em; }
+.th-soft .lbl { display: inline-block; padding: 3px 12px; border-radius: 999px; background: color-mix(in srgb, var(--a) 14%, #fff); color: var(--a); opacity: 1; letter-spacing: .08em; }
+.th-soft .pic { border-radius: 18px; }
+.th-soft .b-talk div { border-radius: 20px; }
+/* 밤 */
+.th-night .blk.box { background: color-mix(in srgb, var(--bg) 90%, #fff); border: 1px solid color-mix(in srgb, var(--bg) 74%, #fff); }
+.th-night .b-head .t { background: linear-gradient(90deg, color-mix(in srgb, var(--a) 55%, #fff), color-mix(in srgb, var(--b) 55%, #fff)); -webkit-background-clip: text; background-clip: text; color: transparent; caret-color: var(--ink); }
+.th-night .b-head .t [data-e]:empty::before { color: var(--ink); }
+.th-night .lbl { color: color-mix(in srgb, var(--a) 45%, #fff); opacity: .95; }
+.th-night .b-rel .side1 { color: color-mix(in srgb, var(--a) 50%, #fff); } .th-night .b-rel .side2 { color: color-mix(in srgb, var(--b) 50%, #fff); }
+.th-night .b-rel .call span { color: var(--ink) !important; }
+.th-night .pc .ok b[style] { color: color-mix(in srgb, var(--a) 50%, #fff) !important; }
+.th-night .b-talk div { background: color-mix(in srgb, var(--a) 22%, var(--bg)); } .th-night .b-talk div.r { background: color-mix(in srgb, var(--b) 22%, var(--bg)); }
+/* 서류철 */
+.th-file .blk.box { background: color-mix(in srgb, var(--bg) 55%, #fff); border: 1px solid color-mix(in srgb, var(--ink) 30%, var(--bg)); border-radius: 0 6px 6px 6px; margin-top: 20px; }
+.th-file .blk.box::before { content: attr(data-lab); position: absolute; left: -1px; bottom: 100%; padding: 4px 14px 3px; background: color-mix(in srgb, var(--ink) 10%, var(--bg)); border: 1px solid color-mix(in srgb, var(--ink) 30%, var(--bg)); border-bottom: 0; border-radius: 6px 6px 0 0; font: 400 11px "Galmuri11", monospace; }
+.th-file .b-head { border: 2px solid var(--ink); padding: 20px 18px 16px; position: relative; }
+.th-file .b-head::after { content: "대외비"; position: absolute; right: 18px; top: 14px; padding: 4px 10px; border: 3px solid var(--a); color: var(--a); font: 800 15px "Pretendard Variable", sans-serif; letter-spacing: .2em; transform: rotate(-8deg); opacity: .85; }
+.th-file .b-head .t { font: 400 44px/1.15 "Galmuri11", monospace; letter-spacing: 0; }
+.th-file .lbl { font-family: "Galmuri11", monospace; letter-spacing: .08em; text-transform: none; }
+.th-file .pic { border-radius: 0; }
+/* 옛날 창 */
+.th-win .blk.box { background: color-mix(in srgb, var(--bg) 25%, #fff); border: 2px solid var(--ink); border-radius: 6px; padding-top: 42px; box-shadow: 5px 5px 0 var(--ink); }
+.th-win .blk.box::before { content: attr(data-lab); position: absolute; left: 0; right: 0; top: 0; height: 26px; padding: 0 12px; background: var(--a); color: #fff; font: 400 12px/26px "Galmuri11", monospace; border-bottom: 2px solid var(--ink); border-radius: 3px 3px 0 0; }
+.th-win .blk.box:nth-child(even)::before { background: var(--b); }
+.th-win .blk.box::after { content: "─ □ ×"; position: absolute; right: 12px; top: 0; height: 26px; font: 400 12px/26px "Galmuri11", monospace; color: #fff; letter-spacing: .25em; }
+.th-win .b-head .t { font: 400 50px/1.1 "Galmuri11", monospace; letter-spacing: 0; }
+.th-win .lbl { display: none; }
+.th-win .pic { border-radius: 0; border: 2px solid var(--ink); }
+/* 흑백 */
+.th-mono .blk.box { background: transparent; border: 0; border-top: 1.5px solid var(--ink); border-radius: 0; padding: 18px 0 4px; }
+.th-mono .b-head { text-align: left; padding: 30px 0 14px; }
+.th-mono .b-head .t { font: 800 84px/.95 "Archivo", var(--font, "Pretendard Variable"), sans-serif; letter-spacing: -.045em; }
+.th-mono .lbl { opacity: 1; font-size: 10.5px; letter-spacing: .3em; }
+.th-mono .pic, .th-mono .b-song .cv { border-radius: 0; }
+.th-mono .pc .kw span { background: transparent !important; color: var(--ink); border: 1px solid var(--ink); border-radius: 0; }
+.th-mono .b-talk div { background: transparent; border: 1px solid var(--ink); border-radius: 0; }
+.th-mono .b-qa .an div { border-radius: 0; background: transparent; }
 @media (max-width: 1000px) {
   .app { grid-template-columns: 1fr; height: auto; }
   .side, .side.r { border: 0; border-top: 1px solid var(--uil); }
@@ -197,7 +303,7 @@ const PRESET = {
 };
 let uid = 0; const nid = () => 'b' + Date.now().toString(36) + (uid++);
 const B = t => ({ id: nid(), t, box: !['head', 'line', 'tags'].includes(t), cols: t === 'full' ? 2 : 1, h: t === 'full' ? 520 : 320, text: '', al: 'c' });
-const D = () => ({ w: 1000, bg: '#f6f5f2', ink: '#1c1c1f', font: 'base', r: 14, gap: 14, border: true });
+const D = () => ({ theme: 'plain', w: 1000, bg: '#f6f5f2', ink: '#1c1c1f', font: 'base', r: 14, gap: 14, border: true });
 const blank = () => ({ v: 4, title: '', sub: '', since: '', a: P({ name: 'NPC', color: '#8c1c13' }), b: P({ name: 'PC', color: '#24427a' }), rel: '', a2b: '', b2a: '', callA: '', callB: '', world: '', song: { title: '', artist: '' }, tags: '', stats: Array.from({ length: 4 }, eSt), qa: Array.from({ length: 3 }, eQA), timeline: Array.from({ length: 4 }, eTL), talk: Array.from({ length: 4 }, eTK), design: D(), blocks: PRESET.detail[2].map(B), stickers: [] });
 const sample = () => normalize({
   title: 'Crown', sub: '정략으로 시작해 정략만은 아니게 된 두 사람', since: '2026.03.14',
@@ -212,40 +318,100 @@ const sample = () => normalize({
   blocks: PRESET.simple[2].map(B),
 });
 const hex = (v, d) => /^#[0-9a-f]{6}$/i.test(v || '') ? v : d;
+const arrV = (src, n, max, mk) => { const l = Array.isArray(src) && src.length ? Math.min(src.length, max) : n; return Array.from({ length: l }, (_, i) => ({ ...mk(), ...((Array.isArray(src) ? src : [])[i] || {}) })); };
 const arr = (src, n, mk) => Array.from({ length: n }, (_, i) => ({ ...mk(), ...((Array.isArray(src) ? src : [])[i] || {}) }));
 function normalize(s) {
   const b = blank(); s = s && typeof s === 'object' ? s : {};
   const o = { ...b, ...s, a: P({ ...b.a, ...(s.a || {}) }), b: P({ ...b.b, ...(s.b || {}) }), song: { ...b.song, ...(s.song || {}) }, design: { ...D(), ...(s.design || {}) } };
-  o.stats = arr(s.stats, 4, eSt).map(x => ({ ...x, a: clamp(Math.round(num(x.a, 50)), 0, 100), b: clamp(Math.round(num(x.b, 50)), 0, 100) }));
-  o.qa = arr(s.qa, 3, eQA); o.timeline = arr(s.timeline, 4, eTL); o.talk = arr(s.talk, 4, eTK);
+  o.stats = arrV(s.stats, 4, 8, eSt).map(x => ({ ...x, a: clamp(Math.round(num(x.a, 50)), 0, 100), b: clamp(Math.round(num(x.b, 50)), 0, 100) }));
+  o.qa = arrV(s.qa, 3, 8, eQA); o.timeline = arrV(s.timeline, 4, 8, eTL); o.talk = arrV(s.talk, 4, 12, eTK);
+  if (!THEMES[o.design.theme]) o.design.theme = 'plain';
   o.blocks = (Array.isArray(s.blocks) && s.blocks.length ? s.blocks : b.blocks).filter(x => x && BT[x.t]).map(x => ({ ...B(x.t), ...x }));
   o.stickers = Array.isArray(s.stickers) ? s.stickers.slice(0, 40) : [];
   ['a', 'b'].forEach(k => ['color', 'hair', 'eye'].forEach(c => o[k][c] = hex(o[k][c], b[k][c])));
   ['bg', 'ink'].forEach(c => o.design[c] = hex(o.design[c], D()[c]));
   return o;
 }
+/* 늘었다 줄었다 하는 목록: 블록별 [상태 키, 최대, 새 칸, 이름] */
+const LISTK = { qa: ['qa', 8, eQA, '문답'], timeline: ['timeline', 8, eTL, '사건'], talk: ['talk', 12, eTK, '대사'], stats: ['stats', 8, eSt, '수치'] };
+/* 테마: 모양(design 값) + 글 말투(OOC에 그대로 들어감) */
+const THEMES = {
+  plain: { nm: '기본', ds: '깔끔한 카드', d: { bg: '#f6f5f2', ink: '#1c1c1f', font: 'base', r: 14, gap: 14, border: true },
+    voice: '담백한 소개 문구. 군더더기 없이 사실 위주, 명사형으로 끝내도 된다.' },
+  news: { nm: '신문', ds: '1면 헤드라인 · 겹줄', d: { bg: '#efe9dc', ink: '#1b1a17', font: 'serif', r: 0, gap: 12, border: true },
+    voice: '신문 1면 기사체. title은 헤드라인(“~ 전격 약혼” 같은 명사형), sub는 부제(“~한 것으로 알려져”), 문답은 인터뷰 기사, 타임라인은 날짜별 단신, 글 상자는 기사 본문(“~했다”).' },
+  note: { nm: '다이어리', ds: '줄 공책 · 마스킹 테이프', d: { bg: '#fbf8f1', ink: '#2b2a28', font: 'round', r: 4, gap: 22, border: false },
+    voice: '다꾸 다이어리 메모 말투(“~했음”, “~함”, 짧게 끊어 쓰기). 타임라인은 날짜별 일기 한 줄, 글 상자는 그날 일기. 이모티콘·기호 장식 없이 글로만.' },
+  soft: { nm: '파스텔', ds: '그라데이션 · 둥근 카드', d: { bg: '#fbf7fb', ink: '#2a2633', font: 'round', r: 22, gap: 16, border: false },
+    voice: '다정하고 말랑한 소개 말투(“~하는 사람”, “~인 두 사람”). 날 선 단어 대신 부드러운 단어, 문장은 짧게.' },
+  night: { nm: '밤', ds: '어두운 바탕 · 빛나는 제목', d: { bg: '#121318', ink: '#e9e9f0', font: 'base', r: 14, gap: 14, border: true },
+    voice: '영화 포스터 카피처럼 서늘하고 짧게. sub는 한 줄 카피, 문장은 끊어서 여운 있게. 감탄사·느낌표 없이.' },
+  file: { nm: '서류철', ds: '파일 탭 · 대외비 도장', d: { bg: '#e8e2d2', ink: '#2b2720', font: 'base', r: 6, gap: 14, border: true },
+    voice: '기밀 조사 보고서 말투(“~로 확인됨”, “~으로 추정”, “특이 사항:”). title은 사건명·파일명처럼, sub는 개요 한 줄, 타임라인은 조사 기록, 글 상자는 조사관 소견.' },
+  win: { nm: '옛날 창', ds: '창 틀 · 도트 글꼴', d: { bg: '#c8d3e6', ink: '#16161c', font: 'base', r: 6, gap: 20, border: true },
+    voice: '옛날 PC·메신저 감성. title은 창 이름처럼 짧게, sub는 상태 메시지(“~하는 중”), 타임라인은 접속 기록처럼, 대사는 메신저 말투 그대로.' },
+  mono: { nm: '흑백', ds: '큰 제목 · 가는 선', d: { bg: '#ffffff', ink: '#111111', font: 'base', r: 0, gap: 18, border: true },
+    voice: '잡지 화보처럼 절제. 단어·명사구 위주로 아주 짧게, 꾸밈말 빼기.' },
+};
+const thOf = S => THEMES[S.design.theme] ? S.design.theme : 'plain';
 function apply(S, o) {
   const got = []; const g = n => { if (!got.includes(n)) got.push(n); };
   ['title', 'sub', 'since', 'rel', 'a2b', 'b2a', 'callA', 'callB', 'world', 'tags'].forEach(k => { if (o[k]) { S[k] = o[k]; g('관계'); } });
   if (o.song && typeof o.song === 'object') { S.song = { ...S.song, ...o.song }; g('테마곡'); }
   for (const k of ['a', 'b']) if (o[k] && typeof o[k] === 'object') { Object.entries(o[k]).forEach(([kk, v]) => { if (v !== '' && v != null) S[k][kk] = v; }); g(k === 'a' ? 'NPC' : 'PC'); }
-  const put = (key, n, mk, label) => { if (Array.isArray(o[key])) { S[key] = Array.from({ length: n }, mk); o[key].slice(0, n).forEach((x, i) => { if (x && typeof x === 'object') S[key][i] = { ...mk(), ...x }; }); g(label); } };
-  put('stats', 4, eSt, '수치'); put('qa', 3, eQA, '문답'); put('timeline', 4, eTL, '타임라인'); put('talk', 4, eTK, '대화');
+  Object.values(LISTK).forEach(([key, max, mk, label]) => { if (Array.isArray(o[key]) && o[key].length) { S[key] = o[key].slice(0, max).filter(x => x && typeof x === 'object').map(x => ({ ...mk(), ...x })); g(label); } });
+  if (Array.isArray(S.stats)) S.stats = S.stats.map(x => ({ ...x, a: clamp(Math.round(num(x.a, 50)), 0, 100), b: clamp(Math.round(num(x.b, 50)), 0, 100) }));
+  /* 글 상자는 용지 위 순서대로 */
+  if (Array.isArray(o.texts)) { const tb = (S.blocks || []).filter(b => b.t === 'text'); o.texts.forEach((t, i) => { if (tb[i] && t) tb[i].text = String(t); }); if (tb.length) g('글 상자'); }
   return got;
 }
-function prompts() {
-  const p = `*[OOC: 롤플레잉 잠시 중단. 「페어틀」 내용 채우기.
-NPC와 PC 두 사람을 소개하는 페어틀의 글자를 채운다. 꾸미기는 사람이 직접 하니 내용만.
-▪ title 페어 이름 8자, sub 한 줄 소개 30자, since 처음 만난 날 “2026.03.14”
-▪ a(NPC)·b(PC): name, en 영문, sex, age, height, role 12자, keys 성격 3개 쉼표로, feats 외관 특징 3개 쉼표로, like, dislike, color 상징색 hex, hair·eye 머리·눈색 hex, quote 대표 대사 30자(RP에서 실제로 한 말), intro 30자. 설정에 없는 값은 “”.
-▪ rel 관계 10자, a2b NPC가 보는 PC 14자, b2a PC가 보는 NPC 14자(RP에 드러난 만큼), callA·callB 서로 부르는 호칭, world 세계관 50자, song 테마곡 {title, artist}(제목·가수만, 가사 쓰지 않음), tags 해시태그 4개
-▪ stats 4개 {k, a, b 0~100} / qa 3개 {q, a NPC 답, b PC 답(RP에서 실제로 한 말일 때만, 아니면 “”)} / timeline 4개 {t “03.14”, text 15자} / talk 4개 {who a|b, text 25자, 실제 대사}
-▪ 근거: 설정과 RP에서 실제 있었던 일만. PC의 말·행동은 지어내지 않는다. 여기서 만든 내용은 이후 RP의 사실로 삼지 않는다.
-▪ 출력: 인사·설명 없이 JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만.
-{"title":"","sub":"","since":"","a":{"name":"","en":"","sex":"","age":"","height":"","role":"","keys":"","feats":"","like":"","dislike":"","color":"","hair":"","eye":"","quote":"","intro":""},"b":{},"rel":"","a2b":"","b2a":"","callA":"","callB":"","world":"","song":{"title":"","artist":""},"tags":"","stats":[],"qa":[],"timeline":[],"talk":[]}]*`;
-  return [{ label: 'AI로 내용 채우기', sub: '글자만 채우고 꾸미기는 편집기에서', text: p }];
+/* OOC: 지금 용지에 있는 블록과 고른 테마에 맞춘다. 길면 둘로 나눈다 */
+function prompts(S) {
+  const th = THEMES[thOf(S)], has = t => (S.blocks || []).some(b => b.t === t), cnt = (k, d) => Math.max(d, (S[k] || []).length);
+  const nText = (S.blocks || []).filter(b => b.t === 'text').length;
+  const HEAD = n => `*[OOC: 롤플레잉 잠시 중단. 「페어틀」 ${n} 글 채우기. 테마는 “${th.nm}”.
+▪ 테마 말투: ${th.voice}
+▪ 모든 칸을 이 말투로 쓰되, 이름·호칭·대사는 RP 그대로.`;
+  const TAIL = `▪ 근거: 설정과 RP에서 실제 있었던 일만. PC의 말·행동은 RP에 나온 것만, NPC·PC 말고 다른 인물은 쓰지 않는다. 설정에 없는 값은 “”. 여기서 만든 내용은 이후 RP의 사실로 삼지 않는다.
+▪ 출력: 인사·설명 없이 JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만. 값은 형식 예시.`;
+  /* 1: 사람과 관계 */
+  const f1 = ['▪ title 페어 이름 10자 안, sub 한 줄 소개 30자, since 처음 만난 날 “2026.03.14” 꼴'], j1 = { title: '', sub: '', since: '' };
+  if (has('people') || has('song') || has('rel')) {
+    f1.push('▪ a(NPC)·b(PC) 각각: name, en 영문 이름, sex, age, height, role 신분 12자, keys 성격 3개 쉼표로, feats 외관 특징 3개 쉼표로, like, dislike, color 상징색 hex(캐릭터 분위기에 맞게, 둘이 겹치지 않게), hair·eye 머리색·눈색 hex, quote 대표 대사 30자(RP에서 실제로 한 말), intro 소개 30자');
+    const per = { name: '', en: '', sex: '', age: '', height: '', role: '', keys: '', feats: '', like: '', dislike: '', color: '', hair: '', eye: '', quote: '', intro: '' };
+    j1.a = per; j1.b = { ...per };
+  }
+  if (has('rel')) { f1.push('▪ rel 관계 10자, a2b NPC가 보는 PC 14자, b2a PC가 보는 NPC 14자(RP에 드러난 만큼), callA NPC가 PC를 부르는 호칭, callB PC가 NPC를 부르는 호칭(RP 그대로)'); Object.assign(j1, { rel: '', a2b: '', b2a: '', callA: '', callB: '' }); }
+  if (has('world')) { f1.push('▪ world 세계관 80자: 시대·장소·두 사람이 놓인 처지'); j1.world = ''; }
+  if (has('song')) { f1.push('▪ song 둘에게 어울리는 테마곡 {title, artist}: 실제 곡이면 제목·가수만, 가사는 쓰지 않는다'); j1.song = { title: '', artist: '' }; }
+  if (has('tags')) { f1.push('▪ tags 해시태그 5개, 띄어쓰기로 구분(“#정략결혼 #서고”)'); j1.tags = ''; }
+  /* 2: 이야기 */
+  const f2 = [], j2 = {};
+  if (has('qa')) { const n = cnt('qa', 3); f2.push(`▪ qa ${n}개 {q 질문, a NPC 답, b PC 답}: 질문은 둘 사이를 잘 보여 주는 것(첫인상, 상대가 귀여울 때 등). 답은 각자 말투로. PC 답은 RP에서 한 말과 맞을 때만, 아니면 “”`); j2.qa = [{ q: '', a: '', b: '' }]; }
+  if (has('timeline')) { const n = cnt('timeline', 4); f2.push(`▪ timeline ${n}개 {t “03.14” 꼴, text 18자}: 둘 사이의 실제 사건, 시간순`); j2.timeline = [{ t: '', text: '' }]; }
+  if (has('talk')) { const n = cnt('talk', 4); f2.push(`▪ talk ${n}개 {who a|b, text 30자}: RP에서 실제로 주고받은 대사 그대로, 한 장면이 이어지게`); j2.talk = [{ who: 'a', text: '' }]; }
+  if (has('stats')) { const n = cnt('stats', 4); f2.push(`▪ stats ${n}개 {k 항목 4자, a NPC 0~100, b PC 0~100}: 둘이 차이 나는 항목 위주(호감, 질투, 솔직함 등), RP에 드러난 만큼`); j2.stats = [{ k: '', a: 50, b: 50 }]; }
+  if (nText) { f2.push(`▪ texts ${nText}개: 글 상자에 들어갈 글, 각 150~250자. 테마 말투로 두 사람 이야기를 쓴다(줄바꿈은 \\n)`); j2.texts = ['']; }
+  const out = [];
+  const mk = (n, f, j) => `${HEAD(n)}\n${f.join('\n')}\n${TAIL}\n${JSON.stringify(j)}]*`;
+  if (!f2.length) out.push({ label: `페어틀 채우기 · ${th.nm}`, sub: '용지에 있는 블록 전부', text: mk('', f1, j1) });
+  else {
+    const one = mk('', [...f1, ...f2], { ...j1, ...j2 });
+    if (one.length <= 1380) out.push({ label: `페어틀 채우기 · ${th.nm}`, sub: '용지에 있는 블록 전부', text: one });
+    else { out.push({ label: `1/2 인물 · ${th.nm}`, sub: '이름 · 인물 · 관계 · 세계관 · 곡 · 태그', text: mk('1/2', f1, j1) }); out.push({ label: `2/2 이야기 · ${th.nm}`, sub: '문답 · 타임라인 · 대화 · 수치 · 글 상자', text: mk('2/2', f2, j2) }); }
+  }
+  return out;
 }
-function progress(S) { return [{ label: 'NPC', ok: !!S.a.role }, { label: 'PC', ok: !!S.b.role }, { label: '관계', ok: !!S.rel }]; }
+function progress(S) {
+  const has = t => (S.blocks || []).some(b => b.t === t), out = [{ label: 'NPC', ok: !!S.a.role }, { label: 'PC', ok: !!S.b.role }];
+  if (has('rel')) out.push({ label: '관계', ok: !!S.rel });
+  if (has('qa')) out.push({ label: '문답', ok: S.qa.some(x => x.a) });
+  if (has('timeline')) out.push({ label: '타임라인', ok: S.timeline.some(x => x.text) });
+  if (has('talk')) out.push({ label: '대화', ok: S.talk.some(x => x.text) });
+  if (has('stats')) out.push({ label: '수치', ok: S.stats.some(x => x.k) });
+  if (has('text')) out.push({ label: '글 상자', ok: S.blocks.some(b => b.t === 'text' && b.text) });
+  return out;
+}
 function schema(S) {
   const per = k => [{ k: `${k}.name`, label: '이름' }, { k: `${k}.en`, label: '영문' }, { k: `${k}.role`, label: '신분' }, { k: `${k}.keys`, label: '성격', full: true }, { k: `${k}.feats`, label: '외관 특징', full: true }];
   return [{ title: '기본', en: 'BASIC', desc: '모든 글자는 편집기 용지 위에서 바로 고칠 수 있어요.', fields: [{ k: 'title', label: '페어 이름' }, { k: 'since', label: '처음 만난 날' }, { k: 'sub', label: '한 줄 소개', full: true }, { k: 'rel', label: '관계' }, { k: 'tags', label: '태그' }] }, { title: 'NPC', en: 'A', fields: per('a') }, { title: 'PC', en: 'B', fields: per('b') }];
@@ -282,148 +448,307 @@ const R = {
   img: (S, b) => `<div class="b-img" style="--h:${b.h}px">${pic(b.id + 'i')}</div>`,
   line: () => `<div class="b-line"><hr></div>`,
 };
-const STK = { text: '글자', pen: '손글씨', bubble: '말풍선', '♥': '♥', '★': '★', '✦': '✦', '→': '→' };
+const STK = { text: '글자', pen: '손글씨', bubble: '말풍선', '♥': '♥', '★': '★', '✦': '✦', '→': '→', '♪': '♪', '☾': '☾', '✿': '✿' };
 const TXT = ['text', 'pen', 'bubble'];
-let ST = null, SEL = null, TAB = 'preset', ZOOM = 0;
+let ST = null, SEL = null, SSEL = null, TAB = 'theme', ZOOM = 0, CLIP = null;
+const blkHTML = (S, b, i) => `<section class="blk${b.box ? ' box' : ''}${SEL === b.id ? ' sel' : ''}" data-bi="${i}" data-lab="${esc(BT[b.t][0])}"><span class="bctl"><button type="button" data-act="grab" class="grab" title="끌어서 옮기기">⠿</button><button type="button" data-act="up" title="위로 (Alt+↑)">↑</button><button type="button" data-act="down" title="아래로 (Alt+↓)">↓</button><button type="button" data-act="dup" title="복제 (Ctrl+D)">⧉</button><button type="button" data-act="del" title="지우기 (Delete)">×</button></span>${R[b.t](S, b, i)}${LISTK[b.t] ? `<button type="button" class="addi" data-addi="${b.t}">+ ${LISTK[b.t][3]} 추가</button>` : ''}</section>`;
 function posterHTML(S) {
-  return S.blocks.map((b, i) => `<section class="blk${b.box ? ' box' : ''}${SEL === b.id ? ' sel' : ''}" data-bi="${i}"><span class="bctl"><button type="button" data-act="up" aria-label="위로">↑</button><button type="button" data-act="down" aria-label="아래로">↓</button><button type="button" data-act="dup" aria-label="복제">⧉</button><button type="button" data-act="del" aria-label="지우기">×</button></span>${R[b.t](S, b, i)}</section>`).join('')
-    + `<div class="stl">${S.stickers.map((t, i) => `<div class="stk ${TXT.includes(t.t) ? t.t : 'icon'}" data-si="${i}" style="left:${t.x}%;top:${t.y}%;${TXT.includes(t.t) ? '' : `color:${i % 2 ? S.b.color : S.a.color}`}">${TXT.includes(t.t) ? E(`stickers.${i}.text`, t.text) : esc(t.t)}<span class="x" data-sx="${i}">×</span></div>`).join('')}</div>`;
+  return S.blocks.map((b, i) => blkHTML(S, b, i)).join('')
+    + `<div class="stl">${S.stickers.map((t, i) => `<div class="stk ${TXT.includes(t.t) ? t.t : 'icon'}${SSEL === i ? ' on' : ''}" data-si="${i}" style="left:${t.x}%;top:${t.y}%;${TXT.includes(t.t) ? '' : `color:${i % 2 ? S.b.color : S.a.color}`}">${TXT.includes(t.t) ? E(`stickers.${i}.text`, t.text) : esc(t.t)}<span class="x" data-sx="${i}">×</span></div>`).join('')}</div>`;
 }
 const S_ = () => (ST ? ST.state : CUR);
 const hist = [], fut = [];
 const snap = () => JSON.stringify(S_());
 let lastSnap = '';
-const commit = Core.debounce(() => { const s = snap(); if (s === lastSnap) return; hist.push(lastSnap); if (hist.length > 60) hist.shift(); fut.length = 0; lastSnap = s; try { localStorage.setItem(KEY, s); } catch (e) {} topbar(); }, 350);
+const saveNow = () => { try { localStorage.setItem(KEY, snap()); } catch (e) {} };
+/* 블록 넣기·지우기 같은 큰 변화는 바로 한 단계로, 글자 치기는 잠깐 모아서 한 단계로 */
+function commitNow() { const s = snap(); if (s === lastSnap) return; hist.push(lastSnap); if (hist.length > 80) hist.shift(); fut.length = 0; lastSnap = s; saveNow(); topbar(); }
+const commit = Core.debounce(commitNow, 350);
 function load(o) { const S = S_(); Object.keys(S).forEach(k => delete S[k]); Object.assign(S, normalize(o)); }
 function fitZoom() { const w = $('#wrap'); return Math.min(1, (w.clientWidth - 80) / S_().design.w); }
 function applyZoom() { $('#zoomer').style.zoom = ZOOM || fitZoom(); $('#wrap').style.overflowX = ZOOM ? 'auto' : 'hidden'; }
+const zf = () => parseFloat($('#zoomer').style.zoom) || 1;
+function zoomBy(dz) { ZOOM = clamp(+(zf() + dz).toFixed(2), .3, 2); applyZoom(); topbar(); }
+/* 그림 복사: 블록을 복제·붙여넣기 할 때 그림도 같이 */
+function copyPhoto(from, to) { const p = Core.photo(from); if (p) Core.setPhoto(to, p); try { const m = localStorage.getItem('pmeta:' + from); if (m) localStorage.setItem('pmeta:' + to, m); } catch (e) {} }
+const cloneBlock = b => { const nb = { ...JSON.parse(JSON.stringify(b)), id: nid() }; ['', 'i', 'a2', 'b2', 'pair'].forEach(s => copyPhoto(b.id + s, nb.id + s)); return nb; };
+const slotT = n => { try { return localStorage.getItem('pairslotT' + n); } catch (e) { return null; } };
 function topbar() {
-  const z = Math.round((parseFloat($('#zoomer').style.zoom) || 1) * 100);
-  const sl = n => { let v = null; try { v = localStorage.getItem('pairslot' + n); } catch (e) {} return v; };
+  const z = Math.round(zf() * 100);
   $('#top').innerHTML = `<span class="nm">${esc(S_().title || '페어틀')}</span>
-    <button class="ib" data-t="undo" ${hist.length ? '' : 'disabled'}>↶ 되돌리기</button><button class="ib" data-t="redo" ${fut.length ? '' : 'disabled'} aria-label="다시 하기">↷</button>
+    <button class="ib" data-t="undo" ${hist.length ? '' : 'disabled'} title="Ctrl+Z">↶ 되돌리기</button><button class="ib" data-t="redo" ${fut.length ? '' : 'disabled'} title="Ctrl+Shift+Z · Ctrl+Y" aria-label="다시 하기">↷</button>
     <span class="sp"></span>
-    <button class="ib" data-t="zo" aria-label="작게">−</button><span class="zoomv">${z}%</span><button class="ib" data-t="zi" aria-label="크게">+</button><button class="ib" data-t="zf">맞춤</button>
+    <button class="ib" data-t="zo" title="Ctrl+−" aria-label="작게">−</button><span class="zoomv">${z}%</span><button class="ib" data-t="zi" title="Ctrl++" aria-label="크게">+</button><button class="ib" data-t="zf" title="Ctrl+0">맞춤</button>
     <span class="sp"></span>
-    ${[1, 2, 3].map(n => `<button class="ib" data-t="slot" data-n="${n}">칸${n} ${sl(n) ? '불러오기' : '저장'}</button>`).join('')}
-    <button class="ib" data-t="exp">파일로 저장</button><label class="ib">파일 열기<input type="file" id="imp" accept=".json,application/json" hidden></label>
-    <button class="ib pri" data-t="png">PNG 저장</button>`;
+    <span class="slots">${[1, 2, 3].map(n => `<button class="ib" data-t="slot" data-n="${n}" title="${slotT(n) ? `${slotT(n)} 저장` : '비어 있음'}">칸${n}${slotT(n) ? ' <i class="dot"></i>' : ''}</button>`).join('')}</span>
+    <button class="ib" data-t="exp" title="Ctrl+Shift+S">파일로 저장</button><label class="ib" title="Ctrl+O">파일 열기<input type="file" id="imp" accept=".json,application/json" hidden></label>
+    <button class="ib" data-t="keys" title="?">단축키</button>
+    <button class="ib pri" data-t="png" title="Ctrl+E">PNG 저장</button>`;
+}
+/* 테마 미리 보기: 지금 내 페어틀을 그 테마로 작게 그린다 */
+const posterCls = d => 'poster th-' + (THEMES[d.theme] ? d.theme : 'plain') + (d.border ? '' : ' nob') + (d.font !== 'base' ? ' f-' + d.font : '');
+const posterVars = (S, d) => `--a:${S.a.color};--b:${S.b.color};--bg:${d.bg};--ink:${d.ink};--r:${d.r}px;--gap:${d.gap}px;--w:${d.w}px`;
+function themeCards() {
+  const S = S_(), cur = thOf(S), inner = posterHTML(S).replace(/<span class="bctl">[\s\S]*?<\/span>/g, '').replace(/<button[^>]*class="addi"[^>]*>[^<]*<\/button>/g, '');
+  return `<div class="thg">${Object.entries(THEMES).map(([k, t]) => { const d = { ...S.design, ...t.d, theme: k }; return `<div role="button" tabindex="0" class="thc" data-theme="${k}" aria-pressed="${cur === k}"><span class="thv"><span class="${posterCls(d)}" style="${posterVars(S, d)};zoom:${(206 / d.w).toFixed(4)}">${inner}</span></span><span class="thn"><b>${t.nm}</b><small>${t.ds}</small></span></div>`; }).join('')}</div>`;
 }
 function left() {
   const t = (k, v) => `<button type="button" data-tab="${k}" aria-pressed="${TAB === k}">${v}</button>`;
-  let h = `<div class="stabs">${t('preset', '시작 양식')}${t('block', '블록')}${t('stk', '스티커')}</div><div class="pane">`;
-  if (TAB === 'preset') h += `<p class="note">양식을 고르면 블록 배치만 바뀌고, 써 둔 글자와 그림은 그대로 남아요.</p>` + Object.entries(PRESET).map(([k, v]) => `<button class="tile" data-preset="${k}"><i>▦</i><span><b>${v[0]}</b><small>${v[1]}</small></span></button>`).join('');
-  if (TAB === 'block') h += `<p class="note">누르면 용지 맨 아래에 붙어요. 블록에 마우스를 올리면 ↑ ↓ 복제 × 단추가 나와요.</p><div class="grid2">` + Object.entries(BT).map(([k, v]) => `<button class="tile" data-add="${k}"><i>${v[2]}</i><b>${v[0]}</b></button>`).join('') + '</div>';
-  if (TAB === 'stk') h += `<p class="note">스티커는 용지 위 아무 데나 끌어서 옮겨요. 글자 스티커는 눌러서 고쳐요.</p><div class="grid2">` + Object.entries(STK).map(([k, v]) => `<button class="tile" data-stk="${k}"><i>${k.length === 1 ? k : 'Aa'}</i><b>${v}</b></button>`).join('') + '</div>';
+  let h = `<div class="stabs">${t('theme', '테마')}${t('block', '블록')}${t('stk', '스티커')}</div><div class="pane">`;
+  if (TAB === 'theme') h += `<p class="note">누르면 용지 전체가 그 테마로 바뀌어요. 써 둔 글자와 그림은 그대로예요. AI로 채우기의 OOC도 테마 말투에 맞춰 바뀌어요.</p>` + themeCards();
+  if (TAB === 'block') h += `<p class="note">눌러서 넣거나 용지 위 원하는 자리로 끌어다 놓아요. 블록을 고른 채로 누르면 그 아래에 들어가요.</p><div class="grid2">` + Object.entries(BT).map(([k, v]) => `<button class="tile" data-add="${k}" title="${v[1]}"><i>${v[2]}</i><b>${v[0]}</b><small>${v[1]}</small></button>`).join('') + '</div>';
+  if (TAB === 'stk') h += `<p class="note">눌러서 넣거나 용지 위로 끌어다 놓아요. 넣은 뒤에도 끌어서 옮기고, 고른 채로 방향키로 조금씩 움직여요.</p><div class="grid2">` + Object.entries(STK).map(([k, v]) => `<button class="tile" data-stk="${k}"><i>${k.length === 1 ? k : 'Aa'}</i><b>${v}</b></button>`).join('') + '</div>';
   $('#left').innerHTML = h + '</div>';
 }
+const leftSoon = Core.debounce(() => { if (TAB === 'theme') left(); }, 300);
+const KEYS = [
+  ['Ctrl+Z / Ctrl+Shift+Z', '되돌리기 / 다시 하기'], ['Ctrl+D', '고른 블록·스티커 복제'], ['Ctrl+C / X / V', '블록·스티커 복사 / 잘라내기 / 붙여넣기'],
+  ['Delete', '고른 블록·스티커 지우기'], ['↑ ↓', '위·아래 블록 고르기'], ['Alt+↑ ↓', '고른 블록 옮기기'], ['방향키 (스티커)', '조금씩 옮기기, Shift를 같이 누르면 크게'],
+  ['Enter', '고른 블록 글자 고치기'], ['Tab / Shift+Tab', '글자 고치는 중 다음·이전 칸으로'], ['Esc', '고치기 끝내기 · 고르기 풀기'],
+  ['Ctrl++ / Ctrl+− / Ctrl+0', '크게 / 작게 / 맞춤 (Ctrl+휠도 돼요)'], ['Ctrl+S', '지금 바로 저장'], ['Ctrl+Shift+S', '파일로 저장'], ['Ctrl+O', '파일 열기'], ['Ctrl+E', 'PNG 저장'], ['?', '단축키 보기'],
+];
 function right() {
   const S = S_(), d = S.design, b = S.blocks.find(x => x.id === SEL);
   const fonts = [['base', '기본'], ['serif', '명조'], ['round', '둥근'], ['pen', '손글씨'], ['dot', '도트']];
-  let h = `<div class="pane"><h5>용지</h5>
-    <div class="fld"><label>너비 ${d.w}px</label><input type="range" min="640" max="1400" step="20" value="${d.w}" data-d="w"></div>
+  let h = `<div class="pane"><h5>용지 · ${THEMES[thOf(S)].nm} 테마</h5>
+    <div class="fld"><label>너비 <b>${d.w}</b>px</label><input type="range" min="640" max="1400" step="20" value="${d.w}" data-d="w"></div>
     <div class="cols"><span>바탕</span><input type="color" value="${d.bg}" data-d="bg"><span>글자</span><input type="color" value="${d.ink}" data-d="ink"></div>
     <div class="cols"><span>상징색</span>${chip('a.color')}${chip('b.color')}</div>
     <h5>글꼴</h5><div class="seg">${fonts.map(([k, v]) => `<button type="button" data-font="${k}" aria-pressed="${d.font === k}">${v}</button>`).join('')}</div>
-    <div class="fld"><label>모서리 둥글기 ${d.r}px</label><input type="range" min="0" max="30" value="${d.r}" data-d="r"></div>
-    <div class="fld"><label>블록 사이 ${d.gap}px</label><input type="range" min="4" max="40" value="${d.gap}" data-d="gap"></div>
+    <div class="fld"><label>모서리 둥글기 <b>${d.r}</b>px</label><input type="range" min="0" max="30" value="${d.r}" data-d="r"></div>
+    <div class="fld"><label>블록 사이 <b>${d.gap}</b>px</label><input type="range" min="4" max="40" value="${d.gap}" data-d="gap"></div>
     <div class="cols"><span>칸 테두리</span><div class="seg"><button type="button" data-border="1" aria-pressed="${d.border}">있음</button><button type="button" data-border="0" aria-pressed="${!d.border}">없음</button></div></div>
     <h5>고른 블록</h5>`;
-  if (!b) h += `<p class="note">용지에서 블록을 누르면 여기서 다듬을 수 있어요.</p>`;
+  if (!b) h += `<p class="note">용지에서 블록을 누르거나 ↑ ↓ 키로 고르면 여기서 다듬을 수 있어요.</p>`;
   else {
     h += `<p class="note"><b>${BT[b.t][0]}</b> · ${BT[b.t][1]}</p><div class="cols"><span>상자</span><div class="seg"><button type="button" data-bx="1" aria-pressed="${b.box}">있음</button><button type="button" data-bx="0" aria-pressed="${!b.box}">없음</button></div></div>`;
     if (b.t === 'full') h += `<div class="cols"><span>칸 수</span><div class="seg"><button type="button" data-cols="1" aria-pressed="${b.cols === 1}">한 장</button><button type="button" data-cols="2" aria-pressed="${b.cols === 2}">두 장</button></div></div>`;
-    if (b.t === 'full' || b.t === 'img') h += `<div class="fld"><label>그림 높이 ${b.h}px</label><input type="range" min="160" max="900" step="10" value="${b.h}" data-bh="1"></div>`;
+    if (b.t === 'full' || b.t === 'img') h += `<div class="fld"><label>그림 높이 <b>${b.h}</b>px</label><input type="range" min="160" max="900" step="10" value="${b.h}" data-bh="1"></div>`;
     if (b.t === 'head') h += `<div class="cols"><span>정렬</span><div class="seg"><button type="button" data-al="c" aria-pressed="${b.al !== 'l'}">가운데</button><button type="button" data-al="l" aria-pressed="${b.al === 'l'}">왼쪽</button></div></div>`;
-    if (b.t === 'stats') h += S.stats.map((x, i) => `<div class="fld"><label>${esc(x.k || '항목')} · ${esc(S.a.name)} ${x.a} / ${esc(S.b.name)} ${x.b}</label><input type="range" min="0" max="100" value="${x.a}" data-st="${i}.a"><input type="range" min="0" max="100" value="${x.b}" data-st="${i}.b"></div>`).join('');
+    if (LISTK[b.t]) { const [key, max, , nm] = LISTK[b.t]; h += `<div class="cols"><span>${nm} ${S[key].length}개</span><div class="seg"><button type="button" data-li="add" ${S[key].length >= max ? 'disabled' : ''}>+ 추가</button><button type="button" data-li="pop" ${S[key].length <= 1 ? 'disabled' : ''}>− 마지막 빼기</button></div></div>`; }
+    if (b.t === 'stats') h += S.stats.map((x, i) => `<div class="fld"><label>${esc(x.k || '항목')} · ${esc(S.a.name)} <b data-sv="${i}.a">${x.a}</b> / ${esc(S.b.name)} <b data-sv="${i}.b">${x.b}</b></label><input type="range" min="0" max="100" value="${x.a}" data-st="${i}.a"><input type="range" min="0" max="100" value="${x.b}" data-st="${i}.b"></div>`).join('');
     if (b.t === 'talk') h += S.talk.map((t, i) => `<div class="cols"><span>대사 ${i + 1}</span><div class="seg"><button type="button" data-tw="${i}.a" aria-pressed="${t.who !== 'b'}">${esc(S.a.name)}</button><button type="button" data-tw="${i}.b" aria-pressed="${t.who === 'b'}">${esc(S.b.name)}</button></div></div>`).join('');
   }
-  $('#right').innerHTML = h + `<h5 style="margin-top:14px">도움말</h5><p class="note">글자는 용지 위에서 눌러 바로 고쳐요. 그림 칸은 눌러서 고르거나 파일을 끌어다 놓고, 넣은 그림은 끌어서 위치를, −/+로 크기를 맞춰요. 색 동그라미를 누르면 색이 바뀌어요. Ctrl+Z로 되돌려요.</p></div>`;
+  $('#right').innerHTML = h + `<h5 style="margin-top:14px">자주 쓰는 단축키</h5><div class="kl">${KEYS.slice(0, 7).map(([k, v]) => `<div><kbd>${k}</kbd><span>${v}</span></div>`).join('')}</div><button type="button" class="ib" data-t="keys" style="margin-top:6px">단축키 전부 보기</button></div>`;
 }
-function render(S) {
-  CUR = S;
-  const el = $('#poster'), d = S.design;
-  el.className = 'poster' + (d.border ? '' : ' nob') + (d.font !== 'base' ? ' f-' + d.font : '');
-  el.style.cssText = `--a:${S.a.color};--b:${S.b.color};--bg:${d.bg};--ink:${d.ink};--r:${d.r}px;--gap:${d.gap}px;--w:${d.w}px`;
+/* 용지만 다시 그리기(오른쪽·왼쪽 칸은 그대로 둬서 끌던 막대가 끊기지 않게) */
+function paint(S) {
+  CUR = S; const el = $('#poster'), d = S.design;
+  el.className = posterCls(d); el.style.cssText = posterVars(S, d);
   el.innerHTML = posterHTML(S);
   el.querySelectorAll('[data-e]').forEach(n => { n.contentEditable = 'plaintext-only'; n.spellcheck = false; });
-  if (!lastSnap) lastSnap = snap();
-  topbar(); left(); right(); applyZoom(); requestAnimationFrame(() => { applyZoom(); topbar(); });
+  Core.mountPhotos(el, () => render(S_()));
+  applyZoom();
 }
-const rerender = () => { render(S_()); commit(); };
+function render(S) {
+  paint(S); if (!lastSnap) lastSnap = snap();
+  topbar(); right(); if (TAB === 'theme') leftSoon(); else left();
+  requestAnimationFrame(() => { applyZoom(); topbar(); });
+}
+const rerender = () => { render(S_()); commitNow(); };
+function select(id) { SEL = id; SSEL = null; $('#poster').querySelectorAll('.blk').forEach(x => x.classList.toggle('sel', S_().blocks[+x.dataset.bi].id === id)); $('#poster').querySelectorAll('.stk').forEach(x => x.classList.remove('on')); right(); const el = $('#poster .blk.sel'); if (el) el.scrollIntoView({ block: 'nearest' }); }
+function selectStk(i) { SSEL = i; SEL = null; $('#poster').querySelectorAll('.blk').forEach(x => x.classList.remove('sel')); $('#poster').querySelectorAll('.stk').forEach(x => x.classList.toggle('on', +x.dataset.si === i)); right(); }
+const selIdx = () => S_().blocks.findIndex(x => x.id === SEL);
 document.addEventListener('input', e => { const n = e.target.closest && e.target.closest('#poster [data-e]'); if (!n) return; set(S_(), n.dataset.e, n.textContent); commit(); });
 document.addEventListener('focusout', e => { if (e.target.closest && e.target.closest('#poster [data-e]')) setTimeout(() => { const a = document.activeElement; if (!(a && a.closest && a.closest('#poster [data-e]'))) render(S_()); }, 0); });
-function undo() { if (!hist.length) return; fut.push(snap()); const s = hist.pop(); load(JSON.parse(s)); lastSnap = s; try { localStorage.setItem(KEY, s); } catch (e) {} render(S_()); }
-function redo() { if (!fut.length) return; hist.push(snap()); const s = fut.pop(); load(JSON.parse(s)); lastSnap = s; try { localStorage.setItem(KEY, s); } catch (e) {} render(S_()); }
+function undo() { if (!hist.length) return Core.toast('더 되돌릴 게 없어요'); fut.push(snap()); const s = hist.pop(); load(JSON.parse(s)); lastSnap = s; saveNow(); render(S_()); }
+function redo() { if (!fut.length) return; hist.push(snap()); const s = fut.pop(); load(JSON.parse(s)); lastSnap = s; saveNow(); render(S_()); }
+/* 블록·스티커 조작 */
+function delSel() {
+  const S = S_();
+  if (SSEL != null && S.stickers[SSEL]) { S.stickers.splice(SSEL, 1); SSEL = null; rerender(); Core.toast('스티커를 지웠어요 · Ctrl+Z로 되돌리기'); return true; }
+  const i = selIdx(); if (i < 0) return false;
+  S.blocks.splice(i, 1); SEL = (S.blocks[i] || S.blocks[i - 1] || {}).id || null; rerender(); Core.toast('블록을 지웠어요 · Ctrl+Z로 되돌리기'); return true;
+}
+function dupSel() {
+  const S = S_();
+  if (SSEL != null && S.stickers[SSEL]) { const t = S.stickers[SSEL]; S.stickers.push({ ...t, x: clamp(t.x + 3, 0, 100), y: clamp(t.y + 3, 0, 100) }); SSEL = S.stickers.length - 1; rerender(); return true; }
+  const i = selIdx(); if (i < 0) return false;
+  const nb = cloneBlock(S.blocks[i]); S.blocks.splice(i + 1, 0, nb); SEL = nb.id; rerender(); return true;
+}
+function copySel(cut) {
+  const S = S_();
+  if (SSEL != null && S.stickers[SSEL]) { CLIP = { k: 'stk', v: { ...S.stickers[SSEL] } }; } else { const i = selIdx(); if (i < 0) return false; CLIP = { k: 'blk', v: JSON.parse(JSON.stringify(S.blocks[i])) }; }
+  if (cut) delSel(); else Core.toast('복사했어요 · Ctrl+V로 붙여넣기');
+  return true;
+}
+function pasteClip() {
+  if (!CLIP) return false; const S = S_();
+  if (CLIP.k === 'stk') { S.stickers.push({ ...CLIP.v, x: clamp(CLIP.v.x + 3, 0, 100), y: clamp(CLIP.v.y + 3, 0, 100) }); SSEL = S.stickers.length - 1; SEL = null; }
+  else { const nb = cloneBlock(CLIP.v), i = selIdx(); S.blocks.splice(i < 0 ? S.blocks.length : i + 1, 0, nb); SEL = nb.id; SSEL = null; }
+  rerender(); return true;
+}
+function moveSel(dir) { const S = S_(), i = selIdx(), j = i + dir; if (i < 0 || j < 0 || j >= S.blocks.length) return; [S.blocks[i], S.blocks[j]] = [S.blocks[j], S.blocks[i]]; rerender(); select(SEL); }
+function addBlock(t, at) { const S = S_(), nb = B(t); let i = at; if (i == null) { const s = selIdx(); i = s < 0 ? S.blocks.length : s + 1; } S.blocks.splice(i, 0, nb); SEL = nb.id; SSEL = null; rerender(); select(nb.id); }
+function addSticker(k, x, y) { const S = S_(); const n = S.stickers.length; S.stickers.push({ t: k, text: STK[k], x: x ?? 50 + (n % 6) * 3, y: y ?? visibleY() + (n % 6) * 2 }); SSEL = S.stickers.length - 1; SEL = null; rerender(); }
+/* 지금 화면에 보이는 높이 쯤에 스티커를 둔다 */
+function visibleY() { const r = $('#poster').getBoundingClientRect(), w = $('#wrap').getBoundingClientRect(); return clamp(((w.top + w.height / 2) - r.top) / r.height * 100, 5, 95); }
+function listItem(t, op) { const S = S_(), [key, max, mk] = LISTK[t]; if (op === 'add' && S[key].length < max) S[key].push(mk()); if (op === 'pop' && S[key].length > 1) S[key].pop(); rerender(); }
+function exportFile() { const a = document.createElement('a'); a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(snap()); a.download = `페어틀_${S_().title || 'pair'}.json`; a.click(); }
+function showKeys() {
+  if ($('.keys')) return $('.keys').remove();
+  const m = document.createElement('div'); m.className = 'keys'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-label', '단축키');
+  m.innerHTML = `<div class="keysb"><div class="keysh"><b>단축키</b><button type="button" data-kx="1" aria-label="닫기">×</button></div><div class="kl">${KEYS.map(([k, v]) => `<div><kbd>${k}</kbd><span>${v}</span></div>`).join('')}</div><p class="note">맥에서는 Ctrl 대신 ⌘. 글자를 고치는 중에는 Tab, Esc, Enter만 먹어요.</p></div>`;
+  document.body.appendChild(m);
+}
+function slotMenu(btn) {
+  const old = $('.slotm'); if (old) { const same = old.dataset.n === btn.dataset.n; old.remove(); if (same) return; }
+  const n = btn.dataset.n, t = slotT(n), m = document.createElement('div'); m.className = 'slotm'; m.dataset.n = n;
+  m.innerHTML = `<b>칸${n}</b><small>${t ? `${t}에 저장함` : '비어 있어요'}</small><button type="button" data-sl="save">지금 것을 여기에 저장</button>${t ? `<button type="button" data-sl="load">불러오기</button><button type="button" data-sl="clear">비우기</button>` : ''}`;
+  const r = btn.getBoundingClientRect(), tr = $('#top').getBoundingClientRect();
+  m.style.left = Math.min(r.left - tr.left, tr.width - 200) + 'px'; m.style.top = (r.bottom - tr.top + 4) + 'px';
+  $('#top').appendChild(m);
+}
+const isTyping = t => t && (/INPUT|TEXTAREA|SELECT/.test(t.tagName) || t.isContentEditable);
 document.addEventListener('keydown', e => {
-  const n = e.target.closest && e.target.closest('#poster [data-e]');
-  if (n && e.key === 'Enter' && !n.closest('.b-text')) { e.preventDefault(); n.blur(); }
-  if ((e.ctrlKey || e.metaKey) && !n && document.body.dataset.mode === 'view' && !/INPUT|TEXTAREA/.test(e.target.tagName)) { if (e.key === 'z') { e.preventDefault(); undo(); } if (e.key === 'y') { e.preventDefault(); redo(); } }
+  if (document.body.dataset.mode !== 'view' || !ST) return;
+  const mod = e.ctrlKey || e.metaKey, c = e.code, t = e.target;
+  if (e.key === 'Escape' && ($('.keys') || $('.slotm'))) { $('.keys')?.remove(); $('.slotm')?.remove(); return; }
+  const n = t.closest && t.closest('#poster [data-e]');
+  if (n) {
+    if (e.key === 'Escape') { e.preventDefault(); n.blur(); return; }
+    if (e.key === 'Tab') { e.preventDefault(); const all = [...$('#poster').querySelectorAll('[data-e]')]; const nx = all[(all.indexOf(n) + (e.shiftKey ? -1 : 1) + all.length) % all.length]; nx.focus(); const r = document.createRange(); r.selectNodeContents(nx); const sl = getSelection(); sl.removeAllRanges(); sl.addRange(r); return; }
+    if (e.key === 'Enter' && (!n.closest('.b-text') || mod)) { e.preventDefault(); n.blur(); }
+    return;
+  }
+  if (isTyping(t)) return;
+  if ((e.key === 'Enter' || e.key === ' ') && t.closest && t.closest('.thc')) { e.preventDefault(); t.click(); return; }
+  const S = S_(), stop = () => e.preventDefault();
+  if (mod && c === 'KeyZ') { stop(); e.shiftKey ? redo() : undo(); return; }
+  if (mod && c === 'KeyY') { stop(); redo(); return; }
+  if (mod && (c === 'Equal' || c === 'NumpadAdd')) { stop(); zoomBy(.1); return; }
+  if (mod && (c === 'Minus' || c === 'NumpadSubtract')) { stop(); zoomBy(-.1); return; }
+  if (mod && (c === 'Digit0' || c === 'Numpad0')) { stop(); ZOOM = 0; applyZoom(); topbar(); return; }
+  if (mod && c === 'KeyS') { stop(); if (e.shiftKey) exportFile(); else { saveNow(); Core.toast('저장했어요 · 이 브라우저에 남아요'); } return; }
+  if (mod && c === 'KeyE') { stop(); $('#btn-png').click(); return; }
+  if (mod && c === 'KeyO') { stop(); $('#imp').click(); return; }
+  if (mod && c === 'KeyD') { stop(); dupSel(); return; }
+  if (mod && (c === 'KeyC' || c === 'KeyX') && !String(getSelection())) { if (copySel(c === 'KeyX')) stop(); return; }
+  if (mod && c === 'KeyV') { if (pasteClip()) stop(); return; }
+  if (mod) return;
+  if (e.key === '?' || (c === 'Slash' && e.shiftKey) || c === 'F1') { stop(); showKeys(); return; }
+  if (e.key === 'Delete' || e.key === 'Backspace') { if (delSel()) stop(); return; }
+  if (e.key === 'Escape') { SEL = null; SSEL = null; render(S); return; }
+  if (/^Arrow/.test(e.key) && SSEL != null && S.stickers[SSEL]) {
+    stop(); const st = S.stickers[SSEL], d = e.shiftKey ? 2 : .4;
+    if (e.key === 'ArrowLeft') st.x = clamp(+(st.x - d).toFixed(1), 0, 100); if (e.key === 'ArrowRight') st.x = clamp(+(st.x + d).toFixed(1), 0, 100);
+    if (e.key === 'ArrowUp') st.y = clamp(+(st.y - d).toFixed(1), 0, 100); if (e.key === 'ArrowDown') st.y = clamp(+(st.y + d).toFixed(1), 0, 100);
+    const el = $(`#poster .stk[data-si="${SSEL}"]`); if (el) { el.style.left = st.x + '%'; el.style.top = st.y + '%'; } commit(); return;
+  }
+  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    stop(); const dir = e.key === 'ArrowUp' ? -1 : 1;
+    if (e.altKey) { moveSel(dir); return; }
+    const i = selIdx(), j = i < 0 ? (dir > 0 ? 0 : S.blocks.length - 1) : clamp(i + dir, 0, S.blocks.length - 1);
+    if (S.blocks[j]) select(S.blocks[j].id); return;
+  }
+  if (e.key === 'Enter' && t.tagName !== 'BUTTON' && t.tagName !== 'A') { const f = $('#poster .blk.sel [data-e]'); if (f) { stop(); f.focus(); } }
 });
-let drag = null, moved = false;
+$('#wrap').addEventListener('wheel', e => { if (!(e.ctrlKey || e.metaKey) || document.body.dataset.mode !== 'view') return; e.preventDefault(); zoomBy(e.deltaY < 0 ? .1 : -.1); }, { passive: false });
+/* ── 끌기: 스티커·그림 위치 / 왼쪽에서 블록·스티커 끌어 넣기 / 블록 순서 ── */
+let drag = null, moved = false, pd = null, noClick = 0;
+function dropAt(y) {
+  const bl = [...$('#poster').querySelectorAll(':scope > .blk')];
+  for (let i = 0; i < bl.length; i++) { const r = bl[i].getBoundingClientRect(); if (y < r.top + r.height / 2) return { i, y: r.top - 2 }; }
+  const last = bl[bl.length - 1]; return { i: bl.length, y: last ? last.getBoundingClientRect().bottom + 2 : $('#poster').getBoundingClientRect().top + 20 };
+}
 document.addEventListener('pointerdown', e => {
+  if (e.button !== 0 || document.body.dataset.mode !== 'view') return;
+  const src = e.target.closest('#left [data-add], #left [data-stk], #poster .bctl [data-act="grab"]');
+  if (src) { pd = { kind: src.dataset.add ? 'add' : src.dataset.stk ? 'stk' : 'move', v: src.dataset.add || src.dataset.stk, from: src.closest('.blk') ? +src.closest('.blk').dataset.bi : -1, sx: e.clientX, sy: e.clientY, on: false, label: src.dataset.add ? BT[src.dataset.add][0] : src.dataset.stk ? STK[src.dataset.stk] : BT[S_().blocks[+src.closest('.blk').dataset.bi].t][0] }; e.preventDefault(); return; }
   const st = e.target.closest('#poster .stk'), im = e.target.closest('#poster .pic img'), ed = e.target.closest('[data-e]');
-  if (st && !e.target.closest('.x') && !(ed && document.activeElement === ed)) { drag = { t: 'stk', i: +st.dataset.si, r: $('#poster').getBoundingClientRect(), el: st }; moved = false; return; }
+  if (st && !e.target.closest('.x') && !(ed && document.activeElement === ed)) { drag = { t: 'stk', i: +st.dataset.si, r: $('#poster').getBoundingClientRect(), el: st }; moved = false; if (SSEL !== +st.dataset.si) selectStk(+st.dataset.si); return; }
   if (im) { const p = im.closest('.pic'), k = p.dataset.photo, m = META(k); drag = { t: 'img', k, m, sx: e.clientX, sy: e.clientY, x0: m.x, y0: m.y, w: p.clientWidth, h: p.clientHeight, im }; moved = false; e.preventDefault(); }
 });
 document.addEventListener('pointermove', e => {
+  if (pd) {
+    if (!pd.on && Math.hypot(e.clientX - pd.sx, e.clientY - pd.sy) < 6) return;
+    if (!pd.on) { pd.on = true; pd.ghost = document.createElement('div'); pd.ghost.className = 'ghost'; pd.ghost.textContent = pd.label; document.body.appendChild(pd.ghost); if (pd.kind !== 'stk') { pd.line = document.createElement('div'); pd.line.className = 'dropline'; document.body.appendChild(pd.line); } }
+    pd.ghost.style.left = e.clientX + 12 + 'px'; pd.ghost.style.top = e.clientY + 12 + 'px';
+    const pr = $('#poster').getBoundingClientRect(), over = e.clientX > pr.left && e.clientX < pr.right && e.clientY > pr.top && e.clientY < pr.bottom;
+    pd.ghost.classList.toggle('ok', over);
+    if (pd.line) { pd.line.hidden = !over; if (over) { const d = dropAt(e.clientY); pd.at = d.i; pd.line.style.left = pr.left + 'px'; pd.line.style.width = pr.width + 'px'; pd.line.style.top = d.y + 'px'; } }
+    return;
+  }
   if (!drag) return; moved = true;
-  if (drag.t === 'img') { const zf = parseFloat($('#zoomer').style.zoom) || 1; drag.m.x = clamp(drag.x0 - (e.clientX - drag.sx) / (drag.w * zf) * 100, 0, 100); drag.m.y = clamp(drag.y0 - (e.clientY - drag.sy) / (drag.h * zf) * 100, 0, 100); drag.im.style.objectPosition = `${drag.m.x}% ${drag.m.y}%`; }
+  if (drag.t === 'img') { drag.m.x = clamp(drag.x0 - (e.clientX - drag.sx) / (drag.w * zf()) * 100, 0, 100); drag.m.y = clamp(drag.y0 - (e.clientY - drag.sy) / (drag.h * zf()) * 100, 0, 100); drag.im.style.objectPosition = `${drag.m.x}% ${drag.m.y}%`; }
   else { const r = drag.r, x = clamp((e.clientX - r.left) / r.width * 100, 0, 100), y = clamp((e.clientY - r.top) / r.height * 100, 0, 100); drag.el.style.left = x + '%'; drag.el.style.top = y + '%'; S_().stickers[drag.i].x = +x.toFixed(1); S_().stickers[drag.i].y = +y.toFixed(1); }
 });
-document.addEventListener('pointerup', () => { if (!drag) return; if (drag.t === 'img') setMeta(drag.k, drag.m); else commit(); drag = null; });
-function pickColor(path) { const inp = document.createElement('input'); inp.type = 'color'; inp.value = get(S_(), path) || '#888888'; inp.oninput = () => { set(S_(), path, inp.value); rerender(); }; inp.click(); }
+document.addEventListener('pointerup', e => {
+  if (pd) {
+    const p = pd; pd = null; if (p.ghost) p.ghost.remove(); if (p.line) p.line.remove();
+    if (!p.on) { if (p.kind === 'add') addBlock(p.v); if (p.kind === 'stk') addSticker(p.v); noClick = Date.now(); return; }
+    noClick = Date.now();
+    const pr = $('#poster').getBoundingClientRect(); if (!(e.clientX > pr.left && e.clientX < pr.right && e.clientY > pr.top && e.clientY < pr.bottom)) return;
+    if (p.kind === 'stk') { addSticker(p.v, +clamp((e.clientX - pr.left) / pr.width * 100, 0, 100).toFixed(1), +clamp((e.clientY - pr.top) / pr.height * 100, 0, 100).toFixed(1)); return; }
+    if (p.kind === 'add') { addBlock(p.v, p.at ?? S_().blocks.length); return; }
+    const bl = S_().blocks, [b] = bl.splice(p.from, 1); let at = p.at ?? bl.length; if (at > p.from) at--; bl.splice(at, 0, b); SEL = b.id; rerender(); select(b.id); return;
+  }
+  if (!drag) return; if (drag.t === 'img') setMeta(drag.k, drag.m); else commit(); drag = null;
+});
+function pickColor(path) { const inp = document.createElement('input'); inp.type = 'color'; inp.value = get(S_(), path) || '#888888'; inp.oninput = () => { set(S_(), path, inp.value); paint(S_()); }; inp.onchange = () => rerender(); inp.click(); }
 document.addEventListener('click', e => {
+  if (Date.now() - noClick < 250 && e.target.closest('#left, #poster')) { e.stopPropagation(); e.preventDefault(); return; }
   if (!e.target.closest('#poster')) return;
   if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; return; }
   const z = e.target.closest('.adj [data-z]');
   if (z) { e.stopPropagation(); e.preventDefault(); const p = z.closest('.pic'), k = p.dataset.photo, m = META(k); m.z = clamp(+(m.z + (+z.dataset.z) * .1).toFixed(2), 1, 3); setMeta(k, m); p.querySelector('img').style.transform = `scale(${m.z})`; return; }
+  const ai = e.target.closest('[data-addi]'); if (ai) { e.stopPropagation(); select(S_().blocks[+ai.closest('.blk').dataset.bi].id); listItem(ai.dataset.addi, 'add'); return; }
   const act = e.target.closest('.bctl [data-act]');
-  if (act) { e.stopPropagation(); const i = +act.closest('.blk').dataset.bi, bl = S_().blocks, a = act.dataset.act;
-    if (a === 'up' && i > 0) [bl[i - 1], bl[i]] = [bl[i], bl[i - 1]];
-    if (a === 'down' && i < bl.length - 1) [bl[i + 1], bl[i]] = [bl[i], bl[i + 1]];
-    if (a === 'dup') bl.splice(i + 1, 0, { ...bl[i], id: nid() });
-    if (a === 'del') { bl.splice(i, 1); SEL = null; }
-    rerender(); return; }
-  const sx = e.target.closest('[data-sx]'); if (sx) { e.stopPropagation(); S_().stickers.splice(+sx.dataset.sx, 1); rerender(); return; }
+  if (act) { e.stopPropagation(); const i = +act.closest('.blk').dataset.bi, a = act.dataset.act; SEL = S_().blocks[i].id;
+    if (a === 'up') moveSel(-1); if (a === 'down') moveSel(1); if (a === 'dup') dupSel(); if (a === 'del') delSel(); return; }
+  const sx = e.target.closest('[data-sx]'); if (sx) { e.stopPropagation(); SSEL = +sx.dataset.sx; delSel(); return; }
   const c = e.target.closest('[data-c]'); if (c) { e.stopPropagation(); pickColor(c.dataset.c); return; }
   if (e.target.closest('[data-e]')) e.stopPropagation();
+  if (e.target.closest('.stk')) return;
   const blk = e.target.closest('.blk');
-  if (blk && !e.target.closest('[data-photo]')) { const id = S_().blocks[+blk.dataset.bi].id; if (SEL !== id) { SEL = id; $('#poster').querySelectorAll('.blk').forEach(x => x.classList.toggle('sel', x === blk)); right(); } }
+  if (blk && !e.target.closest('[data-photo]')) { const id = S_().blocks[+blk.dataset.bi].id; if (SEL !== id) select(id); }
 }, true);
 document.addEventListener('click', e => {
   if (!ST) return; const S = S_(), q = s => e.target.closest(s);
+  if (!q('.slotm') && !q('[data-t="slot"]')) $('.slotm')?.remove();
+  if (q('.keys') && (q('[data-kx]') || !q('.keysb'))) { $('.keys').remove(); return; }
+  if (q('#wrap') && !q('#poster') && (SEL || SSEL != null)) { SEL = null; SSEL = null; render(S); return; }
   if (q('#right [data-c]')) { pickColor(q('#right [data-c]').dataset.c); return; }
+  const kb = q('[data-t="keys"]'); if (kb) { showKeys(); return; }
+  const sl = q('.slotm [data-sl]');
+  if (sl) { const n = sl.closest('.slotm').dataset.n, a = sl.dataset.sl; $('.slotm').remove();
+    if (a === 'save') { try { localStorage.setItem('pairslot' + n, snap()); const d = new Date(); localStorage.setItem('pairslotT' + n, `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`); Core.toast(`칸${n}에 저장했어요`); } catch (err) { Core.toast('저장 공간이 모자라요'); } topbar(); }
+    if (a === 'load') { let v = null; try { v = localStorage.getItem('pairslot' + n); } catch (err) {} if (v) { hist.push(snap()); load(JSON.parse(v)); SEL = null; rerender(); Core.toast(`칸${n}을 불러왔어요 · Ctrl+Z로 되돌리기`); } }
+    if (a === 'clear') { try { localStorage.removeItem('pairslot' + n); localStorage.removeItem('pairslotT' + n); } catch (err) {} topbar(); Core.toast(`칸${n}을 비웠어요`); }
+    return; }
   const tb = q('#top [data-t]');
-  if (tb) { const t = tb.dataset.t, zf = parseFloat($('#zoomer').style.zoom) || 1;
+  if (tb) { const t = tb.dataset.t;
     if (t === 'undo') undo(); if (t === 'redo') redo();
-    if (t === 'zi') { ZOOM = Math.min(2, zf + .1); applyZoom(); topbar(); }
-    if (t === 'zo') { ZOOM = Math.max(.3, zf - .1); applyZoom(); topbar(); }
+    if (t === 'zi') zoomBy(.1); if (t === 'zo') zoomBy(-.1);
     if (t === 'zf') { ZOOM = 0; applyZoom(); topbar(); }
-    if (t === 'png') $('#btn-png').click();
-    if (t === 'slot') { const n = tb.dataset.n; let v = null; try { v = localStorage.getItem('pairslot' + n); } catch (err) {} if (v) { hist.push(snap()); load(JSON.parse(v)); rerender(); Core.toast(`칸${n}을 불러왔어요`); } else { try { localStorage.setItem('pairslot' + n, snap()); Core.toast(`칸${n}에 저장했어요`); } catch (err) {} topbar(); } }
-    if (t === 'exp') { const a = document.createElement('a'); a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(snap()); a.download = `페어틀_${S.title || 'pair'}.json`; a.click(); }
+    if (t === 'png') { SEL = null; SSEL = null; paint(S); $('#btn-png').click(); }
+    if (t === 'slot') slotMenu(tb);
+    if (t === 'exp') exportFile();
     return; }
   const tab = q('#left [data-tab]'); if (tab) { TAB = tab.dataset.tab; left(); return; }
-  const pr = q('#left [data-preset]'); if (pr) { const old = S.blocks; S.blocks = PRESET[pr.dataset.preset][2].map(t => { const keep = old.find(x => x.t === t); return keep ? { ...keep } : B(t); }); SEL = null; rerender(); return; }
-  const ad = q('#left [data-add]'); if (ad) { const nb = B(ad.dataset.add); S.blocks.push(nb); SEL = nb.id; rerender(); $('#wrap').scrollTop = $('#wrap').scrollHeight; return; }
-  const sk = q('#left [data-stk]'); if (sk) { const k = sk.dataset.stk; S.stickers.push({ t: k, text: STK[k], x: 50 + (S.stickers.length % 6) * 3, y: 20 + (S.stickers.length % 6) * 4 }); rerender(); return; }
+  const th = q('#left [data-theme]'); if (th) { const k = th.dataset.theme; S.design = { ...S.design, ...THEMES[k].d, theme: k }; rerender(); left(); Core.toast(`${THEMES[k].nm} 테마로 바꿨어요 · AI로 채우기 OOC도 이 말투로 바뀌었어요`); return; }
   const fo = q('#right [data-font]'); if (fo) { S.design.font = fo.dataset.font; rerender(); return; }
   const bo = q('#right [data-border]'); if (bo) { S.design.border = bo.dataset.border === '1'; rerender(); return; }
   const b = S.blocks.find(x => x.id === SEL);
-  if (b) { const bx = q('#right [data-bx]'), co = q('#right [data-cols]'), al = q('#right [data-al]'), tw = q('#right [data-tw]');
+  if (b) { const bx = q('#right [data-bx]'), co = q('#right [data-cols]'), al = q('#right [data-al]'), tw = q('#right [data-tw]'), li = q('#right [data-li]');
     if (bx) { b.box = bx.dataset.bx === '1'; rerender(); }
     if (co) { b.cols = +co.dataset.cols; rerender(); }
     if (al) { b.al = al.dataset.al; rerender(); }
+    if (li && LISTK[b.t]) listItem(b.t, li.dataset.li);
     if (tw) { const [i, w] = tw.dataset.tw.split('.'); S.talk[+i].who = w; rerender(); } }
 });
+/* 오른쪽 막대·색: 끄는 동안엔 용지만, 놓으면 저장 */
 document.addEventListener('input', e => {
   if (!ST) return; const S = S_(), t = e.target;
-  if (t.matches('#right [data-d]')) { const k = t.dataset.d; S.design[k] = t.type === 'range' ? +t.value : t.value; render(S); commit(); return; }
-  if (t.matches('#right [data-bh]')) { const b = S.blocks.find(x => x.id === SEL); if (b) { b.h = +t.value; render(S); commit(); } return; }
-  if (t.matches('#right [data-st]')) { const [i, k] = t.dataset.st.split('.'); S.stats[+i][k] = +t.value; render(S); commit(); }
+  const lab = v => { const b = t.closest('.fld')?.querySelector('label b'); if (b) b.textContent = v; };
+  if (t.matches('#right [data-d]')) { const k = t.dataset.d; S.design[k] = t.type === 'range' ? +t.value : t.value; if (t.type === 'range') lab(t.value); paint(S); commit(); return; }
+  if (t.matches('#right [data-bh]')) { const b = S.blocks.find(x => x.id === SEL); if (b) { b.h = +t.value; lab(t.value); paint(S); commit(); } return; }
+  if (t.matches('#right [data-st]')) { const [i, k] = t.dataset.st.split('.'); S.stats[+i][k] = +t.value; const v = $(`#right [data-sv="${i}.${k}"]`); if (v) v.textContent = t.value; paint(S); commit(); }
 });
-document.addEventListener('change', e => { if (e.target.id !== 'imp') return; const f = e.target.files && e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { hist.push(snap()); load(JSON.parse(r.result)); rerender(); Core.toast('불러왔어요'); } catch (err) { Core.toast('파일을 읽지 못했어요'); } }; r.readAsText(f); });
+document.addEventListener('change', e => {
+  if (e.target.matches && e.target.matches('#right [data-d], #right [data-bh], #right [data-st]')) { if (TAB === 'theme') leftSoon(); return; }
+  if (e.target.id !== 'imp') return; const f = e.target.files && e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { hist.push(snap()); load(JSON.parse(r.result)); SEL = null; rerender(); Core.toast('불러왔어요'); } catch (err) { Core.toast('파일을 읽지 못했어요'); } }; r.readAsText(f); e.target.value = '';
+});
 window.addEventListener('resize', Core.debounce(() => { if (!ZOOM) { applyZoom(); topbar(); } }, 150));
 ST = Core.app({ key: KEY, what: '페어틀', sample, blank, normalize, schema, prompts, apply, progress, render, skin: false, fileName: S => `페어틀_${S.title || S.a.name}` });
 })();
