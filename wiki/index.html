@@ -17,8 +17,6 @@
 /* ── 위키백과 테마: 흰 바탕 · 명조 제목 · 회색 테두리 정보 상자 · 파란 링크 · 분류는 맨 아래 ── */
 .t-wp { --c: #202122; --c2: #f8f9fa; --link: #0645ad; --line: #a2a9b1; }
 .t-wp .top { background: #fff; color: #202122; border-bottom: 1px solid #a2a9b1; height: 58px; }
-.t-wp .top b { font: 400 22px "Noto Serif KR", "Nanum Myeongjo", Georgia, serif; letter-spacing: .02em; }
-.t-wp .top b small { display: block; font: 400 11px "Pretendard Variable", sans-serif; color: #54595d; letter-spacing: 0; }
 .t-wp .top .sr { border: 1px solid #a2a9b1; background: #fff; border-radius: 2px; }
 .t-wp .wrap { display: flex; flex-direction: column; }
 .t-wp .ttl { border-bottom: 1px solid #a2a9b1; }
@@ -36,7 +34,7 @@
 .t-wp .toc b { text-align: center; }
 .t-wp .toc a span { color: #202122; font-weight: 400; }
 .t-wp h2.sh { font: 400 25px "Noto Serif KR", "Nanum Myeongjo", Georgia, serif; border-bottom-color: #a2a9b1; }
-.t-wp h2.sh span { display: none; }
+.t-wp h2.sh .no { display: none; }
 .t-wp h2.sh em { font-family: "Pretendard Variable", sans-serif; }
 .t-wp .dlg { border-left: 0; background: none; padding: 2px 0 2px 26px; font-style: italic; color: #333; }
 .t-wp .foot { background: #fff; }
@@ -49,7 +47,6 @@ body[data-mode="view"] { background: var(--bg); }
 .skins button:focus-visible { outline: 2px solid #2f6bff; outline-offset: 2px; }
 .poster { width: min(1060px, 100%); background: #fff; color: var(--ink); font: 400 15px/1.75 "Pretendard Variable", Pretendard, sans-serif; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
 .top { display: flex; align-items: center; gap: 14px; height: 52px; padding: 0 18px; background: var(--c); color: #fff; }
-.top b { font-size: 19px; font-weight: 800; letter-spacing: -.02em; }
 .top .sp { flex: 1; }
 .top .sr { width: 240px; max-width: 40%; height: 32px; border-radius: 4px; background: rgba(255,255,255,.95); color: #999; font-size: 13px; display: flex; align-items: center; padding: 0 10px; }
 .wrap { padding: 22px 26px 30px; }
@@ -80,7 +77,7 @@ body[data-mode="view"] { background: var(--bg); }
 .toc a { display: block; color: var(--link); text-decoration: none; line-height: 1.8; }
 .toc a span { color: var(--c); margin-right: 6px; font-weight: 700; }
 h2.sh { display: flex; align-items: baseline; gap: 8px; margin: 26px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--line); font-size: 24px; font-weight: 800; }
-h2.sh span { color: var(--c); }
+h2.sh .no { color: var(--c); }
 h2.sh em { margin-left: auto; font-style: normal; font-size: 12px; font-weight: 500; color: var(--link); }
 .sec p { margin: 0 0 10px; }
 .sec ul { margin: 0 0 10px; padding-left: 22px; }
@@ -104,6 +101,52 @@ h2.sh.h3 { font-size: 19px; margin-top: 18px; }
 .t-wp h2.sh.h3 { font: 700 17px "Pretendard Variable", sans-serif; border-bottom: 0; }
 .toc small { font-weight: 400; color: var(--link); font-size: 12px; }
 del { color: #888; }
+.top .logo { color: inherit; text-decoration: none; font-size: 19px; font-weight: 800; letter-spacing: -.02em; }
+.t-wp .top .logo { font: 400 22px "Noto Serif KR", "Nanum Myeongjo", Georgia, serif; letter-spacing: .02em; }
+.t-wp .top .logo small { display: block; font: 400 11px "Pretendard Variable", sans-serif; color: #54595d; letter-spacing: 0; }
+.tlinks { display: flex; gap: 4px; }
+.tb { color: inherit; text-decoration: none; font-size: 13px; font-weight: 600; padding: 5px 9px; border-radius: 4px; opacity: .92; }
+.tb:hover { background: rgba(255,255,255,.16); }
+.t-wp .tb { color: #0645ad; font-weight: 400; } .t-wp .tb:hover { background: none; text-decoration: underline; }
+.top .sr { padding: 0; }
+.top .sr input { all: unset; box-sizing: border-box; width: 100%; height: 100%; padding: 0 10px; color: #222; font-size: 13px; }
+.top .sr input::placeholder { color: #999; }
+a.wl:hover, .cats a:hover, .toc a:hover { text-decoration: underline; }
+a.wl.red { color: #e33; }
+.t-wp a.wl.red { color: #d73333; }
+sup.fn a { color: var(--link); text-decoration: none; }
+.fnpop { position: absolute; z-index: 5; width: min(360px, 80%); background: #fff; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 6px 22px rgba(0,0,0,.16); padding: 10px 14px; font-size: 13.5px; line-height: 1.6; }
+.fnpop > a { color: var(--link); text-decoration: none; margin-right: 4px; font-weight: 700; }
+.t-wp .fnpop { border-radius: 2px; border-color: #a2a9b1; }
+.fns a { text-decoration: none; }
+.t-wp .fns { border-top: 0; margin-top: 0; padding-top: 0; }
+.hit { background: #fff6c8 !important; }
+.poster { position: relative; }
+h2.sh .no { color: var(--c); text-decoration: none; }
+h2.sh .ht { cursor: pointer; }
+.t-wp h2.sh .no { display: none; }
+.sec.fold .sb { display: none; }
+.sec.fold h2.sh { opacity: .6; }
+h2.sh em { cursor: pointer; }
+.intro { margin-bottom: 14px; }
+.intro p { margin: 0 0 10px; }
+.redir { margin: 0 0 8px; font-size: 13px; color: var(--sub); }
+.navw { padding: 0 26px; }
+.catpg p { margin: 0 0 12px; }
+.cath { font-size: 17px; margin: 18px 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.catgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 6px 22px; }
+.catgrid h4 { margin: 8px 0 2px; font-size: 15px; }
+.catgrid ul, ul.srch { margin: 0; padding-left: 20px; }
+ul.srch li { margin: 6px 0; } ul.srch small { margin-left: 8px; color: var(--sub); }
+.miss { padding: 18px 0 6px; }
+.miss p { margin: 0 0 10px; }
+.mbtn { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+.mbtn button { all: unset; cursor: pointer; padding: 8px 14px; border-radius: 4px; border: 1px solid var(--line); font-size: 13.5px; font-weight: 700; background: #fff; color: #222; }
+.mbtn button:first-child { background: var(--c); border-color: var(--c); color: #fff; }
+.t-wp .mbtn button:first-child { background: #36c; border-color: #36c; }
+.mbtn button:focus-visible { outline: 2px solid #2f6bff; outline-offset: 2px; }
+.sim { font-size: 13.5px; color: var(--sub); }
+.hist .wl { font-weight: 700; }
 .hist table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .hist th, .hist td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; }
 .hist th { background: #f8f9fa; font-weight: 700; }
@@ -117,7 +160,9 @@ del { color: #888; }
   .info { order: -1; max-width: 360px; margin: 0 auto; width: 100%; }
   .wrap { padding: 16px 14px 22px; }
   .ttl h1 { font-size: 27px; }
-  .top .sr { display: none; }
+  .top .sr { width: 118px; max-width: none; height: 30px; }
+  .top { gap: 8px; padding: 0 12px; }
+  .tlinks .tb[data-all] { display: none; }
 }
 </style>
 </head>
@@ -146,20 +191,21 @@ del { color: #888; }
 (() => {
 const { esc, clamp, num, $ } = Core;
 const SKIN = { namu: '나무위키', wp: '위키백과' };
-const N = { info: 12, sec: 16, hist: 8 };
+const N = { info: 12, sec: 16, hist: 8, doc: 8 };
 const eInfo = () => ({ k: '', v: '' }), eSec = () => ({ h: '', text: '' }), eHist = () => ({ t: '', who: '', diff: 0, msg: '' });
-const blank = () => ({ v: 3, skin: 'namu', title: 'NPC', alias: '', cats: '', updated: '', parent: '', notice: '', nav: '', navItems: '', related: '', view: 'doc', info: Array.from({ length: N.info }, eInfo), secs: Array.from({ length: N.sec }, eSec), hist: Array.from({ length: N.hist }, eHist) });
+const eDoc = () => ({ title: '', alias: '', cats: '', parent: '', info: '', body: '' });
+const blank = () => ({ v: 4, wk: 'namu', title: 'NPC', alias: '', cats: '', updated: '', parent: '', notice: '', nav: '', navItems: '', related: '', view: 'doc', info: Array.from({ length: N.info }, eInfo), secs: Array.from({ length: N.sec }, eSec), hist: Array.from({ length: N.hist }, eHist), docs: Array.from({ length: N.doc }, eDoc) });
 const sample = () => normalize({
-  skin: 'namu', title: 'NPC', alias: '황태자', cats: '등장인물, 황실, 서고 단골, 말보다 행동',
-  updated: '2026-11-24 22:41:07', parent: '황실', notice: '이 문서에 스포일러가 포함되어 있습니다.', nav: '황궁의 사람들', navItems: 'NPC, PC, 황궁 서고, 정원 끝 회랑', related: 'PC, 황궁 서고, 정략 약혼',
-  info: [{ k: '이름', v: 'NPC' }, { k: '신분', v: '제국 황태자' }, { k: '나이', v: '24세' }, { k: '생일', v: '3월 14일' }, { k: '키', v: '187cm' }, { k: '좋아하는 것', v: '서고 창가 자리, 홍차(설탕 없이)' }, { k: '싫어하는 것', v: '말을 먼저 꺼내는 일' }, { k: '관계', v: '[[PC]]의 약혼자' }],
+  wk: 'namu', title: 'NPC', alias: '황태자', cats: '등장인물, 황실, 서고 단골, 말보다 행동',
+  updated: '2026-11-24 22:41:07', parent: '제국', notice: '이 문서에 스포일러가 포함되어 있습니다.', nav: '황궁의 사람들', navItems: 'NPC, PC, 황궁 서고, 정원 끝 회랑', related: 'PC, 황궁 서고, 정략 약혼',
+  info: [{ k: '이름', v: 'NPC' }, { k: '신분', v: '[[제국]] 황태자' }, { k: '나이', v: '24세' }, { k: '생일', v: '3월 14일' }, { k: '키', v: '187cm' }, { k: '좋아하는 것', v: '[[황궁 서고]] 창가 자리, 홍차(설탕 없이)' }, { k: '싫어하는 것', v: '말을 먼저 꺼내는 일' }, { k: '관계', v: '[[PC]]의 [[정략 약혼|약혼자]]' }],
   secs: [
-    { h: '개요', text: "제국의 황태자. 정략으로 [[PC]]와 약혼했지만 정략'''만'''은 아니라는 게 중론이다.((본인은 끝까지 부정한다.))" },
+    { h: '개요', text: "[[제국]]의 황태자. [[정략 약혼|정략]]으로 [[PC]]와 약혼했지만 정략'''만'''은 아니라는 게 중론이다.((본인은 끝까지 부정한다.))" },
     { h: '외모', text: "검은 머리를 반쯤 묶고 다닌다. 왼쪽 눈 밑에 점이 있다. 실내에서도 장갑을 벗지 않는데, ~~손이 차가운 걸 들키기 싫어서라는 설이 있다~~ 이유는 밝혀지지 않았다." },
     { h: '성격', text: "말수가 적고 예법을 중시한다. 감정을 말로 표현하는 데 서툴러서 대부분 행동으로 대신한다.\n* 걱정되면 시종을 보내는 대신 직접 간다.\n* \"우연입니다\"를 자주 쓰지만 우연이었던 적은 거의 없다." },
-    { h: '행적', text: "봄 무도회에서 [[PC]]에게 의례상 첫 춤을 청했다가 두 곡째까지 손을 놓지 않았다.\n> 한 곡만 추면 됩니다.\n이후 황궁 서고 방문 시간이 [[PC]]와 열한 번 연속 겹친 사실이 알려졌다.((출입 기록 기준.))" },
+    { h: '행적', text: "[[봄 무도회]]에서 [[PC]]에게 의례상 첫 춤을 청했다가 두 곡째까지 손을 놓지 않았다.\n> 한 곡만 추면 됩니다.\n이후 [[황궁 서고]] 방문 시간이 [[PC]]와 열한 번 연속 겹친 사실이 알려졌다.((출입 기록 기준.))" },
     { h: '### 무도회 이후', text: "서고에 오는 시간이 정해지기 시작했다. 공식 일정표에는 '자료 열람'이라고만 적혀 있다." },
-    { h: '[[PC]]와의 관계', text: "공식적으로는 정략 약혼자. 비 오는 정원에서 망토를 같이 쓴 이후로 둘의 거리가 눈에 띄게 줄었다.\n* 사절단 일을 남에게 먼저 듣고 하루 종일 말수가 줄었다.\n* 다음 날 바로 풀렸다." },
+    { h: '[[PC]]와의 관계', text: "공식적으로는 [[정략 약혼|정략 약혼자]]. [[정원 끝 회랑]]에서 비를 피하며 망토를 같이 쓴 이후로 둘의 거리가 눈에 띄게 줄었다.\n* 사절단 일을 남에게 먼저 듣고 하루 종일 말수가 줄었다.\n* 다음 날 바로 풀렸다." },
     { h: '여담', text: "* 홍차는 설탕 없이. [[PC]]가 이걸 기억하고 먼저 주문한 일이 있다.\n* 부치지 않은 편지가 세 장 있다는 설이 있다.((본인 확인 불가.))\n* 군밤 값을 몰라서 물어본 적이 있다." },
   ],
   hist: [
@@ -169,12 +215,21 @@ const sample = () => normalize({
     { t: '2026-10-02 09:20', who: 'NPC', diff: -57, msg: '“부치지 않은 편지” 삭제' },
     { t: '2026-09-09 18:03', who: '211.***.**.14', diff: 210, msg: '행적 정리' },
   ],
+  docs: [
+    { title: 'PC', alias: '공녀', cats: '등장인물, 공작가, 서고 단골', parent: '제국', info: "이름: PC\n신분: 공작가의 공녀\n관계: [[NPC]]의 [[정략 약혼|약혼자]]\n좋아하는 것: [[황궁 서고]], 군밤", body: "[[제국]] 공작가의 공녀. [[NPC]]와 [[정략 약혼|정략으로 약혼]]했다.\n== 개요 ==\n책을 좋아해 [[황궁 서고]]에 자주 드나든다. 서고 방문 시간이 [[NPC]]와 자꾸 겹치는 이유는 본인도 모른다고 한다.((모를 리가 없다.))\n== 행적 ==\n=== 봄 무도회 ===\n[[봄 무도회]]에서 [[NPC]]의 첫 춤 신청을 받았다. 한 곡만 추기로 했는데 두 곡을 췄다.\n== 여담 ==\n* [[NPC]]가 홍차에 설탕을 넣지 않는다는 걸 먼저 알아챘다.\n* 군밤을 좋아한다. ~~황태자에게 값을 알려 준 장본인~~" },
+    { title: '제국', alias: '', cats: '세계관, 국가', parent: '', info: "체제: 황제정\n수도: 황도\n특징: 마법이 사라진 지 백 년", body: "이야기의 무대가 되는 나라. 마법이 사라진 지 백 년이 지났다.\n== 개요 ==\n황실과 공작가들이 [[정략 약혼|정략]]으로 힘을 나눠 갖는다. 황궁에는 [[황궁 서고]]와 [[정원 끝 회랑]]이 있다.\n== 사회 ==\n* 혼인은 대부분 가문끼리 정한다.\n* 매년 봄 황궁에서 [[봄 무도회]]가 열린다.((사교계 데뷔 무대이기도 하다.))" },
+    { title: '황궁 서고', alias: '서고', cats: '장소, 황궁', parent: '제국', info: "위치: 황궁 동쪽 별관\n개방: 귀족 열람 허가제", body: "[[제국]] 황궁 동쪽 별관에 있는 서고.\n== 개요 ==\n창가 자리가 [[NPC]]의 지정석처럼 쓰인다. [[PC]]가 자주 들른다.\n== 출입 기록 ==\n[[NPC]]와 [[PC]]의 방문 시간이 열한 번 연속 겹쳤다.((사서 증언.)) ~~우연이라고 한다~~" },
+    { title: '정략 약혼', alias: '약혼', cats: '사건, 황실', parent: '제국', info: "당사자: [[NPC]], [[PC]]\n성격: 가문 간 약정", body: "[[NPC]]와 [[PC]] 사이의 약혼.\n== 개요 ==\n[[제국]] 황실과 공작가가 맺은 약정이다. 본인들의 뜻은 묻지 않았다.((공식 문서 기준.))\n== 이후 ==\n[[봄 무도회]] 이후 정략'''만'''은 아니게 되었다는 평이 많다." },
+    { title: '정원 끝 회랑', alias: '', cats: '장소, 황궁', parent: '황궁 서고', info: "위치: 황궁 정원 서쪽 끝", body: "황궁 정원 끝에 있는 지붕 있는 회랑.\n== 개요 ==\n비 오는 날 [[NPC]]와 [[PC]]가 망토 하나로 비를 피한 곳. 이후 둘이 자주 지나간다." },
+  ],
 });
 const arr = (src, n, mk) => Array.from({ length: n }, (_, i) => ({ ...mk(), ...((Array.isArray(src) ? src : [])[i] || {}) }));
+const infoStr = v => Array.isArray(v) ? v.map(x => x && typeof x === 'object' ? `${x.k || ''}: ${x.v || ''}` : String(x)).join('\n') : String(v || '');
 function normalize(s) {
   const b = blank(); s = s && typeof s === 'object' ? s : {};
-  const o = { ...b, ...s }; if (!SKIN[o.skin]) o.skin = 'namu'; if (!['doc', 'hist'].includes(o.view)) o.view = 'doc';
+  const o = { ...b, ...s }; if (!SKIN[o.wk]) o.wk = SKIN[s.skin] ? s.skin : 'namu'; o.view = 'doc';
   o.info = arr(s.info, N.info, eInfo); o.secs = arr(s.secs, N.sec, eSec); o.hist = arr(s.hist, N.hist, eHist).map(h => ({ ...h, diff: Math.round(num(h.diff, 0)) }));
+  o.docs = arr(s.docs, N.doc, eDoc).map(d => ({ ...d, info: infoStr(d.info), body: String(d.body || '') }));
   return o;
 }
 function apply(S, o) {
@@ -184,44 +239,86 @@ function apply(S, o) {
   if (Array.isArray(o.more)) { const have = S.secs.filter(x => x.h); const next = [...have, ...o.more.filter(x => x && x.h)].slice(0, N.sec); S.secs = Array.from({ length: N.sec }, (_, i) => ({ ...eSec(), ...(next[i] || {}) })); g('문단'); }
   const put = (key, n, mk, label) => { if (Array.isArray(o[key])) { S[key] = Array.from({ length: n }, mk); o[key].slice(0, n).forEach((x, i) => { if (x && typeof x === 'object') S[key][i] = { ...mk(), ...x }; }); g(label); } };
   put('info', N.info, eInfo, '정보 상자'); put('secs', N.sec, eSec, '문단'); put('hist', N.hist, eHist, '편집 역사');
+  /* 연결 문서: 같은 제목이면 바꾸고, 없으면 빈 칸에 넣는다 */
+  if (Array.isArray(o.docs)) {
+    o.docs.forEach(d => {
+      if (!d || !d.title || d.title === S.title) return;
+      const x = { ...eDoc(), ...d, info: infoStr(d.info), body: String(d.body || '') };
+      let i = S.docs.findIndex(y => y.title === d.title); if (i < 0) i = S.docs.findIndex(y => !y.title);
+      if (i >= 0) { S.docs[i] = x; g('연결 문서'); }
+    });
+  }
   return got;
 }
-function prompts() {
-  const RULE = `▪ 실제 나무위키 문서를 그대로 고증한다: 첫 문장은 “~의 등장인물.”처럼 정의로 시작, “~이다/~한다” 평서체, 사실 나열 사이에 ~~취소선 드립~~과 ((각주 드립)), 여담은 목록. 정보는 최대한 많이, 길게(설정에 있는 건 전부).
-▪ 문법: [[문서]] 링크, '''굵게''', ~~취소선~~, ((각주)), 줄 앞 “* ” 목록, “> ” 대사 인용, 문단 제목을 “### 소제목”으로 쓰면 하위 문단(1.1). 줄바꿈은 \\n
-▪ 근거: 설정과 RP에서 실제 있었던 일만. PC의 말·행동은 RP에 나온 것만, 다른 인물 이름은 쓰지 않는다. 여기서 만든 내용은 이후 RP의 사실로 삼지 않는다.
-▪ 출력: 인사·설명 없이 JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만. 값은 형식 예시일 뿐.`;
-  const p1 = `*[OOC: 롤플레잉 잠시 중단. NPC의 「위키 문서」 1/2: 틀 · 정보 상자 · 앞쪽 문단.
-▪ title NPC 이름, alias 별칭, cats 분류 4~6개 쉼표로, updated 최근 수정 “2026-11-24 22:41:07”, parent 상위 문서(소속·세계관 이름), notice 문서 위 알림 한 줄(스포일러 경고 등, 없으면 “”), nav 틀 제목(소속 집단 이름), navItems 틀에 들어갈 문서 4~6개 쉼표로(NPC·PC·장소·사물만), related 관련 문서 3개 쉼표로
-▪ info 정보 상자 8~12줄: k 항목(이름, 이명, 나이, 생일, 키, 소속, 좋아하는 것, 싫어하는 것, 관계 등) v 값
-▪ secs 문단 5~7개: 개요, 외모, 성격, 능력·특기, 과거, 행적(### 하위 문단으로 사건별) 순서. 각 text 300~500자
+function prompts(S) {
+  const RULE = `▪ 실제 나무위키 고증: 첫 줄은 정의 한 문장(“~의 등장인물이다.”), ~이다·~한다 평서체, 건조한 백과사전 말투 사이에 ~~취소선 드립~~과 ((각주 드립)). 설정·RP에 있는 정보는 빠짐없이, 최대한 길고 자세하게.
+▪ 문법: [[문서]] 또는 [[문서|보이는 글]] 링크, '''굵게''', ~~취소선~~, ((각주)), 줄 앞 “* ” 목록, “> ” 대사 인용. 줄바꿈 \\n
+▪ 링크: 본문에 나오는 NPC·PC·세계관(나라·조직)·장소·사물·사건은 처음 나올 때마다 [[ ]]. 같은 대상은 늘 같은 이름(연결 문서 제목과 똑같이).
+▪ 근거: 설정·RP에서 실제 있던 일만. PC의 말·행동은 RP에 나온 것만, NPC·PC 말고 다른 인물 이름은 쓰지 않는다. 여기 쓴 내용은 이후 RP의 사실로 삼지 않는다.
+▪ 출력: 인사·설명 없이 JSON 코드 블록 하나. 문자열 안 따옴표는 “ ”만. 값은 형식 예시.`;
+  const p1 = `*[OOC: 롤플레잉 잠시 중단. NPC의 「나무위키 문서」 1/3: 틀 · 정보 상자 · 앞쪽 문단.
+▪ title NPC 이름, alias 별칭·이명, cats 분류 4~6개 쉼표로, updated “2026-11-24 22:41:07” 꼴, parent 상위 문서(세계관의 나라·조직 이름 그대로), notice 문서 위 알림(스포일러 경고 등), nav 틀 제목(소속 이름), navItems 틀 문서 4~6개 쉼표로(NPC·PC·장소·사물만), related 관련 문서 3~4개 쉼표로
+▪ info 정보 상자 10~12줄: 이름, 이명, 나이, 생일, 키, 소속, 가족, 능력, 좋아하는 것, 싫어하는 것, 관계 등. 값 안에도 [[링크]]
+▪ secs 문단 6~8개: 개요, 외모, 성격(### 하위 문단으로 겉과 속), 능력·특기, 과거, 행적(### 하위 문단으로 사건별 2~3개). 각 text 350~600자, 사건은 시간순
 ${RULE}
 {"title":"","alias":"","cats":"","updated":"","parent":"","notice":"","nav":"","navItems":"","related":"","info":[{"k":"","v":""}],"secs":[{"h":"","text":""}]}]*`;
-  const p2 = `*[OOC: 롤플레잉 잠시 중단. NPC의 「위키 문서」 2/2: 뒤쪽 문단 · 편집 역사.
-1/2에서 쓴 문단 뒤에 이어질 문단만 쓴다(겹치지 않게).
-▪ more 문단 4~7개: [[PC]]와의 관계(### 하위 문단으로 시기별), 어록(“> ” 대사 인용 5개 이상, RP에서 실제로 한 말), 평가, 기타 인간관계(사물·장소 위주, 다른 인물 이름 없이), 여담(“* ” 목록 8개 이상) 순서. 각 text 300~600자
-▪ hist 편집 역사 5~8개(최근 것부터): t “2026-11-24 22:41”, who 편집자(“211.***.**.14” 같은 가린 IP, 또는 NPC|PC 본인), diff 바뀐 글자 수(+/-), msg 편집 요약 15자(실제 위키 편집 요약처럼 “여담 추가”, “오타 수정”, “반달 복구”)
+  const p2 = `*[OOC: 롤플레잉 잠시 중단. NPC의 「나무위키 문서」 2/3: 뒤쪽 문단 · 편집 역사.
+1/3에서 쓴 문단 뒤에 이어질 문단만 쓴다(내용 겹치지 않게).
+▪ more 문단 5~7개: [[PC]]와의 관계(### 하위 문단으로 시기별 2~3개), 어록(“> ” 대사 인용 6개 이상, RP에서 실제로 한 말 그대로, 각 대사 뒤 줄에 상황 한 줄), 평가, 기타 관계(장소·사물·조직), 여담(“* ” 목록 10개 이상, 각주 섞어서). 각 text 350~700자
+▪ hist 편집 역사 6~8개(최근 것부터): t “2026-11-24 22:41” 꼴, who 편집자(“211.***.**.14” 같은 가린 IP 또는 NPC|PC 본인), diff 바뀐 글자 수(+/-), msg 실제 위키 편집 요약처럼 15자(“여담 추가”, “오타 수정”, “반달 복구”, “출처 추가”)
 ${RULE}
 {"more":[{"h":"","text":""}],"hist":[{"t":"","who":"","diff":0,"msg":""}]}]*`;
-  return [{ label: '위키 1/2', sub: '틀 · 정보 상자 · 개요~행적', text: p1 }, { label: '위키 2/2', sub: '관계 · 어록 · 여담 · 역사', text: p2 }];
+  const p3 = `*[OOC: 롤플레잉 잠시 중단. 「나무위키 연결 문서」 3/3: 1/3·2/3의 [[링크]]로 들어가는 문서들.
+▪ docs 5~7개: PC 문서 1개, 세계관 문서 1개(나라·조직, 제목은 1/3의 parent와 똑같이), 나머지는 1/3·2/3에서 [[ ]]로 건 장소·사물·사건 문서. 제목은 링크 글자와 한 글자도 다르지 않게
+▪ 각 문서: title 제목, alias 다른 이름(그 이름으로 링크해도 넘어옴), cats 분류 2~4개 쉼표로, parent 상위 문서, info 정보 상자 “항목: 값”을 줄마다(\\n) 3~6줄, body 본문
+▪ body: 첫 줄 정의 한 문장, 그다음 “== 문단 제목 ==” 줄로 문단을 나누고 하위 문단은 “=== 제목 ===”. PC 문서는 개요·행적·NPC와의 관계·여담, 세계관 문서는 개요·역사·사회·지리 등 4문단 이상 600~900자, 장소·사물·사건은 2~3문단 250~400자. 서로 [[링크]]로 잇는다
+${RULE}
+{"docs":[{"title":"","alias":"","cats":"","parent":"","info":"","body":""}]}]*`;
+  return [{ label: '위키 1/3', sub: 'NPC 문서 · 틀 · 정보 상자 · 개요~행적', text: p1 }, { label: '위키 2/3', sub: 'NPC 문서 · 관계 · 어록 · 여담 · 역사', text: p2 }, { label: '위키 3/3', sub: 'PC · 세계관 · 장소 · 사물 문서', text: p3 }];
 }
-function progress(S) { return [{ label: '문서', ok: !!S.title }, { label: '정보 상자', ok: S.info.some(i => i.k) }, { label: `문단 ${S.secs.filter(x => x.h).length}개`, ok: S.secs.some(x => x.text) }, { label: '편집 역사', ok: S.hist.some(h => h.t) }]; }
+/* 빨간 링크(없는 문서) 하나만 만들어 달라는 OOC */
+function onePrompt(S, t) {
+  return `*[OOC: 롤플레잉 잠시 중단. 「나무위키 문서」 “${t}” 하나만 쓴다. ${t}이(가) 무엇인지 설정·RP에서 찾아 그대로.
+▪ 세계관 정보, PC와 NPC의 캐릭터 정보, 유저 노트, 두 사람의 관계성을 참고하여 서술한다.
+▪ title “${t}” 그대로, alias 다른 이름, cats 분류 2~4개 쉼표로, parent 상위 문서, info 정보 상자 “항목: 값” 줄마다(\\n) 3~6줄, body 본문: 첫 줄 정의 한 문장, “== 문단 ==”으로 나누고 하위는 “=== 하위 ===”, 3~5문단 500~900자
+▪ 실제 나무위키처럼 평서체, ~~취소선~~과 ((각주)) 섞기, 나오는 NPC·PC·장소·사물은 [[ ]] 링크. 다른 인물 이름은 쓰지 않는다. 설정·RP에 있는 것만.
+▪ 출력: JSON 코드 블록 하나만. 문자열 안 따옴표는 “ ”만.
+{"docs":[{"title":"${t}","alias":"","cats":"","parent":"","info":"","body":""}]}]*`;
+}
+function progress(S) { const d = S.docs.filter(x => x.title).length; return [{ label: '문서', ok: !!S.title }, { label: '정보 상자', ok: S.info.some(i => i.k) }, { label: `문단 ${S.secs.filter(x => x.h).length}개`, ok: S.secs.some(x => x.text) }, { label: '편집 역사', ok: S.hist.some(h => h.t) }, { label: `연결 문서 ${d}개`, ok: d > 0 }]; }
 function schema(S) {
   const list = (key, n, t, fs) => { const o = []; for (let i = 0; i < n; i++) { o.push({ sub: `${t} ${i + 1}` }); fs.forEach(f => o.push({ ...f, k: `${key}.${i}.${f.k}` })); } return o; };
   return [
-    { title: '문서', en: 'PAGE', desc: "본문 문법: [[이름]] 링크 · '''굵게''' · ~~취소선~~ · ((각주)) · 줄 앞 * 목록 · 줄 앞 > 대사 · 문단 제목을 ### 로 시작하면 하위 문단. 사진은 보기 화면에서 정보 상자 사진 칸을 눌러 넣어요.", fields: [{ k: 'title', label: '문서 제목' }, { k: 'alias', label: '별칭' }, { k: 'updated', label: '최근 수정' }, { k: 'cats', label: '분류 (쉼표로)', full: true }, { k: 'parent', label: '상위 문서' }, { k: 'notice', label: '문서 위 알림' }, { k: 'nav', label: '틀 제목' }, { k: 'navItems', label: '틀 문서들 (쉼표로)' }, { k: 'related', label: '관련 문서 (쉼표로)', full: true }, { k: 'skin', label: '위키', type: 'select', opts: [['namu', '나무위키'], ['wp', '위키백과']] }] },
+    { title: '문서', en: 'PAGE', desc: "본문 문법: [[문서]] · [[문서|보이는 글]] 링크 · '''굵게''' · ~~취소선~~ · ((각주)) · 줄 앞 * 목록 · 줄 앞 > 대사 · 문단 제목을 ### 로 시작하면 하위 문단. 링크한 문서가 연결 문서에 있으면 파란 글자, 없으면 빨간 글자가 돼요. 사진은 보기 화면에서 정보 상자 사진 칸을 눌러 넣어요.", fields: [{ k: 'title', label: '문서 제목' }, { k: 'alias', label: '별칭' }, { k: 'updated', label: '최근 수정' }, { k: 'cats', label: '분류 (쉼표로)', full: true }, { k: 'parent', label: '상위 문서' }, { k: 'notice', label: '문서 위 알림' }, { k: 'nav', label: '틀 제목' }, { k: 'navItems', label: '틀 문서들 (쉼표로)' }, { k: 'related', label: '관련 문서 (쉼표로)', full: true }, { k: 'wk', label: '위키', type: 'select', opts: [['namu', '나무위키'], ['wp', '위키백과']] }] },
     { title: '정보 상자', en: 'INFOBOX', fields: list('info', N.info, '줄', [{ k: 'k', label: '항목', ph: '비우면 빠져요' }, { k: 'v', label: '값' }]) },
     { title: '문단', en: 'SECTIONS', fields: list('secs', N.sec, '문단', [{ k: 'h', label: '제목', ph: '비우면 빠져요' }, { k: 'text', label: '본문', type: 'textarea', full: true, rows: 5 }]) },
+    { title: '연결 문서', en: 'LINKED PAGES', desc: '파란 링크를 누르면 들어가는 문서들이에요. PC 문서, 세계관 문서, 장소·사물 문서를 넣어요. 본문은 == 문단 == 줄로 나누고, 하위 문단은 === 하위 === 로 써요. 정보 상자는 “항목: 값”을 한 줄에 하나씩.', fields: list('docs', N.doc, '문서', [{ k: 'title', label: '제목', ph: '비우면 빠져요' }, { k: 'alias', label: '다른 이름 (쉼표로)' }, { k: 'cats', label: '분류 (쉼표로)' }, { k: 'parent', label: '상위 문서' }, { k: 'info', label: '정보 상자', type: 'textarea', full: true, rows: 3 }, { k: 'body', label: '본문', type: 'textarea', full: true, rows: 8 }]) },
     { title: '편집 역사', en: 'HISTORY', fields: list('hist', N.hist, '판', [{ k: 't', label: '시각' }, { k: 'who', label: '편집자' }, { k: 'diff', label: '바뀐 글자 수', num: true }, { k: 'msg', label: '요약' }]) },
   ];
 }
+/* ── 문서 찾기 ── */
+const list = s => String(s || '').split(/[,，]/).map(x => x.trim()).filter(Boolean);
+const unesc = s => String(s).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;|&#x27;/g, "'").replace(/&amp;/g, '&');
+const key = s => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+/* 제목이나 다른 이름으로 문서를 찾는다: { i: -1(본 문서) | 연결 문서 번호, from: 넘어온 이름 } */
+function find(S, t) {
+  const k = key(t.split('#')[0]); if (!k) return null;
+  if (key(S.title) === k) return { i: -1 };
+  let i = S.docs.findIndex(d => d.title && key(d.title) === k); if (i >= 0) return { i };
+  if (list(S.alias).some(a => key(a) === k)) return { i: -1, from: t };
+  i = S.docs.findIndex(d => d.title && list(d.alias).some(a => key(a) === k)); if (i >= 0) return { i, from: t };
+  return null;
+}
 /* 위키 문법 → HTML */
+let SCUR = null;
 function md(t, fns) {
+  const link = (_, x) => { const raw = unesc(x); const [to, shown] = raw.split('|'); const ok = !!find(SCUR, to); return `<a class="wl${ok ? '' : ' red'}" href="#" data-go="${esc(to.trim())}" title="${esc(to.trim())}">${esc((shown || to).trim())}</a>`; };
+  const fn = (_, x) => { fns.push(x); const n = fns.length; return `<sup class="fn"><a href="#" data-fn="${n}" id="r${n}">[${n}]</a></sup>`; };
   const inline = s => esc(s)
-    .replace(/\(\((.+?)\)\)/g, (_, x) => { fns.push(x); const n = fns.length; return `<sup class="fn" id="r${n}">[${n}]</sup>`; })
+    .replace(/\(\((.+?)\)\)/g, fn).replace(/\[\*\s?(.+?)\]/g, fn)
     .replace(/(?:'|&#39;|&#x27;){3}(.+?)(?:'|&#39;|&#x27;){3}/g, '<b>$1</b>')
     .replace(/~~(.+?)~~/g, '<del>$1</del>')
-    .replace(/\[\[(.+?)\]\]/g, (_, x) => `<a class="wl" href="#" onclick="return false">${x}</a>`);
+    .replace(/\[\[(.+?)\]\]/g, link);
   const lines = String(t || '').split(/\n|\\n/); let h = '', ul = false;
   lines.forEach(l => {
     if (/^\s*\*\s+/.test(l)) { if (!ul) { h += '<ul>'; ul = true; } h += `<li>${inline(l.replace(/^\s*\*\s+/, ''))}</li>`; return; }
@@ -232,53 +329,159 @@ function md(t, fns) {
   if (ul) h += '</ul>';
   return h;
 }
-const list = s => String(s || '').split(/[,，]/).map(x => x.trim()).filter(Boolean);
-function posterHTML(S, an) {
-  const secs = S.secs.filter(x => x.h), info = S.info.filter(x => x.k), fns = [];
-  const head = (t) => t.replace(/\[\[(.+?)\]\]/g, '$1');
-  const pic = Core.photo('a');
-  const cats = String(S.cats || '').split(/[,，]/).map(x => x.trim()).filter(Boolean);
-  let body = '';
-  if (S.view === 'hist') {
-    const hs = S.hist.filter(h => h.t); const rev = hs.length + 6;
-    body = `<div class="hist"><table><thead><tr><th>판</th><th>시각</th><th>편집자</th><th>변경</th><th>요약</th></tr></thead><tbody>${hs.map((h, i) => `<tr><td class="r">r${rev - i}</td><td>${esc(h.t)}</td><td>${esc(h.who)}</td><td class="${h.diff >= 0 ? 'p' : 'm'}">(${h.diff >= 0 ? '+' : ''}${h.diff})</td><td>${esc(h.msg)}</td></tr>`).join('')}</tbody></table></div>`;
+/* 각주 글: 굵게·취소선·링크까지 */
+const fnText = f => md(f, []).replace(/<\/?p>/g, '');
+/* 연결 문서 본문(== 문단 ==)을 문단 배열로 */
+function parseBody(body) {
+  const out = []; let intro = [], cur = null;
+  String(body || '').split(/\n|\\n/).forEach(l => {
+    const m = l.match(/^\s*(={2,4})\s*(.+?)\s*={2,4}\s*$/);
+    if (m) { cur = { h: (m[1].length > 2 ? '### ' : '') + m[2], text: '' }; out.push(cur); return; }
+    if (cur) cur.text += (cur.text ? '\n' : '') + l; else intro.push(l);
+  });
+  return { intro: intro.join('\n').trim(), secs: out };
+}
+/* 지금 보는 문서 */
+const NAV = { page: '', stack: [] };
+function docOf(S, i) {
+  if (i < 0) return { main: true, title: S.title, alias: S.alias, cats: S.cats, parent: S.parent, notice: S.notice, intro: '', secs: S.secs.filter(x => x.h), info: S.info.filter(x => x.k), photo: 'a', related: S.related };
+  const d = S.docs[i]; const b = parseBody(d.body);
+  const info = String(d.info || '').split(/\n|\\n/).map(l => { const j = l.search(/[:：]/); return j < 0 ? null : { k: l.slice(0, j).trim(), v: l.slice(j + 1).trim() }; }).filter(x => x && x.k);
+  return { title: d.title, alias: d.alias, cats: d.cats, parent: d.parent, notice: '', intro: b.intro, secs: b.secs, info, photo: 'd' + i, related: '' };
+}
+const CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+const initial = s => { const c = String(s).charCodeAt(0) - 0xAC00; if (c >= 0 && c < 11172) { const x = CHO[Math.floor(c / 588)]; return { 'ㄲ': 'ㄱ', 'ㄸ': 'ㄷ', 'ㅃ': 'ㅂ', 'ㅆ': 'ㅅ', 'ㅉ': 'ㅈ' }[x] || x; } return String(s).charAt(0).toUpperCase(); };
+const allDocs = S => [{ i: -1, title: S.title, cats: S.cats }, ...S.docs.map((d, i) => ({ i, title: d.title, cats: d.cats })).filter(d => d.title)];
+function posterHTML(S) {
+  SCUR = S; const wp = S.wk === 'wp'; const p = NAV.page; const fns = [];
+  const go = (t, label, cls = 'wl') => `<a class="${cls}${find(S, t) ? '' : ' red'}" href="#" data-go="${esc(t)}">${esc(label || t)}</a>`;
+  let title = '', small = '', btns = '', meta = '', pre = '', body = '', cats = [], nav = '';
+  const tabs = (cur, hist = true) => wp
+    ? `<span data-v="doc" class="${cur === 'doc' ? 'on' : ''}">읽기</span><span data-v="edit">편집</span>${hist ? `<span data-v="hist" class="${cur === 'hist' ? 'on' : ''}">역사 보기</span>` : ''}`
+    : `<span data-v="star" title="별">★ ${S.docs.filter(d => d.title).length + 3}</span><span data-v="doc" class="${cur === 'doc' ? 'on' : ''}">문서</span><span data-v="edit">편집</span><span data-v="talk" class="${cur === 'talk' ? 'on' : ''}">토론</span>${hist ? `<span data-v="hist" class="${cur === 'hist' ? 'on' : ''}">역사</span>` : ''}`;
+  const kind = p.split(':')[0], arg = p.slice(kind.length + 1);
+  if (kind === 'cat') {
+    title = `분류:${esc(arg)}`; btns = tabs('doc', false);
+    const ds = allDocs(S).filter(d => list(d.cats).includes(arg));
+    const groups = {}; ds.forEach(d => { const k = initial(d.title); (groups[k] = groups[k] || []).push(d); });
+    body = `<div class="catpg"><p>${wp ? `다음은 이 분류에 속하는 문서 ${ds.length}개입니다.` : `이 분류에 속하는 문서는 총 ${ds.length}개입니다.`}</p><h3 class="cath">"${esc(arg)}" 분류에 속하는 문서</h3><div class="catgrid">${Object.keys(groups).sort().map(k => `<div><h4>${esc(k)}</h4><ul>${groups[k].map(d => `<li>${go(d.title)}</li>`).join('')}</ul></div>`).join('')}</div></div>`;
+  } else if (kind === 'miss') {
+    title = esc(arg); btns = tabs('doc', false);
+    body = `<div class="miss"><p><b>해당 문서를 찾을 수 없습니다.</b></p><p>“${esc(arg)}” 문서가 아직 없어요. AI에게 이 문서 하나만 써 달라고 하거나, 직접 쓸 수 있어요.</p><div class="mbtn"><button type="button" data-one="${esc(arg)}">이 문서 OOC 복사</button><button type="button" data-new="${esc(arg)}">직접 쓰기</button></div>
+      ${allDocs(S).some(d => key(d.title).includes(key(arg)) || key(arg).includes(key(d.title))) ? `<p class="sim">비슷한 문서: ${allDocs(S).filter(d => key(d.title).includes(key(arg)) || key(arg).includes(key(d.title))).map(d => go(d.title)).join(', ')}</p>` : ''}</div>`;
+  } else if (kind === 'search') {
+    title = `“${esc(arg)}” 검색 결과`; btns = '';
+    const hit = allDocs(S).filter(d => key(d.title).includes(key(arg)) || key(d.cats).includes(key(arg)));
+    body = `<div class="miss"><p>${find(S, arg) ? `${go(arg)} 문서로 바로 가기` : `“${esc(arg)}” 문서가 없습니다. ${go(arg, '새 문서 만들기')}`}</p><ul class="srch">${hit.map(d => `<li>${go(d.title)}<small>${esc(d.cats || '')}</small></li>`).join('') || '<li>검색 결과가 없습니다.</li>'}</ul></div>`;
+  } else if (kind === 'all') {
+    title = wp ? '최근 바뀜' : '최근 변경'; btns = '';
+    body = `<div class="hist"><table><thead><tr><th>문서</th><th>시각</th><th>편집자</th><th>변경</th></tr></thead><tbody>${allDocs(S).map((d, j) => { const h = S.hist.filter(x => x.t)[j] || S.hist.find(x => x.t) || {}; return `<tr><td>${go(d.title)}</td><td>${esc(h.t || S.updated || '')}</td><td>${esc(h.who || '211.***.**.14')}</td><td class="${(h.diff || 1) >= 0 ? 'p' : 'm'}">(${(h.diff || 0) >= 0 ? '+' : ''}${h.diff || 0})</td></tr>`; }).join('')}</tbody></table></div>`;
   } else {
-    let n1 = 0, n2 = 0; const nums = secs.map(x => { if (/^###\s*/.test(x.h)) { n2++; return { no: `${Math.max(n1, 1)}.${n2}`, sub: true, h: x.h.replace(/^###\s*/, '') }; } n1++; n2 = 0; return { no: `${n1}.`, sub: false, h: x.h }; });
-    const secHTML = secs.map((x, i) => `<section class="sec"><h2 class="sh${nums[i].sub ? ' h3' : ''}"><span>${nums[i].no}</span>${esc(head(nums[i].h))}<em>[편집]</em></h2>${md(x.text, fns)}</section>`).join('');
-    body = `<div class="lay"><div>
-      ${secs.length > 2 ? `<nav class="toc"><b>목차${S.skin === 'wp' ? ' <small>[숨기기]</small>' : ''}</b>${secs.map((x, i) => `<a href="#" onclick="return false" style="${nums[i].sub ? 'padding-left:18px' : ''}"><span>${nums[i].no}</span>${esc(head(nums[i].h))}</a>`).join('')}</nav>` : ''}
-      ${secHTML}
-      ${S.related ? `<h2 class="sh"><span>${n1 + 1}.</span>${S.skin === 'wp' ? '같이 보기' : '관련 문서'}<em>[편집]</em></h2><ul>${list(S.related).map(r => `<li><a class="wl" href="#" onclick="return false">${esc(r)}</a></li>`).join('')}</ul>` : ''}
-      ${fns.length && S.skin === 'wp' ? `<h2 class="sh">각주<em>[편집]</em></h2>` : ''}
-      ${fns.length ? `<div class="fns">${fns.map((f, i) => `<div><a>[${i + 1}]</a>${esc(f).replace(/(?:'|&#39;|&#x27;){3}(.+?)(?:'|&#39;|&#x27;){3}/g, '<b>$1</b>')}</div>`).join('')}</div>` : ''}
-    </div>
-    <aside class="info"><div class="ih">${esc(S.title)}${S.alias ? `<small>${esc(S.alias)}</small>` : ''}</div><div class="pic${pic ? '' : ' empty'}" data-photo="a">${pic ? `<img src="${pic}" alt="${esc(S.title)}">` : '사진을 넣으려면 누르세요'}</div>
-      <table><tbody>${info.map(r => `<tr><th>${esc(r.k)}</th><td>${md(r.v, []).replace(/<\/?p>/g, '')}</td></tr>`).join('')}</tbody></table></aside></div>`;
+    const at = arg ? find(S, arg) || { i: -1 } : { i: -1 }; const D = docOf(S, at.i); const view = kind === 'hist' ? 'hist' : kind === 'talk' ? 'talk' : 'doc';
+    title = esc(D.title); small = view === 'hist' ? '<small>(문서 역사)</small>' : view === 'talk' ? '<small>(토론)</small>' : D.alias ? `<small>${esc(list(D.alias)[0] || D.alias)}</small>` : '';
+    btns = tabs(view); cats = list(D.cats);
+    pre = `${at.from && view === 'doc' ? `<div class="redir">${wp ? `(${esc(at.from)}에서 넘어옴)` : `<b>${esc(at.from)}</b>에서 넘어옴`}</div>` : ''}
+      ${view === 'doc' && D.parent ? `<div class="par">${wp ? `${esc(D.title)}은(는) ${go(D.parent)}에 관한 문서입니다. 다른 뜻에 대해서는 ${go(D.title + ' (동음이의)')} 문서를 참고하십시오.` : `<b>상위 문서:</b> ${go(D.parent)}`}</div>` : ''}
+      ${view === 'doc' && D.notice ? `<div class="ntc">${esc(D.notice)}</div>` : ''}
+      ${view === 'doc' && S.nav && !wp && list(S.navItems).some(x => key(x) === key(D.title)) ? `<table class="nav"><tr><th>${esc(S.nav)}</th></tr><tr><td>${list(S.navItems).map(x => go(x)).join(' · ')}</td></tr></table>` : ''}`;
+    if (view === 'hist') {
+      const hs = D.main ? S.hist.filter(h => h.t) : [{ t: S.updated || '', who: '211.***.**.14', diff: String(S.docs[at.i].body || '').length, msg: '새 문서' }]; const rev = hs.length + (D.main ? 6 : 0);
+      body = `<div class="hist"><table><thead><tr><th>판</th><th>시각</th><th>편집자</th><th>변경</th><th>요약</th></tr></thead><tbody>${hs.map((h, i) => `<tr><td class="r">r${rev - i}</td><td>${esc(h.t)}</td><td>${esc(h.who)}</td><td class="${h.diff >= 0 ? 'p' : 'm'}">(${h.diff >= 0 ? '+' : ''}${h.diff})</td><td>${esc(h.msg)}</td></tr>`).join('')}</tbody></table></div>`;
+    } else if (view === 'talk') {
+      body = `<div class="miss"><p>${wp ? '이 토론 문서에는 아직 글이 없습니다.' : '열린 토론이 없습니다.'}</p><p class="sim">${go(D.title, '문서로 돌아가기')}</p></div>`;
+    } else {
+      let n1 = 0, n2 = 0; const nums = D.secs.map(x => { if (/^###\s*/.test(x.h)) { n2++; return { no: `${Math.max(n1, 1)}.${n2}`, sub: true, h: x.h.replace(/^###\s*/, '') }; } n1++; n2 = 0; return { no: `${n1}.`, sub: false, h: x.h }; });
+      const hh = h => md(h, []).replace(/<\/?p>/g, '');
+      const secHTML = D.secs.map((x, i) => `<section class="sec" id="s-${i}"><h2 class="sh${nums[i].sub ? ' h3' : ''}"><a href="#" class="no" data-toc="1">${nums[i].no}</a><span class="ht" data-fold="${i}">${hh(nums[i].h)}</span><em data-v="edit">[편집]</em></h2><div class="sb">${md(x.text, fns)}</div></section>`).join('');
+      const rel = list(D.related);
+      body = `<div class="lay"><div>
+        ${D.intro ? `<div class="intro">${md(D.intro, fns)}</div>` : ''}
+        ${D.secs.length > 2 ? `<nav class="toc" id="toc"><b>목차${wp ? ' <small>[숨기기]</small>' : ''}</b>${D.secs.map((x, i) => `<a href="#" data-sec="${i}" style="${nums[i].sub ? 'padding-left:18px' : ''}"><span>${nums[i].no}</span>${esc(nums[i].h.replace(/\[\[(?:[^\]|]*\|)?([^\]]+)\]\]/g, '$1'))}</a>`).join('')}</nav>` : ''}
+        ${secHTML}
+        ${rel.length ? `<section class="sec"><h2 class="sh"><span class="no">${n1 + 1}.</span><span class="ht">${wp ? '같이 보기' : '관련 문서'}</span><em data-v="edit">[편집]</em></h2><ul>${rel.map(r => `<li>${go(r)}</li>`).join('')}</ul></section>` : ''}
+        ${fns.length && wp ? `<h2 class="sh"><span class="ht">각주</span></h2>` : ''}
+        ${fns.length ? `<div class="fns">${fns.map((f, i) => `<div id="fn${i + 1}"><a href="#" data-back="${i + 1}">[${i + 1}]</a>${fnText(f)}</div>`).join('')}</div>` : ''}
+      </div>
+      ${D.info.length || D.main ? `<aside class="info"><div class="ih">${esc(D.title)}${D.alias ? `<small>${esc(D.alias)}</small>` : ''}</div>${(() => { const pic = Core.photo(D.photo); return `<div class="pic${pic ? '' : ' empty'}" data-photo="${D.photo}">${pic ? `<img src="${pic}" alt="${esc(D.title)}">` : '사진을 넣으려면 누르세요'}</div>`; })()}
+        <table><tbody>${D.info.map(r => `<tr><th>${esc(r.k)}</th><td>${md(r.v, fns).replace(/<\/?p>/g, '')}</td></tr>`).join('')}</tbody></table></aside>` : ''}</div>`;
+      /* 정보 상자 각주가 본문 뒤에 붙도록 위에서 이미 fns에 들어가 있다 */
+      body = body.replace('<!--fns-->', '');
+    }
+    meta = wp ? `<span class="lead">위키백과, 우리 모두의 백과사전.</span>이 문서는 ${esc(S.updated || '')}에 마지막으로 편집되었습니다.` : `최근 수정 시각: ${esc(S.updated || '')}`;
+    nav = view === 'doc' && S.nav && wp && list(S.navItems).some(x => key(x) === key(D.title)) ? `<div class="navw"><table class="nav"><tr><th>${esc(S.nav)}</th></tr><tr><td>${list(S.navItems).map(x => go(x)).join(' · ')}</td></tr></table></div>` : '';
   }
-  return `<div class="top"><b>${S.skin === 'wp' ? '위키백과<small>우리 모두의 백과사전</small>' : '나무위키'}</b><span class="sp"></span><span class="sr">여기에서 검색</span></div>
+  const back = NAV.stack.length ? `<a href="#" class="tb" data-back-page="1">← 뒤로</a>` : '';
+  return `<div class="top"><a href="#" class="logo" data-home="1">${wp ? '위키백과<small>우리 모두의 백과사전</small>' : '나무위키'}</a>
+    <span class="tlinks">${back}<a href="#" class="tb" data-all="1">${wp ? '최근 바뀜' : '최근 변경'}</a><a href="#" class="tb" data-rand="1">${wp ? '임의의 문서' : '임의 문서'}</a></span><span class="sp"></span>
+    <form class="sr" data-search="1"><input name="q" placeholder="여기에서 검색" autocomplete="off" aria-label="위키 검색"></form></div>
   <div class="wrap">
-    <div class="ttl"><h1>${esc(S.title)}${S.view === 'hist' ? '<small>(문서 역사)</small>' : S.alias ? `<small>${esc(S.alias)}</small>` : ''}</h1>
-      <div class="btns">${S.skin === 'wp' ? `<span data-v="doc" class="${S.view === 'doc' ? 'on' : ''}">읽기</span><span>편집</span><span data-v="hist" class="${S.view === 'hist' ? 'on' : ''}">역사 보기</span>` : `<span>★</span><span data-v="doc" class="${S.view === 'doc' ? 'on' : ''}">문서</span><span>편집</span><span>토론</span><span data-v="hist" class="${S.view === 'hist' ? 'on' : ''}">역사</span>`}</div></div>
-    <div class="meta">${S.skin === 'wp' ? `<span class="lead">위키백과, 우리 모두의 백과사전.</span>이 문서는 ${esc(S.updated || '')}에 마지막으로 편집되었습니다.` : `최근 수정 시각: ${esc(S.updated || '')}`}</div>
-    ${S.view !== 'hist' && S.parent ? `<div class="par">${S.skin === 'wp' ? `${esc(S.title)}은(는) ${esc(S.parent)}에 관한 문서입니다. 다른 뜻에 대해서는 <a class="wl">${esc(S.title)} (동음이의)</a> 문서를 참고하십시오.` : `<b>상위 문서:</b> <a class="wl">${esc(S.parent)}</a>`}</div>` : ''}
-    ${S.view !== 'hist' && S.notice ? `<div class="ntc">${esc(S.notice)}</div>` : ''}
-    ${S.view !== 'hist' && S.nav && S.skin === 'namu' ? `<table class="nav"><tr><th>${esc(S.nav)}</th></tr><tr><td>${list(S.navItems).map(x => `<a class="wl">${esc(x)}</a>`).join(' · ')}</td></tr></table>` : ''}
-    ${cats.length && S.view !== 'hist' ? `<div class="cats"><b>분류</b>${cats.map(c => `<a href="#" onclick="return false">${esc(c)}</a>`).join('<i>|</i>')}</div>` : ''}
+    <div class="ttl"><h1>${title}${small}</h1>${btns ? `<div class="btns">${btns}</div>` : ''}</div>
+    ${meta ? `<div class="meta">${meta}</div>` : ''}
+    ${pre}
+    ${cats.length ? `<div class="cats"><b>분류</b>${cats.map(c => `<a href="#" data-cat="${esc(c)}">${esc(c)}</a>`).join('<i>|</i>')}</div>` : ''}
     ${body}
   </div>
-  ${S.view !== 'hist' && S.nav && S.skin === 'wp' ? `<div style="padding:0 26px"><table class="nav"><tr><th>${esc(S.nav)}</th></tr><tr><td>${list(S.navItems).map(x => `<a class="wl">${esc(x)}</a>`).join(' · ')}</td></tr></table></div>` : ''}
-  <div class="foot">${S.skin === 'wp' ? '이 문서는 RP 속 사실만을 바탕으로 작성되었습니다.' : '이 문서의 내용은 RP 속 사실만을 바탕으로 작성되었습니다.'} 최근 수정 ${esc(S.updated || '')}</div>`;
+  ${nav}
+  <div class="foot">${wp ? '이 문서는 RP 속 사실만을 바탕으로 작성되었습니다.' : '이 문서의 내용은 RP 속 사실만을 바탕으로 작성되었습니다.'} 최근 수정 ${esc(S.updated || '')}</div>`;
 }
-function render(S, { animate }) {
-  const el = $('#poster'); el.className = 'poster t-' + S.skin; el.innerHTML = posterHTML(S, animate);
-  $('#skins').innerHTML = Object.entries(SKIN).map(([k, v]) => `<button type="button" data-sk="${k}" aria-pressed="${S.skin === k}">${v}</button>`).join('');
+function render(S) {
+  const el = $('#poster'); el.className = 'poster t-' + S.wk; el.innerHTML = posterHTML(S);
+  $('#skins').innerHTML = Object.entries(SKIN).map(([k, v]) => `<button type="button" data-sk="${k}" aria-pressed="${S.wk === k}">${v}</button>`).join('');
 }
+/* ── 누르는 것들 ── */
+const pop = () => $('#poster .fnpop');
+function closePop() { const p = pop(); if (p) p.remove(); }
+function goPage(pg) {
+  if (pg === NAV.page) return; NAV.stack.push(NAV.page); if (NAV.stack.length > 30) NAV.stack.shift(); NAV.page = pg;
+  render(ST.state); const top = $('#poster'); if (top.getBoundingClientRect().top < 0) top.scrollIntoView({ block: 'start' });
+}
+function openDoc(t) { const S = ST.state; const f = find(S, t); if (!f) return goPage('miss:' + t); goPage(f.i < 0 && !f.from ? '' : 'doc:' + t); }
+function mark(el) { $$('#poster .hit').forEach(x => x.classList.remove('hit')); if (el) { el.classList.add('hit'); el.scrollIntoView({ block: 'center' }); } }
+const $$ = (s) => [...document.querySelectorAll(s)];
+document.addEventListener('submit', e => {
+  const f = e.target.closest('#poster [data-search]'); if (!f) return; e.preventDefault();
+  const q = f.q.value.trim(); if (!q) return; const S = ST.state; if (find(S, q)) openDoc(q); else goPage('search:' + q);
+});
 document.addEventListener('click', e => {
-  const sk = e.target.closest('#skins [data-sk]'), v = e.target.closest('#poster .btns [data-v]');
-  if (!sk && !v) return; const S = ST.state;
-  if (sk) S.skin = sk.dataset.sk; if (v) S.view = v.dataset.v;
-  try { localStorage.setItem('2inbun:wiki', JSON.stringify(S)); } catch (err) {}
-  render(S, { animate: !!v });
+  const t = e.target; const S = ST.state;
+  const sk = t.closest('#skins [data-sk]');
+  if (sk) { S.wk = sk.dataset.sk; try { localStorage.setItem('2inbun:wiki', JSON.stringify(S)); } catch (err) {} render(S); const f = document.querySelector('#form [data-k="wk"]'); if (f) f.value = S.wk; return; }
+  if (!t.closest('#poster')) return;
+  if (!t.closest('.fnpop') && !t.closest('[data-fn]')) closePop();
+  const a = t.closest('a, [data-v], [data-fold], button'); if (!a) return;
+  if (a.matches('a')) e.preventDefault();
+  const d = a.dataset;
+  if (d.fn) { /* 각주: 누르면 그 자리에 작은 창 */
+    const was = pop(); closePop(); if (was && was.dataset.n === d.fn) return;
+    const fnEl = $('#fn' + d.fn); if (!fnEl) return;
+    const box = document.createElement('div'); box.className = 'fnpop'; box.dataset.n = d.fn;
+    box.innerHTML = `<a href="#" data-jump="${d.fn}">[${d.fn}]</a> ${fnEl.innerHTML.replace(/^<a[^>]*>\[\d+\]<\/a>/, '')}`;
+    const P = $('#poster'), r = a.getBoundingClientRect(), pr = P.getBoundingClientRect(), z = P.offsetWidth ? pr.width / P.offsetWidth : 1;
+    P.appendChild(box); const w = box.offsetWidth;
+    box.style.left = Math.max(8, Math.min((r.left - pr.left) / z - w / 2, P.offsetWidth - w - 8)) + 'px';
+    box.style.top = ((r.bottom - pr.top) / z + 6) + 'px';
+    return;
+  }
+  if (d.jump) { closePop(); mark($('#fn' + d.jump)); return; }
+  if (d.back) { mark($('#r' + d.back)); return; }
+  if (d.sec !== undefined) { mark($('#s-' + d.sec + ' h2')); return; }
+  if (d.toc) { mark($('#toc')); return; }
+  if (d.fold !== undefined && !t.closest('a')) { $('#s-' + d.fold).classList.toggle('fold'); return; }
+  if (d.go !== undefined) { openDoc(d.go); return; }
+  if (d.cat) { goPage('cat:' + d.cat); return; }
+  if (d.home) { goPage(''); return; }
+  if (d.all) { goPage('all:'); return; }
+  if (d.rand) { const ds = allDocs(S).filter(x => key(x.title) !== key((NAV.page.match(/^doc:(.*)/) || [])[1] || (NAV.page ? '' : S.title))); const x = ds[Math.floor(Math.random() * ds.length)]; if (x) openDoc(x.title); return; }
+  if (d.backPage) { NAV.page = NAV.stack.pop() || ''; render(S); return; }
+  if (d.one) { Core.copy(onePrompt(S, d.one)); Core.toast(`“${d.one}” 문서 OOC를 복사했어요`); return; }
+  if (d.new) { const i = S.docs.findIndex(x => !x.title); if (i < 0) { Core.toast('연결 문서 칸이 가득 찼어요'); return; } S.docs[i] = { ...eDoc(), title: d.new }; try { localStorage.setItem('2inbun:wiki', JSON.stringify(S)); } catch (err) {} const tb = document.querySelector('.tabs [data-mode="edit"]'); if (tb) tb.click(); const ti = document.querySelector(`#form [data-k="docs.${i}.title"]`), bo = document.querySelector(`#form [data-k="docs.${i}.body"]`); if (ti) ti.value = d.new; if (bo) { bo.scrollIntoView({ block: 'center' }); bo.focus(); } Core.toast(`연결 문서 ${i + 1}번 칸에 “${d.new}”를 넣었어요`); return; }
+  if (d.v) {
+    const cur = NAV.page.startsWith('doc:') || NAV.page.startsWith('hist:') || NAV.page.startsWith('talk:') ? NAV.page.replace(/^\w+:/, '') : '';
+    if (d.v === 'edit') { const tb = document.querySelector('.tabs [data-mode="edit"]'); if (tb) tb.click(); return; }
+    if (d.v === 'star') return;
+    if (d.v === 'doc') { goPage(cur ? 'doc:' + cur : ''); return; }
+    goPage(d.v + ':' + cur); return;
+  }
 });
 const ST = Core.app({ key: '2inbun:wiki', what: '위키 문서', sample, blank, normalize, schema, prompts, apply, progress, render, fileName: S => `위키_${S.title}` });
 })();

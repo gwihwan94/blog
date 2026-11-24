@@ -485,6 +485,7 @@ window.Core = (() => {
         else if (f.type === 'select') { input = document.createElement('select'); input.innerHTML = f.opts.map(([val, lab]) => `<option value="${esc(val)}">${esc(lab)}</option>`).join(''); }
         else { input = document.createElement('input'); input.type = f.type || 'text'; if (f.type === 'range') { input.min = f.min ?? 0; input.max = f.max ?? 100; input.step = 1; } }
         input.value = v ?? (f.type === 'range' ? 0 : '');
+        input.dataset.k = f.k;
         if (f.ph) input.placeholder = f.ph;
         const lab = document.createElement('span'); lab.className = 'f-lab';
         lab.innerHTML = esc(f.label) + (f.type === 'range' ? `<output>${esc(v ?? 0)}</output>` : '');
